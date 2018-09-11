@@ -1,2 +1,1 @@
-# hello-world
-Hello world new project template.
+2048小游戏,基于cocos creator 开发
