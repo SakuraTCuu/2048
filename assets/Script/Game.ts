@@ -22,6 +22,9 @@ export enum direction {
 @ccclass
 export default class Game extends cc.Component {
 
+    @property(cc.SpriteAtlas)
+    numberAtlas: cc.SpriteAtlas = null;
+
     @property(cc.Prefab)
     squareItem: cc.Prefab = null;
 
@@ -36,9 +39,6 @@ export default class Game extends cc.Component {
 
     @property(cc.Node)
     gameOverNode: cc.Node = null;
-
-    @property(cc.SpriteAtlas)
-    gameAtlas: cc.SpriteAtlas = null;
 
     //上一次触摸点位置
     _pos: cc.Vec2 = null;
@@ -68,6 +68,13 @@ export default class Game extends cc.Component {
     _AudioMgr: AudioMgr = null;
 
     _clickFlag: boolean = true;
+
+    private static _instance: Game = null;
+
+    public static get instance(): Game {
+        return Game._instance;
+    }
+
     /**
      * 2048 小方块
      * 每一步都出现一个方块 2 
@@ -75,6 +82,7 @@ export default class Game extends cc.Component {
      * 2,4,8,16,32,64,128,256,512,1024,2048
      */
     onLoad() {
+        Game._instance = this;
         this._AudioMgr = new AudioMgr();
         // this._AudioMgr.playBGM("bg.mp3");
 
@@ -106,7 +114,7 @@ export default class Game extends cc.Component {
             for (let j = 0; j < this.squareNum; j++) {
                 let item = cc.instantiate(this.squareItem);
                 item.name = i + "" + j;
-                // item.getComponent(Item).showNumber(0);
+                // item.getComponent(Item).showNumber(2);
                 this._sqrt[i][j] = item;
                 this._sqrt2[j][i] = item;
                 this.content.addChild(item);
@@ -127,7 +135,7 @@ export default class Game extends cc.Component {
         // let x = item.width * i + item.width / 2 + (i + 1) * 20;
         // let y = item.height * j + item.width / 2 + (j + 1) * 20;
         let x = item.width * j + item.width / 2 + (j + 1) * 20;
-        let y = item.height * i + item.width / 2 + (i + 1) * 20;
+        let y = item.height * i + item.width / 2 + (i + 1) * 20 + 20;
         item.position = cc.v2(x, -y);
     }
 
@@ -142,6 +150,15 @@ export default class Game extends cc.Component {
         let item2 = this.content.getChildByName(location2.l + "" + location2.r);
         item1.getComponent(Item).showNumber(grid1);
         item2.getComponent(Item).showNumber(grid2);
+
+        // let item0 = this.content.getChildByName("00");
+        // let item1 = this.content.getChildByName("01");
+        // let item2 = this.content.getChildByName("02");
+        // let item3 = this.content.getChildByName("03");
+        // item0.getComponent(Item).showNumber(4);
+        // item1.getComponent(Item).showNumber(16);
+        // item2.getComponent(Item).showNumber(16);
+        // item3.getComponent(Item).showNumber(4);
     }
 
     /**
@@ -241,18 +258,16 @@ export default class Game extends cc.Component {
 
         this.scheduleOnce(() => {
             //检测合并
-            let flag = this.checkAllMerge();
-
-
+            // let flag = this.checkAllMerge();
             // this.randomSqrtInNULL();
-            cc.log("flag--->>>", flag);
-            if (flag) {
-                this.slideSquare();
-            } else {
-                //随机生成 数字块
-                this.randomSqrtInNULL();
-            }
-        }, 0.3);
+            // cc.log("flag--->>>", flag);
+            // if (flag) {
+            //     this.slideSquare();
+            // } else {
+            //随机生成 数字块
+            this.randomSqrtInNULL();
+            // }
+        }, 0.2);
     }
 
     /**
@@ -296,14 +311,103 @@ export default class Game extends cc.Component {
    * 将所有块往一个方向移动
    */
     moveSqrt() {
-        if (this._slide == slideDirection.LeftRight) { //左右
-            for (let i = 0; i < this.squareNum; i++) {
-                this.calcHorizontalSlidePosition(i);
-                // this.calcHorizontalSlidePosition3(i);
+        for (let i = 0; i < this.squareNum; i++) {
+            this.calcSlidePosition(i);
+        }
+    }
+
+
+    /**
+     * 计算块的滑动
+     * @param line  行/列
+     * 
+     * 主要移动和合并的逻辑判断
+     * 9/13 修改
+     */
+    calcSlidePosition(line: number) {
+        let flagList = new Array();
+        let lineList;
+        if (this._slide == slideDirection.LeftRight) {
+            lineList = this._sqrt[line];
+        } else {
+            lineList = this._sqrt2[line];
+        }
+
+        if (this._direction == direction.left || this._direction == direction.up) {
+            for (let i = 0; i < lineList.length; i++) {
+                let isNum = lineList[i].getComponent(Item).isNum();
+                if (isNum) {
+                    flagList.push(i);
+                }
             }
-        } else {   //上下
-            for (let i = 0; i < this.squareNum; i++) {
-                this.calcVerticalSlidePosition(i);
+        } else {
+            for (let i = lineList.length - 1; i >= 0; i--) {
+                let isNum = lineList[i].getComponent(Item).isNum();
+                if (isNum) {
+                    flagList.push(i);
+                }
+            }
+        }
+
+        let index = 0;
+        //从左0开始依次把数字块 按顺序排
+        //根据方向排列
+        if (this._direction == direction.left || this._direction == direction.up) {
+            for (let i = 0; i < flagList.length; i++) {
+                let oldNode: cc.Node = null;
+                let targetNode: cc.Node = null;
+
+                oldNode = lineList[flagList[i]];
+                targetNode = lineList[i];
+                let num = oldNode.getComponent(Item).getNum();
+                targetNode.name = num + "";
+                oldNode.getComponent(Item).setHideNum(num);
+
+                if (i > 0) {
+                    if (lineList[flagList[i - 1]]) {
+                        let preNum = lineList[flagList[i - 1]].getComponent(Item).getHideNum();
+                        let curNum = oldNode.getComponent(Item).getHideNum();
+                        if (preNum == curNum && curNum != 0) {
+                            targetNode = lineList[i - 1 - index];
+                            oldNode.getComponent(Item).setHideNum(0);
+                            targetNode.name = num * 2 + "";
+                            index++;
+                        } else {
+                            targetNode = lineList[i - index];
+                            targetNode.name = num + "";
+                        }
+                    }
+                }
+                this.positionMoveAction(oldNode, targetNode, num);
+            }
+        } else {
+            for (let i = 0; i < flagList.length; i++) {
+                let oldNode: cc.Node = null;
+                let targetNode: cc.Node = null;
+
+                oldNode = lineList[flagList[i]];
+                targetNode = lineList[lineList.length - i - 1];
+                let num = oldNode.getComponent(Item).getNum();
+                targetNode.name = num + "";
+                oldNode.getComponent(Item).setHideNum(num);
+
+                if (i > 0) {
+                    if (lineList[flagList[i - 1]]) {
+                        let preNum = lineList[flagList[i - 1]].getComponent(Item).getHideNum();
+                        let curNum = oldNode.getComponent(Item).getHideNum();
+                        if (preNum == curNum && curNum != 0) {
+                            // targetNode = lineList[i - 1 - index];
+                            targetNode = lineList[lineList.length - i + index];
+                            oldNode.getComponent(Item).setHideNum(0);
+                            targetNode.name = num * 2 + "";
+                            index++;
+                        } else {
+                            targetNode = lineList[lineList.length - i + index - 1];
+                            targetNode.name = num + "";
+                        }
+                    }
+                }
+                this.positionMoveAction(oldNode, targetNode, num);
             }
         }
     }
@@ -410,164 +514,163 @@ export default class Game extends cc.Component {
         }, 0.2);
     }
 
+    // /**
+    //  * 计算水平滑动
+    //  * 计算一行内所有数字块的位置,并进行 移动
+    //  * @param line 行
+    //  */
+    // calcHorizontalSlidePosition(line: number) {
+    //     this.calcSlidePosition(line);
+    //     return;
+    //     let lineList = this._sqrt[line];
+    //     let flagList = new Array();
 
+    //     if (this._direction == direction.left) {
+    //         for (let i = 0; i < lineList.length; i++) {
+    //             let isNum = lineList[i].getComponent(Item).isNum();
+    //             if (isNum) {
+    //                 flagList.push(i);
+    //             }
+    //         }
+    //     } else {
+    //         for (let i = lineList.length - 1; i >= 0; i--) {
+    //             let isNum = lineList[i].getComponent(Item).isNum();
+    //             if (isNum) {
+    //                 flagList.push(i);
+    //             }
+    //         }
+    //     }
 
-    /**
-     * 计算水平滑动
-     * 计算一行内所有数字块的位置,并进行 移动
-     * @param line 行
-     */
-    calcHorizontalSlidePosition(line: number) {
-        let lineList = this._sqrt[line];
-        let flagList = new Array();
+    //     let index = 0;
+    //     //从左0开始依次把数字块 按顺序排
+    //     //根据方向排列
 
-        if (this._direction == direction.left) {
-            for (let i = 0; i < lineList.length; i++) {
-                let isNum = lineList[i].getComponent(Item).isNum();
-                if (isNum) {
-                    flagList.push(i);
-                }
-            }
-        } else {
-            for (let i = lineList.length - 1; i >= 0; i--) {
-                let isNum = lineList[i].getComponent(Item).isNum();
-                if (isNum) {
-                    flagList.push(i);
-                }
-            }
-        }
+    //     if (this._direction == direction.left) {
+    //         for (let i = 0; i < flagList.length; i++) {
+    //             let oldNode: cc.Node = null;
+    //             let targetNode: cc.Node = null;
 
-        //从左0开始依次把数字块 按顺序排
-        //根据方向排列
-        for (let i = 0; i < flagList.length; i++) {
-            let oldNode: cc.Node = null;
-            let targetNode: cc.Node = null;
+    //             oldNode = lineList[flagList[i]];
+    //             targetNode = lineList[i];
+    //             let num = oldNode.getComponent(Item).getNum();
+    //             targetNode.name = num + "";
+    //             oldNode.getComponent(Item).setHideNum(num);
 
-            // if (this._direction == direction.left) {
-            // let num = lineList[flagList[i]].getComponent(Item).getNum();
-            // lineList[i].getComponent(Item).showNumber(num);
+    //             if (i > 0) {
+    //                 if (lineList[flagList[i - 1]]) {
+    //                     let preNum = lineList[flagList[i - 1]].getComponent(Item).getHideNum();
+    //                     let curNum = oldNode.getComponent(Item).getHideNum();
+    //                     if (preNum == curNum && curNum != 0) {
+    //                         targetNode = lineList[i - 1 - index];
+    //                         oldNode.getComponent(Item).setHideNum(0);
+    //                         targetNode.name = num * 2 + "";
+    //                         index++;
+    //                     } else {
+    //                         targetNode = lineList[i - index];
+    //                     }
+    //                 }
+    //             }
+    //             this.positionMoveAction(oldNode, targetNode, num);
+    //         }
+    //     } else {
+    //         for (let i = 0; i < flagList.length; i++) {
+    //             let oldNode: cc.Node = null;
+    //             let targetNode: cc.Node = null;
 
-            oldNode = lineList[flagList[i]];
-            let num = oldNode.getComponent(Item).getNum();
-            // cloneNode.getComponent(Item).showNumber(num);
-            // cloneNode.position = oldNode.position;
-            // cloneNode.name = num + "";
-            oldNode.name = num + "";
-            if (this._direction == direction.left) {
-                targetNode = lineList[i];
-            } else {
-                targetNode = lineList[lineList.length - i - 1];
-            }
+    //             oldNode = lineList[flagList[i]];
+    //             targetNode = lineList[lineList.length - i - 1];
+    //             let num = oldNode.getComponent(Item).getNum();
+    //             targetNode.name = num + "";
+    //             oldNode.getComponent(Item).setHideNum(num);
 
-            oldNode.getComponent(Item).showNumber(0);
-            this.positionMoveAction(oldNode, targetNode);
-            // } else if (this._direction == direction.right) {
-            //     // let num = lineList[flagList[flagList.length - i - 1]].getComponent(Item).getNum();
-            //     // lineList[lineList.length - i - 1].getComponent(Item).showNumber(num);
-            //     oldNode = lineList[flagList[flagList.length - i - 1]];
-            //     let num = oldNode.getComponent(Item).getNum();
-            //     // cloneNode.getComponent(Item).showNumber(num);
-            //     // cloneNode.position = oldNode.position;
-            //     // cloneNode.name = num + "";
-            //     oldNode.name = num + "";
-            //     targetNode = lineList[lineList.length - i - 1];
-            //     oldNode.getComponent(Item).showNumber(0);
-            // }
+    //             if (i > 0) {
+    //                 if (lineList[flagList[i - 1]]) {
+    //                     let preNum = lineList[flagList[i - 1]].getComponent(Item).getHideNum();
+    //                     let curNum = oldNode.getComponent(Item).getHideNum();
+    //                     if (preNum == curNum && curNum != 0) {
+    //                         // targetNode = lineList[i - 1 - index];
+    //                         targetNode = lineList[lineList.length - i + index];
+    //                         oldNode.getComponent(Item).setHideNum(0);
+    //                         targetNode.name = num * 2 + "";
+    //                         index++;
+    //                     } else {
+    //                         targetNode = lineList[lineList.length - i + index - 1];
+    //                     }
+    //                 }
+    //             }
+    //             this.positionMoveAction(oldNode, targetNode, num);
+    //         }
+    //     }
+    // }
 
-            //A克隆一个节点A1,然后把节点A置空,然后移动到指定节点B位置
-            // cloneNode = cc.instantiate(lineList[flagList[i]]);
-            // this.content.addChild(cloneNode);
-            // targetNode = lineList[i];
-            // let runTime = Math.floor(Math.abs(oldNode.x - targetNode.x) / cloneNode.width) * 0.1;
-            // let moveAct = cc.moveTo(runTime, targetNode.position);
-            // cloneNode.runAction(cc.sequence(moveAct, cc.callFunc(() => {
-            //     targetNode.getComponent(Item).showNumber(Number(cloneNode.name));
-            //     this.content.removeChild(cloneNode);
-            //     cloneNode.removeFromParent();
-            //     cloneNode.destroy();
-            // })));
-        }
+    // /**
+    //  * 竖直滑动
+    //  * 计算一列内所有数字块的位置,并进行 移动
+    //  */
+    // calcVerticalSlidePosition(row: number) {
+    //     this.calcSlidePosition(row);
+    //     return;
+    //     let rowList = this._sqrt2[row];
+    //     let flagList = new Array();
+    //     for (let i = 0; i < rowList.length; i++) {
+    //         let isNum = rowList[i].getComponent(Item).isNum();
+    //         if (isNum) {
+    //             flagList.push(i);
+    //         }
+    //     }
 
-        //置空 之前的块
-        // for (let i = 0; i < lineList.length; i++) {
-        //     if (this._direction == direction.left) {
-        //         if (i > flagList.length - 1) {
-        //             lineList[i].getComponent(Item).showNumber(0);
-        //         }
-        //     } else if (this._direction == direction.right) {
-        //         if (i < lineList.length - flagList.length) {
-        //             lineList[i].getComponent(Item).showNumber(0);
-        //         }
-        //     }
-        // }
-    }
+    //     //从左0开始依次把数字块 按顺序排
+    //     //根据方向排列
+    //     for (let i = 0; i < flagList.length; i++) {
+    //         let oldNode: cc.Node = null;
+    //         // let cloneNode: cc.Node = cc.instantiate(this.squareItem);
+    //         let targetNode: cc.Node = null;
 
-    /**
-     * 竖直滑动
-     * 计算一列内所有数字块的位置,并进行 移动
-     */
-    calcVerticalSlidePosition(row: number) {
-        let rowList = this._sqrt2[row];
-        let flagList = new Array();
-        for (let i = 0; i < rowList.length; i++) {
-            let isNum = rowList[i].getComponent(Item).isNum();
-            if (isNum) {
-                flagList.push(i);
-            }
-        }
+    //         if (this._direction == direction.up) {
+    //             // let num = rowList[flagList[i]].getComponent(Item).getNum();
+    //             // rowList[i].getComponent(Item).showNumber(num);
 
-        //从左0开始依次把数字块 按顺序排
-        //根据方向排列
-        for (let i = 0; i < flagList.length; i++) {
-            let oldNode: cc.Node = null;
-            // let cloneNode: cc.Node = cc.instantiate(this.squareItem);
-            let targetNode: cc.Node = null;
+    //             oldNode = rowList[flagList[i]];
+    //             let num = oldNode.getComponent(Item).getNum();
+    //             // cloneNode.getComponent(Item).showNumber(num);
+    //             // cloneNode.position = oldNode.position;
+    //             // cloneNode.name = num + "";
+    //             oldNode.name = num + "";
+    //             targetNode = rowList[i];
+    //             oldNode.getComponent(Item).showNumber(0);
+    //         } else if (this._direction == direction.down) {
+    //             // let num = rowList[flagList[flagList.length - i - 1]].getComponent(Item).getNum();
+    //             // rowList[rowList.length - i - 1].getComponent(Item).showNumber(num);
 
-            if (this._direction == direction.up) {
-                // let num = rowList[flagList[i]].getComponent(Item).getNum();
-                // rowList[i].getComponent(Item).showNumber(num);
+    //             oldNode = rowList[flagList[flagList.length - i - 1]];
+    //             let num = oldNode.getComponent(Item).getNum();
+    //             oldNode.name = num + "";
+    //             // cloneNode.getComponent(Item).showNumber(num);
+    //             // cloneNode.position = oldNode.position;
+    //             // cloneNode.name = num + "";
+    //             targetNode = rowList[rowList.length - i - 1];
+    //             oldNode.getComponent(Item).showNumber(0);
+    //         }
 
-                oldNode = rowList[flagList[i]];
-                let num = oldNode.getComponent(Item).getNum();
-                // cloneNode.getComponent(Item).showNumber(num);
-                // cloneNode.position = oldNode.position;
-                // cloneNode.name = num + "";
-                oldNode.name = num + "";
-                targetNode = rowList[i];
-                oldNode.getComponent(Item).showNumber(0);
-            } else if (this._direction == direction.down) {
-                // let num = rowList[flagList[flagList.length - i - 1]].getComponent(Item).getNum();
-                // rowList[rowList.length - i - 1].getComponent(Item).showNumber(num);
+    //         //A克隆一个节点A1,然后把节点A置空,然后移动到指定节点B位置
+    //         // cloneNode = cc.instantiate(lineList[flagList[i]]);
+    //         // this.content.addChild(cloneNode);
+    //         // this.positionMoveAction(oldNode, targetNode);
+    //     }
 
-                oldNode = rowList[flagList[flagList.length - i - 1]];
-                let num = oldNode.getComponent(Item).getNum();
-                oldNode.name = num + "";
-                // cloneNode.getComponent(Item).showNumber(num);
-                // cloneNode.position = oldNode.position;
-                // cloneNode.name = num + "";
-                targetNode = rowList[rowList.length - i - 1];
-                oldNode.getComponent(Item).showNumber(0);
-            }
-
-            //A克隆一个节点A1,然后把节点A置空,然后移动到指定节点B位置
-            // cloneNode = cc.instantiate(lineList[flagList[i]]);
-            // this.content.addChild(cloneNode);
-            this.positionMoveAction(oldNode, targetNode);
-        }
-
-        //置空 之前的块
-        // for (let i = 0; i < rowList.length; i++) {
-        //     if (this._direction == direction.up) {
-        //         if (i > flagList.length - 1) {
-        //             rowList[i].getComponent(Item).showNumber(0);
-        //         }
-        //     } else if (this._direction == direction.down) {
-        //         if (i < rowList.length - flagList.length) {
-        //             rowList[i].getComponent(Item).showNumber(0);
-        //         }
-        //     }
-        // }
-    }
+    //     //置空 之前的块
+    //     // for (let i = 0; i < rowList.length; i++) {
+    //     //     if (this._direction == direction.up) {
+    //     //         if (i > flagList.length - 1) {
+    //     //             rowList[i].getComponent(Item).showNumber(0);
+    //     //         }
+    //     //     } else if (this._direction == direction.down) {
+    //     //         if (i < rowList.length - flagList.length) {
+    //     //             rowList[i].getComponent(Item).showNumber(0);
+    //     //         }
+    //     //     }
+    //     // }
+    // }
 
     /**
      * 随机一个数字  2/4
@@ -629,7 +732,7 @@ export default class Game extends cc.Component {
                 // cloneNode.position = two.position;
                 // cloneNode.name = num2 + "";
                 two.name = num2 * 2 + "";
-                this.positionMoveAction(two, one);
+                // this.positionMoveAction(two, one);
                 //进行飞行动作
                 this._score += num1;
                 cc.log("合并两个--->>>");
@@ -651,25 +754,22 @@ export default class Game extends cc.Component {
     /**
      * move动作
      */
-    positionMoveAction(oldNode: cc.Node, targetNode: cc.Node) {
-
-        cc.log("oldName--->>>", oldNode.name);
-
+    positionMoveAction(oldNode: cc.Node, targetNode: cc.Node, num) {
+        oldNode.getComponent(Item).showNumber(0);
         let cloneNode: cc.Node = cc.instantiate(this.squareItem);
-        cloneNode.getComponent(Item).showNumber(Number(oldNode.name));
+        cloneNode.getComponent(Item).showNumber(num);
         cloneNode.position = oldNode.position;
-        cloneNode.name = oldNode.name;
         this.content.addChild(cloneNode);
-
         let runTime;
         if (this._slide == slideDirection.LeftRight) {
             runTime = Math.floor(Math.abs(oldNode.x - targetNode.x) / cloneNode.height) * 0.1;
         } else {
             runTime = Math.floor(Math.abs(oldNode.y - targetNode.y) / cloneNode.height) * 0.1;
         }
-        let moveAct = cc.moveTo(runTime, targetNode.position);
+
+        let moveAct = cc.moveTo(0.2, targetNode.position);
         cloneNode.runAction(cc.sequence(moveAct, cc.callFunc(() => {
-            targetNode.getComponent(Item).showNumber(Number(cloneNode.name));
+            targetNode.getComponent(Item).showNumber(Number(targetNode.name));
             this.content.removeChild(cloneNode);
             cloneNode.removeFromParent();
             cloneNode.destroy();
@@ -698,106 +798,4 @@ export default class Game extends cc.Component {
         cc.director.loadScene("main");
     }
 
-
-    calcHorizontalSlidePosition2(line: number) {
-        let lineList = this._sqrt[line];
-        let flagList = new Array();
-        let numList = new Array();
-        //映射，代表移动的目标角标
-        let targetList = new Array();
-        for (let i = 0; i < lineList.length; i++) {
-            let isNum = lineList[i].getComponent(Item).isNum();
-            if (isNum) {
-                flagList.push(i);
-                numList.push(lineList[i].getComponent(Item).getNum());
-            }
-        }
-
-        for (let i = 0; i < flagList.length; i++) {
-            lineList[i] = numList[i];
-            flagList[i]
-            if (numList[i + 1] && numList[i] == numList[i + 1]) {
-
-            }
-        }
-    }
-
-    /**
-     * 数组排序
-     */
-    sortArray(numList: Array<number>) {
-        let newList = new Array();
-        let index = -1;
-        //先进行合并操作，合并一次，就更新一下数组，冒泡排序
-        for (let i = 0; i < numList.length; i++) {
-            if (numList[i + 1] && numList[i] == numList[i + 1]) {
-                //合并,并放到新数组里
-                newList.push(numList[i] * 2);
-                index = i + 1;
-                break;
-            }
-        }
-        //合并之后更新一下数组，并且再次进行排序
-        if (index > 0) {
-            numList[index] = 0;
-            return this.sortArray(numList);
-        }
-        return newList;
-    }
-
-
-    /**
-    * 计算水平滑动
-    * 计算一行内所有数字块的位置,并进行 移动
-    * @param line 行
-    */
-    calcHorizontalSlidePosition3(line: number) {
-        let lineList = this._sqrt[line];
-        let flagList = new Array();
-        for (let i = 0; i < lineList.length; i++) {
-            let isNum = lineList[i].getComponent(Item).isNum();
-            if (isNum) {
-                flagList.push(i);
-            }
-        }
-
-
-        cc.log("flagList.length-->>", flagList.length);
-        //从左0开始依次把数字块 按顺序排
-        //根据方向排列
-        for (let i = 0; i < flagList.length; i++) {
-            let oldNode: cc.Node = null;
-            let targetNode: cc.Node = null;
-
-            if (this._direction == direction.left) {
-
-                oldNode = lineList[flagList[i]]
-                oldNode.name = oldNode.getComponent(Item).getNum() + "";
-                targetNode = lineList[i];
-
-                //移动
-                if (i > 0) {
-                    if (lineList[flagList[i - 1]].getComponent(Item).getNum() == lineList[flagList[i]].getComponent(Item).getNum()) {
-                        //可以合并; 并且目标节点是上一个节点
-                        cc.log("可以合并");
-                        targetNode = lineList[i - 1];
-                    } else {
-                        //不能合并
-                    }
-                } else {
-                }
-                cc.log(oldNode.getComponent(Item).getNum());
-                cc.log(targetNode.getComponent(Item).getNum());
-                // let num = lineList[flagList[i]].getComponent(Item).getNum();
-                // lineList[i].getComponent(Item).showNumber(num);
-
-            } else if (this._direction == direction.right) {
-                // let num = lineList[flagList[flagList.length - i - 1]].getComponent(Item).getNum();
-                // lineList[lineList.length - i - 1].getComponent(Item).showNumber(num);
-            }
-
-            this.positionMoveAction(oldNode, targetNode);
-        }
-
-    }
 }
