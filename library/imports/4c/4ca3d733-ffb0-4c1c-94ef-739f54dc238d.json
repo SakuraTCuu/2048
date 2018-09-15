@@ -1,0 +1,22 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "shangdian-shangdian21",
+    "texture": "ab44347b-8e81-4ea5-8bf3-f7a73268b1c5",
+    "atlas": "8bafe9d6-586a-446f-be47-91b4fdaa06a4",
+    "rect": [
+      0,
+      0,
+      582,
+      818
+    ],
+    "offset": [
+      0,
+      0
+    ],
+    "originalSize": [
+      582,
+      818
+    ]
+  }
+}

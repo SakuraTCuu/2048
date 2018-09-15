@@ -1,0 +1,10 @@
+{
+  "__type__": "dragonBones.DragonBonesAtlasAsset",
+  "_name": "IconAnim_tex",
+  "_objFlags": 0,
+  "_rawFiles": null,
+  "_atlasJson": "{\"width\":1024,\"imagePath\":\"IconAnim_tex.png\",\"height\":512,\"name\":\"IconAnim\",\"SubTexture\":[{\"width\":503,\"y\":1,\"height\":274,\"name\":\"fengmian/fm07\",\"x\":1},{\"width\":240,\"y\":1,\"height\":176,\"name\":\"fengmian/fm06\",\"x\":506},{\"width\":123,\"y\":1,\"height\":130,\"name\":\"fengmian/fm05\",\"x\":884},{\"width\":134,\"y\":1,\"height\":157,\"name\":\"fengmian/fm04\",\"x\":748},{\"width\":556,\"y\":277,\"height\":207,\"name\":\"fengmian/fm08\",\"x\":1}]}",
+  "texture": {
+    "__uuid__": "ea320869-7598-4454-a9c2-54e15834c7b9"
+  }
+}

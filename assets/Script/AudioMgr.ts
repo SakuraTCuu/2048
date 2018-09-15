@@ -1,6 +1,6 @@
 
 export default class AudioMgr {
-    bgmVolume: number = 0.0;
+    bgmVolume: number = 0.5;
     sfxVolume: number = 0.3;
     bgmAudioID: number = 0;
     //背景音乐播放的时间
@@ -20,20 +20,24 @@ export default class AudioMgr {
 
         cc.audioEngine.setMaxAudioInstance(this.MAX_AUDIO_NUM);
 
+    }
+
+    init() {
         let self = this;
         cc.game.on(cc.game.EVENT_HIDE, function () {
-            console.log("cc.audioEngine.pauseAll");
+            console.log("cc.audioEngine.pauseAll1");
             self.pauseAll();
         });
         cc.game.on(cc.game.EVENT_SHOW, function () {
-            console.log("cc.audioEngine.resumeAll");
+            console.log("cc.audioEngine.resumeAll2");
             // cc.audioEngine.resumeAll();
             self.resumeAll();
         });
     }
 
     getUrl(url) {
-        return cc.url.raw("resources/audio/" + url);
+        cc.log(url);
+        return cc.url.raw("resources/audio/effectAudio/" + url);
     }
 
     playBGM(url) {
@@ -43,6 +47,11 @@ export default class AudioMgr {
             cc.audioEngine.stop(this.bgmAudioID);
         }
         this.bgmAudioID = cc.audioEngine.play(audioUrl, true, this.bgmVolume);
+    }
+
+
+    StopBGM() {
+        cc.audioEngine.stop(this.bgmAudioID);
     }
 
     playSFX(url) {

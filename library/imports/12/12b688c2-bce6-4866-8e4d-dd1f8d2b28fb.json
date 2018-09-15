@@ -1,0 +1,22 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "IconAnim_tex",
+    "texture": "ea320869-7598-4454-a9c2-54e15834c7b9",
+    "atlas": "",
+    "rect": [
+      3,
+      1,
+      1004,
+      483
+    ],
+    "offset": [
+      -7,
+      13.5
+    ],
+    "originalSize": [
+      1024,
+      512
+    ]
+  }
+}

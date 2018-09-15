@@ -1,0 +1,22 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "paizi-paizi_12",
+    "texture": "55ac2ebe-5470-4ad7-b44e-16ad484da92f",
+    "atlas": "d727e969-5c01-42d8-99fb-2724f3e9422c",
+    "rect": [
+      1951,
+      0,
+      43,
+      58
+    ],
+    "offset": [
+      -1,
+      0
+    ],
+    "originalSize": [
+      45,
+      59
+    ]
+  }
+}

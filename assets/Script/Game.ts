@@ -51,6 +51,8 @@ export default class Game extends cc.Component {
     _score: number = 0;
     //步数
     _step: number = 0;
+    //合并的步数
+    _mergeStep: number = 0;
 
     //每一行的格子数
     squareNum: number = 4;
@@ -68,11 +70,11 @@ export default class Game extends cc.Component {
     //当前龙骨动画的armature对象
     _armature: dragonBones.Armature = null;
 
-    //上一次播放特效的id
-    _effectId: number = 0;
+    //本次是否进行过合并
+    _isMerge: boolean = false;
 
-    //上一次播放特效的时间
-    _preTime: number = null;
+    //播放音效的ID
+    _audioID: number = -1;
 
     _AudioMgr: AudioMgr = null;
 
@@ -93,7 +95,9 @@ export default class Game extends cc.Component {
     onLoad() {
         Game._instance = this;
         this._AudioMgr = new AudioMgr();
-        // this._AudioMgr.playBGM("bg.mp3");
+        this._AudioMgr.StopBGM();
+        //大厅是不播放背景音乐的
+        // this._AudioMgr.playBGM("BGM.mp3");
 
         //初始化
         this.initGame();
@@ -141,42 +145,49 @@ export default class Game extends cc.Component {
     setEffectName(id: number) {
         let effectName = "";
         switch (id) {
-            case 1:
+            case 8:
                 effectName = "dbgood";
                 break;
-            case 2:
+            case 9:
                 effectName = "dbgreat";
                 break;
-            case 3:
+            case 10:
                 effectName = "dbperfect";
                 break;
-            case 4:
+            case 11:
                 effectName = "dbunbele";
                 break;
-            case 5:
-                effectName = "damazing";
-                break;
-            default:
+            case 12:
                 effectName = "damazing";
                 break;
         }
-        this.setEffectNode(effectName);
+        if (effectName == "") {
+
+        } else {
+            this.setEffectNode(effectName);
+        }
     }
 
     /**
-     * 设置合并和一些分数，及特效等中间状态
-     * @param num 此次消除的得分
+     * 播放特效
      */
-    setMergeTime(num: number) {
-        let currentTime = Date.now();
-        if (currentTime - this._preTime < 1000) {
-            //播放 特效
-            this.setEffectName(this._effectId++);
-        } else {
-            //特效置空
-            this._effectId = 0;
+    playAudioEffect() {
+        cc.log("播放特效id---->>>", this._audioID);
+        if (this._audioID > 12) {
+            this._audioID = -1;//
+            cc.log("你太牛逼了..连销12个..厉害了，从0继续吧");
+            return;
         }
-        this._preTime = currentTime;
+        if (this._audioID <= 0) {
+            cc.log("下一次就有声音了哦");
+            return;
+        }
+
+        //播放 特效
+        this.setEffectName(this._audioID);
+        this._AudioMgr.playSFX("audio" + this._audioID + ".ogg");
+        //设置合并的步数
+        this._mergeStep++;
     }
 
     initGame() {
@@ -249,11 +260,39 @@ export default class Game extends cc.Component {
         this.stepLab.string = this._step + "";
     }
 
+
+    /**
+     * 每一次移动之前都会触发的事件
+     */
+    everyTimeMoveCallback() {
+        //播放滑动的视频
+        this._AudioMgr.playSFX("move.ogg");
+    }
+
+    /**
+     * 每一次移动之后都会触发的事件
+     */
+    everyTimeEndCallback() {
+
+        //播放滑动的视频
+        // this._AudioMgr.playSFX("move.ogg");
+
+    }
+
+    /**
+     * 每次合并都会触发的事件
+     */
+    everyTimeMergeCallBack() {
+
+
+    }
+
     touchEnd(event) {
         if (this._clickFlag) {
             this._clickFlag = false;
             let pos = event.getLocation()
             this._endPos = cc.v2(pos.x, pos.y);
+            this.everyTimeMoveCallback();
             this.checkSlideDirection(this._endPos);
             this._step++;
             this.setLabInfo();
@@ -273,6 +312,7 @@ export default class Game extends cc.Component {
             this._clickFlag = false;
             let pos = event.getLocation()
             this._cancelPos = cc.v2(pos.x, pos.y);
+            this.everyTimeMoveCallback();
             this.checkSlideDirection(this._cancelPos);
             this._step++;
             this.setLabInfo();
@@ -335,6 +375,20 @@ export default class Game extends cc.Component {
 
         //移动位置  所有块往一个方向移动
         this.moveSqrt();
+        this.everyTimeEndCallback();
+
+        if (this._isMerge) {
+            //本次有合并成功的
+            //   音效id++
+            this._audioID++;
+            //播放音效
+            this.playAudioEffect();
+            this.everyTimeMergeCallBack();
+        } else {
+            //本次没有合并成功的..音效id从开始
+            this._audioID = -1;
+        }
+        this._isMerge = false;
 
         this.scheduleOnce(() => {
             //检测合并
@@ -453,6 +507,7 @@ export default class Game extends cc.Component {
                             targetNode.name = num * 2 + "";
                             // targetNode.isMerge = true;
                             index++;
+                            this._isMerge = true;
                         } else {
                             targetNode = lineList[i - index];
                             targetNode.name = num + "";
@@ -478,15 +533,12 @@ export default class Game extends cc.Component {
                         let curNum = oldNode.getComponent(Item).getHideNum();
                         if (preNum == curNum && curNum != 0) {
 
-
-
                             // targetNode = lineList[i - 1 - index];
                             targetNode = lineList[lineList.length - i + index];
                             oldNode.getComponent(Item).setHideNum(0);
                             targetNode.name = num * 2 + "";
                             index++;
-                            //合并两个 记住合并的时间
-                            this.setMergeTime(num * 2);
+                            this._isMerge = true;
                         } else {
                             targetNode = lineList[lineList.length - i + index - 1];
                             targetNode.name = num + "";
@@ -594,7 +646,6 @@ export default class Game extends cc.Component {
 
         //延迟0.2s
         // this.scheduleOnce(() => {
-        this._AudioMgr.playSFX("click.mp3");
         nullList[index].getComponent(Item).showNumber(num, true);
         this._clickFlag = true;
         // }, 0.3);

@@ -1,0 +1,14 @@
+{
+  "__type__": "cc.SpriteAtlas",
+  "_name": "number2.plist",
+  "_objFlags": 0,
+  "_rawFiles": null,
+  "_spriteFrames": {
+    "shangdian-shangdian21": {
+      "__uuid__": "4ca3d733-ffb0-4c1c-94ef-739f54dc238d"
+    },
+    "fengmian-jiemian": {
+      "__uuid__": "a470e5d8-2bc7-4dc5-9a4b-8f7bae213a08"
+    }
+  }
+}

@@ -1,0 +1,215 @@
+{
+  "__type__": "cc.SpriteAtlas",
+  "_name": "number1.plist",
+  "_objFlags": 0,
+  "_rawFiles": null,
+  "_spriteFrames": {
+    "duorenjiemian-duoren01": {
+      "__uuid__": "97e2d593-2504-435e-896b-666a5d005a34"
+    },
+    "daoju-qipao01": {
+      "__uuid__": "8b42e367-426f-4df0-8840-ba0e9fc009d6"
+    },
+    "shezhi-shezhi1": {
+      "__uuid__": "5f458a7c-8e45-4537-b5ff-812f2cc5493a"
+    },
+    "daoju-daoju8": {
+      "__uuid__": "f2e89a52-cd36-4b77-9490-39ed16e85cf5"
+    },
+    "shangdian-shangdian6": {
+      "__uuid__": "75efe9f6-33bb-4a90-8a47-772995a46655"
+    },
+    "jieshuan-jieshuan4": {
+      "__uuid__": "bcfed527-cd40-4df8-8237-8a5c7b3b18b4"
+    },
+    "anjian-anjian06": {
+      "__uuid__": "4dcb11cb-9933-428e-ab54-6218dedeb217"
+    },
+    "shezhi-fkms013": {
+      "__uuid__": "49eedbde-554d-4e07-bfc5-bc0b36fe8cc4"
+    },
+    "shezhi-fkms012": {
+      "__uuid__": "a5b7ca4d-a5a7-472d-9100-9f4c03724acd"
+    },
+    "shezhi-fkms015": {
+      "__uuid__": "c84c5956-d4ea-401a-9685-7ec1b6f48527"
+    },
+    "qindao-089": {
+      "__uuid__": "0242882b-2a1a-4ec1-99f0-136fc2ebe131"
+    },
+    "qindao-qiandao": {
+      "__uuid__": "8c536a17-4280-4116-ae5c-cb8332f142ba"
+    },
+    "shangdian-shangdian3": {
+      "__uuid__": "2d3262dc-6144-4d22-bf35-eeed500736a8"
+    },
+    "shezhi-shezhi7": {
+      "__uuid__": "20493d8d-c592-4217-b5c1-e2a48ab50f09"
+    },
+    "shezhi-shezhi8": {
+      "__uuid__": "b7e07199-f3a2-4a9e-8a3a-7e526386b417"
+    },
+    "shezhi-shezhi11": {
+      "__uuid__": "599e8901-c5b2-4406-bf14-4a0b71552170"
+    },
+    "shezhi-shezhi10": {
+      "__uuid__": "1ad832be-7328-4410-9980-92daab2c50b2"
+    },
+    "shezhi-fenxiang04": {
+      "__uuid__": "d40a3444-378e-4518-ba6b-2890072f2cbe"
+    },
+    "duorenjiemian-duoren10": {
+      "__uuid__": "365393ff-02d8-4a27-ad1e-95e644994b34"
+    },
+    "gankajiemian-gkjm040": {
+      "__uuid__": "e4a7d5b9-64f1-48fb-8092-e273d193cdf7"
+    },
+    "gankajiemian-gkjm038": {
+      "__uuid__": "903cd9fe-6306-4fc6-9f20-bcbd03c4b3c8"
+    },
+    "gankajiemian-gkjm037": {
+      "__uuid__": "9a1d8f53-ea60-4762-aeb0-c90e97f9170e"
+    },
+    "gankajiemian-tishi11": {
+      "__uuid__": "e5aa6b40-e0a0-4b0d-baca-542fc59870dd"
+    },
+    "gankajiemian-tishi12": {
+      "__uuid__": "4a602aaa-edde-4478-9b93-b794e5fe9db0"
+    },
+    "duorenjiemian-tishi": {
+      "__uuid__": "047961e4-2466-4b43-bebd-25131419a70a"
+    },
+    "gankajiemian-tishi03": {
+      "__uuid__": "862a2cb2-362c-4310-8ef6-e057c4b1ee6d"
+    },
+    "gankajiemian-tishi09": {
+      "__uuid__": "a13ebdb5-5bbf-445e-bf2a-208bd3562d81"
+    },
+    "gankajiemian-tishi002": {
+      "__uuid__": "4bd2468f-d1cf-4721-8f50-23d80201a909"
+    },
+    "gankajiemian-tishikuang": {
+      "__uuid__": "9a2d6cc7-d5d3-4839-84ad-61fdaac878c9"
+    },
+    "gankajiemian-tishi06": {
+      "__uuid__": "f30e577f-f82d-4bee-b639-ca930ab52a00"
+    },
+    "paizi-paizi_2": {
+      "__uuid__": "e4405899-9297-4a36-9744-c4083f48861c"
+    },
+    "paizi-paizi_6": {
+      "__uuid__": "d93c7260-e9ff-4f54-9bed-caf99a6c707d"
+    },
+    "paizi-paizi_3": {
+      "__uuid__": "7d561929-e7a8-4eff-af56-4d6b4cd9e3aa"
+    },
+    "paizi-paizi_7": {
+      "__uuid__": "942d4a38-dac5-4c7e-bb9f-261290d29c89"
+    },
+    "paizi-paizi_4": {
+      "__uuid__": "d2fb096e-ca64-4eac-af75-76bc358455cb"
+    },
+    "paizi-paizi_5": {
+      "__uuid__": "92f78d65-4d71-49b7-b5b8-7e732b5c406a"
+    },
+    "paizi-paizi_8": {
+      "__uuid__": "a8c663a0-e498-46fa-8491-d376c6cd4599"
+    },
+    "paizi-paizi_9": {
+      "__uuid__": "fd42d078-87ef-40b5-9ae9-03a4edd46118"
+    },
+    "paizi-paizi_10": {
+      "__uuid__": "97b02388-ef41-4b8f-aca2-cd1ff3ad33a5"
+    },
+    "paizi-paizi_11": {
+      "__uuid__": "8fc2b114-ad41-460a-a8c3-23b47d0a5863"
+    },
+    "paizi-paizi_12": {
+      "__uuid__": "81a7f9aa-df29-48aa-938d-6f37e38d3430"
+    },
+    "paizi-paizi_13": {
+      "__uuid__": "9faa473b-cb08-44f0-9d63-51f191b705fb"
+    },
+    "paizi-paizi_14": {
+      "__uuid__": "ce4e6595-7be1-423c-95ef-c720d8da8bf5"
+    },
+    "paizi-paizi_15": {
+      "__uuid__": "d2a72b6f-40c6-4fba-84a3-82434ff34abd"
+    },
+    "gankajiemian-mingci_4": {
+      "__uuid__": "40d14613-d72a-46f1-aaf5-c40814a30ed3"
+    },
+    "daoju-daoju047": {
+      "__uuid__": "76668bd6-94f4-43fa-8a42-4e39d6d30f21"
+    },
+    "daoju-daoju048": {
+      "__uuid__": "cda8fa85-9912-420b-be02-cf4bb6a57e37"
+    },
+    "daoju-daoju050": {
+      "__uuid__": "38517245-41eb-47c0-b55d-257e18421fea"
+    },
+    "qita-yinbi": {
+      "__uuid__": "87847280-a2bf-4ab3-af3d-1280cf5469ef"
+    },
+    "gankajiemian-gkjm08": {
+      "__uuid__": "425560fc-d1a3-47a6-a173-6eb810be0c60"
+    },
+    "shangdian-shangdian19": {
+      "__uuid__": "9b76700c-6e7c-4d4e-97e5-1d3a93a76fc5"
+    },
+    "anjian-anjian10": {
+      "__uuid__": "6b2d6b3f-7ea8-4e21-a4d7-1cf83c4f08cd"
+    },
+    "shezhi-shizhi5": {
+      "__uuid__": "c1f740af-282c-483d-8b56-bba01a64be4b"
+    },
+    "shezhi-shizhi6": {
+      "__uuid__": "857b13c1-d019-4d1a-abf7-03b5279aa254"
+    },
+    "shezhi-shezhi2": {
+      "__uuid__": "714b8d99-fd9d-4093-8193-cd10032b801c"
+    },
+    "shezhi-shizhi3": {
+      "__uuid__": "fe1fc8c6-91d7-472f-8f10-7a30976cbb0f"
+    },
+    "shezhi-shezhi4": {
+      "__uuid__": "c24e0847-9209-444a-83db-b3998112e474"
+    },
+    "shezhi-shezhi15": {
+      "__uuid__": "1db63a1c-4774-423a-84fa-c9c331d82c7e"
+    },
+    "fengmian-jiemian14": {
+      "__uuid__": "499917e6-6bbc-4f2b-b95e-73254bb39055"
+    },
+    "fengmian-choujiang": {
+      "__uuid__": "f530a6e8-8216-4c24-8025-1bed60f7f96a"
+    },
+    "fengmian-jiemian13": {
+      "__uuid__": "0141d8bc-6ba4-4619-9995-d439611b28b2"
+    },
+    "fengmian-jingdanmoshi": {
+      "__uuid__": "1a2baa07-597d-4e8c-9fc5-9701dce70154"
+    },
+    "fengmian-ycd": {
+      "__uuid__": "2309bd23-ea33-4c14-9da3-7a9fde6d5b7a"
+    },
+    "fengmian-tiaozhanjiemian": {
+      "__uuid__": "79fbf26b-97fa-49bf-acf8-a94417f6d800"
+    },
+    "fengmian-045": {
+      "__uuid__": "97161a45-fa20-4d59-b714-4b26ebc6c88f"
+    },
+    "fengmian-fengkuangmoshi02": {
+      "__uuid__": "749f4f62-4c8e-4cf4-a1e2-02526c888bf3"
+    },
+    "fengmian-fengkuangmoshi01": {
+      "__uuid__": "d70627a8-45af-4bde-adbe-70d649a113ef"
+    },
+    "fengmian-fengmian1": {
+      "__uuid__": "cecbc979-3b91-4c35-ac1d-7cec523b7c33"
+    },
+    "fengmian-fm13": {
+      "__uuid__": "5b1fdc0a-af76-451c-abbd-545471c881b1"
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "duorenjiemian-duoren03",
+    "texture": "0658b9a9-d308-42e5-a9f4-761742564d2c",
+    "atlas": "8189526f-42ff-4900-8931-2d6ce2291dd9",
+    "rect": [
+      812,
+      1011,
+      240,
+      67
+    ],
+    "offset": [
+      0,
+      0
+    ],
+    "originalSize": [
+      240,
+      67
+    ]
+  }
+}

@@ -1,0 +1,98 @@
+{
+  "version": "1.1.1",
+  "windows": {
+    "main": {
+      "main": true,
+      "url": "app://editor/index.html",
+      "windowType": "dockable",
+      "x": -8,
+      "y": -8,
+      "width": 1382,
+      "height": 784,
+      "layout": {
+        "children": [
+          {
+            "children": [
+              {
+                "active": 0,
+                "children": [
+                  "hierarchy"
+                ],
+                "height": 226,
+                "type": "panel",
+                "width": 245
+              },
+              {
+                "active": 0,
+                "children": [
+                  "assets"
+                ],
+                "height": 426.984375,
+                "type": "panel",
+                "width": 245
+              }
+            ],
+            "height": 656,
+            "type": "dock-v",
+            "width": 245
+          },
+          {
+            "children": [
+              {
+                "active": 0,
+                "children": [
+                  "scene"
+                ],
+                "height": 387,
+                "type": "panel",
+                "width": 780
+              },
+              {
+                "active": 0,
+                "children": [
+                  "console",
+                  "timeline"
+                ],
+                "height": 266,
+                "type": "panel",
+                "width": 780
+              }
+            ],
+            "height": 656,
+            "type": "dock-v",
+            "width": 780
+          },
+          {
+            "active": 1,
+            "children": [
+              "inspector",
+              "builder"
+            ],
+            "height": 656,
+            "type": "panel",
+            "width": 329
+          }
+        ],
+        "type": "dock-h"
+      },
+      "panels": [
+        "console",
+        "timeline",
+        "inspector",
+        "hierarchy",
+        "assets",
+        "scene",
+        "builder"
+      ]
+    },
+    "worker": {}
+  },
+  "panels": {
+    "builder": {
+      "x": 425,
+      "y": 4,
+      "width": 516,
+      "height": 739
+    }
+  }
+}

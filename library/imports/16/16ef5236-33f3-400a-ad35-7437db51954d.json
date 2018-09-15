@@ -1,0 +1,22 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "fenxiang-fenxiang6",
+    "texture": "0658b9a9-d308-42e5-a9f4-761742564d2c",
+    "atlas": "8189526f-42ff-4900-8931-2d6ce2291dd9",
+    "rect": [
+      697,
+      1713,
+      362,
+      165
+    ],
+    "offset": [
+      0,
+      0
+    ],
+    "originalSize": [
+      362,
+      165
+    ]
+  }
+}

@@ -1,0 +1,273 @@
+2018-09-15T17:24:49.396Z - normal: Load ~/.CocosCreator/settings.json
+2018-09-15T17:24:49.411Z - normal: checking language setting...
+2018-09-15T17:24:49.411Z - normal: Language: zh
+2018-09-15T17:24:52.636Z - success: protocol editor-framework registered
+2018-09-15T17:24:52.636Z - success: protocol app registered
+2018-09-15T17:24:52.636Z - success: protocol theme registered
+2018-09-15T17:24:52.636Z - success: protocol packages registered
+2018-09-15T17:24:52.637Z - success: protocol unpack registerred
+2018-09-15T17:24:52.637Z - success: protocol disable-commonjs registerred
+2018-09-15T17:24:52.889Z - normal: connected!
+2018-09-15T17:24:52.892Z - normal: Check project H:\Game_Project\Creator_Project\2048\2048
+2018-09-15T17:24:52.895Z - normal: Initializing Cocos2d
+2018-09-15T17:24:53.379Z - normal: Initializing Asset Database
+2018-09-15T17:24:53.475Z - success: protocol uuid registerred
+2018-09-15T17:24:53.475Z - success: protocol db registerred
+2018-09-15T17:24:53.475Z - success: protocol thumbnail registerred
+2018-09-15T17:24:53.475Z - normal: Loading editor/builtin packages
+2018-09-15T17:24:53.531Z - success: anysdk loaded
+2018-09-15T17:24:53.847Z - success: assets loaded
+2018-09-15T17:24:53.850Z - success: builder loaded
+2018-09-15T17:24:53.856Z - success: cocos-analytics loaded
+2018-09-15T17:24:53.863Z - success: console loaded
+2018-09-15T17:24:53.937Z - success: fb-instant-games loaded
+2018-09-15T17:24:53.942Z - success: hierarchy loaded
+2018-09-15T17:24:53.947Z - success: inspector loaded
+2018-09-15T17:24:53.949Z - success: keystore loaded
+2018-09-15T17:24:53.955Z - success: node-library loaded
+2018-09-15T17:24:53.958Z - success: package-asset loaded
+2018-09-15T17:24:53.961Z - success: preferences loaded
+2018-09-15T17:24:53.966Z - success: project-exporter loaded
+2018-09-15T17:24:54.000Z - success: project-importer loaded
+2018-09-15T17:24:54.005Z - success: project-settings loaded
+2018-09-15T17:24:54.012Z - success: ui-kit loaded
+2018-09-15T17:24:54.015Z - success: ui-grid loaded
+2018-09-15T17:24:54.020Z - success: scene loaded
+2018-09-15T17:24:54.024Z - success: sprite-editor loaded
+2018-09-15T17:24:54.030Z - success: store loaded
+2018-09-15T17:24:54.036Z - success: timeline loaded
+2018-09-15T17:24:54.037Z - normal: Loading builtin packages
+2018-09-15T17:24:54.042Z - success: asset-db-debugger loaded
+2018-09-15T17:24:54.045Z - success: code-editor loaded
+2018-09-15T17:24:54.047Z - success: color-picker loaded
+2018-09-15T17:24:54.051Z - success: package-manager loaded
+2018-09-15T17:24:54.055Z - success: qqplay-adapter loaded
+2018-09-15T17:24:54.063Z - success: sdkbox loaded
+2018-09-15T17:24:54.067Z - success: tester loaded
+2018-09-15T17:24:54.070Z - success: ui-kit-preview-extra loaded
+2018-09-15T17:24:54.073Z - success: ui-kit-preview loaded
+2018-09-15T17:24:54.077Z - success: ui-tree loaded
+2018-09-15T17:24:54.086Z - success: weapp-adapter loaded
+2018-09-15T17:24:56.716Z - normal: Initializing project H:\Game_Project\Creator_Project\2048\2048
+2018-09-15T17:24:56.725Z - normal: Loading packages
+2018-09-15T17:24:56.738Z - normal: Watching packages
+2018-09-15T17:24:57.745Z - normal: Run Application
+2018-09-15T17:25:01.252Z - success: preview server running at http://localhost:7456
+2018-09-15T17:25:12.754Z - normal: 1.9.2
+2018-09-15T17:27:45.513Z - error: TypeError: Cannot read property 'dispose' of null
+    at call__preloadInTryCatch (eval at misc.tryCatchFunctor_EDITOR (D:\Cocos\Cocos_Creator1.9.2\CocosCreator\resources\engine\cocos2d\core\utils\misc.js:1:1), <anonymous>:8:20)
+    at CCClass._invoke (D:\Cocos\Cocos_Creator1.9.2\CocosCreator\resources\engine\cocos2d\core\component-scheduler.js:233:21)
+    at CCClass.invoke (D:\Cocos\Cocos_Creator1.9.2\CocosCreator\resources\engine\cocos2d\core\node-activator.js:65:14)
+    at CCClass.activateNode (D:\Cocos\Cocos_Creator1.9.2\CocosCreator\resources\engine\cocos2d\core\node-activator.js:225:26)
+    at cc_Node._onHierarchyChanged (D:\Cocos\Cocos_Creator1.9.2\CocosCreator\resources\engine\cocos2d\core\utils\base-node.js:1090:40)
+    at cc_Node._onHierarchyChanged (D:\Cocos\Cocos_Creator1.9.2\CocosCreator\resources\engine\cocos2d\core\CCNode.js:1126:14)
+    at cc_Node.setParent (D:\Cocos\Cocos_Creator1.9.2\CocosCreator\resources\engine\cocos2d\core\utils\base-node.js:406:18)
+    at Object.restoreDeleteNode (D:\Cocos\Cocos_Creator1.9.2\CocosCreator\resources\app.asar\editor\page\scene-utils\scene-undo-impl.js:1:4546)
+    at DeleteNodesCommand.undo (D:\Cocos\Cocos_Creator1.9.2\CocosCreator\resources\app.asar\editor\page\scene-utils\scene-undo.js:1:2626)
+2018-09-15T17:27:49.763Z - error: TypeError: Cannot read property 'dispose' of null
+    at callonDestroyInTryCatch (eval at misc.tryCatchFunctor_EDITOR (D:\Cocos\Cocos_Creator1.9.2\CocosCreator\resources\engine\cocos2d\core\utils\misc.js:1:1), <anonymous>:8:20)
+    at CCClass.destroyComp (D:\Cocos\Cocos_Creator1.9.2\CocosCreator\resources\engine\cocos2d\core\node-activator.js:326:17)
+    at dragonBones_ArmatureDisplay._onPreDestroy (D:\Cocos\Cocos_Creator1.9.2\CocosCreator\resources\engine\cocos2d\core\components\CCComponent.js:514:36)
+    at dragonBones_ArmatureDisplay.prototype._destroyImmediate (D:\Cocos\Cocos_Creator1.9.2\CocosCreator\resources\engine\cocos2d\core\platform\CCObject.js:436:14)
+    at cc_Node._onPreDestroy [as _onPreDestroyBase] (D:\Cocos\Cocos_Creator1.9.2\CocosCreator\resources\engine\cocos2d\core\utils\base-node.js:1218:23)
+    at cc_Node._onPreDestroy (D:\Cocos\Cocos_Creator1.9.2\CocosCreator\resources\engine\cocos2d\core\CCNode.js:1052:36)
+    at cc_Node.prototype._destroyImmediate (D:\Cocos\Cocos_Creator1.9.2\CocosCreator\resources\engine\cocos2d\core\platform\CCObject.js:436:14)
+    at cc_Node._onPreDestroy [as _onPreDestroyBase] (D:\Cocos\Cocos_Creator1.9.2\CocosCreator\resources\engine\cocos2d\core\utils\base-node.js:1211:25)
+    at cc_Node._onPreDestroy (D:\Cocos\Cocos_Creator1.9.2\CocosCreator\resources\engine\cocos2d\core\CCNode.js:1052:36)
+2018-09-15T17:27:51.501Z - error: TypeError: Cannot read property 'dispose' of null
+    at call__preloadInTryCatch (eval at misc.tryCatchFunctor_EDITOR (D:\Cocos\Cocos_Creator1.9.2\CocosCreator\resources\engine\cocos2d\core\utils\misc.js:1:1), <anonymous>:8:20)
+    at CCClass._invoke (D:\Cocos\Cocos_Creator1.9.2\CocosCreator\resources\engine\cocos2d\core\component-scheduler.js:233:21)
+    at CCClass.invoke (D:\Cocos\Cocos_Creator1.9.2\CocosCreator\resources\engine\cocos2d\core\node-activator.js:65:14)
+    at CCClass.activateNode (D:\Cocos\Cocos_Creator1.9.2\CocosCreator\resources\engine\cocos2d\core\node-activator.js:225:26)
+    at cc_Node._onHierarchyChanged (D:\Cocos\Cocos_Creator1.9.2\CocosCreator\resources\engine\cocos2d\core\utils\base-node.js:1090:40)
+    at cc_Node._onHierarchyChanged (D:\Cocos\Cocos_Creator1.9.2\CocosCreator\resources\engine\cocos2d\core\CCNode.js:1126:14)
+    at cc_Node.setParent (D:\Cocos\Cocos_Creator1.9.2\CocosCreator\resources\engine\cocos2d\core\utils\base-node.js:406:18)
+    at Object.restoreDeleteNode (D:\Cocos\Cocos_Creator1.9.2\CocosCreator\resources\app.asar\editor\page\scene-utils\scene-undo-impl.js:1:4546)
+    at DeleteNodesCommand.undo (D:\Cocos\Cocos_Creator1.9.2\CocosCreator\resources\app.asar\editor\page\scene-utils\scene-undo.js:1:2626)
+2018-09-15T17:30:40.052Z - error: TypeError: Cannot read property 'dispose' of null
+    at callonDestroyInTryCatch (eval at misc.tryCatchFunctor_EDITOR (D:\Cocos\Cocos_Creator1.9.2\CocosCreator\resources\engine\cocos2d\core\utils\misc.js:1:1), <anonymous>:8:20)
+    at CCClass.destroyComp (D:\Cocos\Cocos_Creator1.9.2\CocosCreator\resources\engine\cocos2d\core\node-activator.js:326:17)
+    at dragonBones_ArmatureDisplay._onPreDestroy (D:\Cocos\Cocos_Creator1.9.2\CocosCreator\resources\engine\cocos2d\core\components\CCComponent.js:514:36)
+    at dragonBones_ArmatureDisplay.prototype._destroyImmediate (D:\Cocos\Cocos_Creator1.9.2\CocosCreator\resources\engine\cocos2d\core\platform\CCObject.js:436:14)
+    at cc_Node._onPreDestroy [as _onPreDestroyBase] (D:\Cocos\Cocos_Creator1.9.2\CocosCreator\resources\engine\cocos2d\core\utils\base-node.js:1218:23)
+    at cc_Node._onPreDestroy (D:\Cocos\Cocos_Creator1.9.2\CocosCreator\resources\engine\cocos2d\core\CCNode.js:1052:36)
+    at cc_Node.prototype._destroyImmediate (D:\Cocos\Cocos_Creator1.9.2\CocosCreator\resources\engine\cocos2d\core\platform\CCObject.js:436:14)
+    at cc_Node._onPreDestroy [as _onPreDestroyBase] (D:\Cocos\Cocos_Creator1.9.2\CocosCreator\resources\engine\cocos2d\core\utils\base-node.js:1211:25)
+    at cc_Node._onPreDestroy (D:\Cocos\Cocos_Creator1.9.2\CocosCreator\resources\engine\cocos2d\core\CCNode.js:1052:36)
+2018-09-15T17:30:51.764Z - error: TypeError: Cannot read property 'dispose' of null
+    at call__preloadInTryCatch (eval at misc.tryCatchFunctor_EDITOR (D:\Cocos\Cocos_Creator1.9.2\CocosCreator\resources\engine\cocos2d\core\utils\misc.js:1:1), <anonymous>:8:20)
+    at CCClass._invoke (D:\Cocos\Cocos_Creator1.9.2\CocosCreator\resources\engine\cocos2d\core\component-scheduler.js:233:21)
+    at CCClass.invoke (D:\Cocos\Cocos_Creator1.9.2\CocosCreator\resources\engine\cocos2d\core\node-activator.js:65:14)
+    at CCClass.activateNode (D:\Cocos\Cocos_Creator1.9.2\CocosCreator\resources\engine\cocos2d\core\node-activator.js:225:26)
+    at cc_Node._onHierarchyChanged (D:\Cocos\Cocos_Creator1.9.2\CocosCreator\resources\engine\cocos2d\core\utils\base-node.js:1090:40)
+    at cc_Node._onHierarchyChanged (D:\Cocos\Cocos_Creator1.9.2\CocosCreator\resources\engine\cocos2d\core\CCNode.js:1126:14)
+    at cc_Node.setParent (D:\Cocos\Cocos_Creator1.9.2\CocosCreator\resources\engine\cocos2d\core\utils\base-node.js:406:18)
+    at Object.restoreDeleteNode (D:\Cocos\Cocos_Creator1.9.2\CocosCreator\resources\app.asar\editor\page\scene-utils\scene-undo-impl.js:1:4546)
+    at DeleteNodesCommand.undo (D:\Cocos\Cocos_Creator1.9.2\CocosCreator\resources\app.asar\editor\page\scene-utils\scene-undo.js:1:2626)
+2018-09-15T17:43:23.277Z - normal: Start building with options : {
+  "androidStudio": true,
+  "apiLevel": "",
+  "appABIs": [],
+  "appKey": "",
+  "appSecret": "",
+  "buildPath": "H:\\Game_Project\\Creator_Project\\2048\\2048\\build",
+  "debug": false,
+  "dest": "H:\\Game_Project\\Creator_Project\\2048\\2048\\build\\wechatgame",
+  "encryptJs": true,
+  "excludeScenes": [],
+  "excludedModules": [],
+  "fb-instant-games": {},
+  "includeAnySDK": false,
+  "includeEruda": false,
+  "includeSDKBox": false,
+  "inlineSpriteFrames": true,
+  "inlineSpriteFrames_native": true,
+  "jailbreakPlatform": false,
+  "md5Cache": false,
+  "mergeStartScene": false,
+  "oauthLoginServer": "",
+  "optimizeHotUpdate": true,
+  "orientation": {
+    "landscapeLeft": true,
+    "landscapeRight": true,
+    "portrait": false,
+    "upsideDown": false
+  },
+  "packageName": "org.cocos2d.helloworld",
+  "platform": "wechatgame",
+  "previewHeight": "720",
+  "previewWidth": "1280",
+  "privateKey": "",
+  "qqplay": {
+    "REMOTE_SERVER_ROOT": "",
+    "orientation": "portrait"
+  },
+  "renderMode": "0",
+  "scenes": [
+    "2d2f792f-a40c-49bb-a189-ed176a246e49",
+    "7820f2c4-e2e3-4960-af56-c80aef896761"
+  ],
+  "sourceMaps": false,
+  "startScene": "2d2f792f-a40c-49bb-a189-ed176a246e49",
+  "template": "link",
+  "title": "2048Game",
+  "useDebugKeystore": true,
+  "vsVersion": "auto",
+  "webOrientation": "auto",
+  "wechatgame": {
+    "appid": "wx55ef2a54fabc2e27",
+    "orientation": "portrait"
+  },
+  "xxteaKey": "3e97cdb1-d8ed-4d",
+  "zipCompressJs": true,
+  "project": "H:\\Game_Project\\Creator_Project\\2048\\2048",
+  "projectName": "2048Game",
+  "debugBuildWorker": false
+}
+2018-09-15T17:43:23.282Z - normal: Building H:\Game_Project\Creator_Project\2048\2048
+2018-09-15T17:43:23.282Z - normal: Destination H:\Game_Project\Creator_Project\2048\2048\build\wechatgame
+2018-09-15T17:43:24.244Z - normal: Delete H:\Game_Project\Creator_Project\2048\2048\build\wechatgame\**\*
+2018-09-15T17:43:33.457Z - normal: Compiled project javascript file successfully
+2018-09-15T17:43:33.458Z - normal: Start building assets
+2018-09-15T17:43:33.458Z - normal: Start spawn build-worker
+2018-09-15T17:43:35.834Z - normal: Finish spawn build-worker
+2018-09-15T17:43:35.834Z - normal: Start init build-worker
+2018-09-15T17:43:42.862Z - normal: 1.9.2
+2018-09-15T17:43:43.089Z - normal: Finish init build-worker
+2018-09-15T17:43:43.089Z - normal: Start build-assets in worker
+2018-09-15T17:43:46.958Z - normal: Finish build-assets in worker
+2018-09-15T17:43:46.972Z - normal: Finish building assets
+2018-09-15T17:43:47.140Z - normal: Start building raw assets
+2018-09-15T17:43:47.143Z - normal: Start building plugin scripts
+2018-09-15T17:43:47.285Z - normal: Finish building raw assets
+2018-09-15T17:43:47.295Z - normal: Generating main.js from D:\Cocos\Cocos_Creator1.9.2\CocosCreator\resources\static\build-templates\shares\main.js
+2018-09-15T17:43:51.548Z - normal: Built to "H:\Game_Project\Creator_Project\2048\2048\build\wechatgame" successfully
+2018-09-15T17:48:58.277Z - warn: Error: ipc timeout. message: scene:query-node, session: scene@renderer:15803
+2018-09-15T17:51:15.729Z - error: TypeError: Cannot read property 'dispose' of null
+    at callonDestroyInTryCatch (eval at misc.tryCatchFunctor_EDITOR (D:\Cocos\Cocos_Creator1.9.2\CocosCreator\resources\engine\cocos2d\core\utils\misc.js:1:1), <anonymous>:8:20)
+    at CCClass.destroyComp (D:\Cocos\Cocos_Creator1.9.2\CocosCreator\resources\engine\cocos2d\core\node-activator.js:326:17)
+    at dragonBones_ArmatureDisplay._onPreDestroy (D:\Cocos\Cocos_Creator1.9.2\CocosCreator\resources\engine\cocos2d\core\components\CCComponent.js:514:36)
+    at dragonBones_ArmatureDisplay.prototype._destroyImmediate (D:\Cocos\Cocos_Creator1.9.2\CocosCreator\resources\engine\cocos2d\core\platform\CCObject.js:436:14)
+    at cc_Node._onPreDestroy [as _onPreDestroyBase] (D:\Cocos\Cocos_Creator1.9.2\CocosCreator\resources\engine\cocos2d\core\utils\base-node.js:1218:23)
+    at cc_Node._onPreDestroy (D:\Cocos\Cocos_Creator1.9.2\CocosCreator\resources\engine\cocos2d\core\CCNode.js:1052:36)
+    at cc_Node.prototype._destroyImmediate (D:\Cocos\Cocos_Creator1.9.2\CocosCreator\resources\engine\cocos2d\core\platform\CCObject.js:436:14)
+    at cc_Node._onPreDestroy [as _onPreDestroyBase] (D:\Cocos\Cocos_Creator1.9.2\CocosCreator\resources\engine\cocos2d\core\utils\base-node.js:1211:25)
+    at cc_Node._onPreDestroy (D:\Cocos\Cocos_Creator1.9.2\CocosCreator\resources\engine\cocos2d\core\CCNode.js:1052:36)
+2018-09-15T17:52:04.579Z - normal: Start building with options : {
+  "androidStudio": true,
+  "apiLevel": "",
+  "appABIs": [],
+  "appKey": "",
+  "appSecret": "",
+  "buildPath": "H:\\Game_Project\\Creator_Project\\2048\\2048\\build",
+  "debug": false,
+  "dest": "H:\\Game_Project\\Creator_Project\\2048\\2048\\build\\wechatgame",
+  "encryptJs": true,
+  "excludeScenes": [],
+  "excludedModules": [],
+  "fb-instant-games": {},
+  "includeAnySDK": false,
+  "includeEruda": false,
+  "includeSDKBox": false,
+  "inlineSpriteFrames": true,
+  "inlineSpriteFrames_native": true,
+  "jailbreakPlatform": false,
+  "md5Cache": false,
+  "mergeStartScene": false,
+  "oauthLoginServer": "",
+  "optimizeHotUpdate": true,
+  "orientation": {
+    "landscapeLeft": true,
+    "landscapeRight": true,
+    "portrait": false,
+    "upsideDown": false
+  },
+  "packageName": "org.cocos2d.helloworld",
+  "platform": "wechatgame",
+  "previewHeight": "720",
+  "previewWidth": "1280",
+  "privateKey": "",
+  "qqplay": {
+    "REMOTE_SERVER_ROOT": "",
+    "orientation": "portrait"
+  },
+  "renderMode": "0",
+  "scenes": [
+    "2d2f792f-a40c-49bb-a189-ed176a246e49",
+    "7820f2c4-e2e3-4960-af56-c80aef896761"
+  ],
+  "sourceMaps": false,
+  "startScene": "2d2f792f-a40c-49bb-a189-ed176a246e49",
+  "template": "link",
+  "title": "2048Game",
+  "useDebugKeystore": true,
+  "vsVersion": "auto",
+  "webOrientation": "auto",
+  "wechatgame": {
+    "appid": "wx55ef2a54fabc2e27",
+    "orientation": "portrait"
+  },
+  "xxteaKey": "3e97cdb1-d8ed-4d",
+  "zipCompressJs": true,
+  "project": "H:\\Game_Project\\Creator_Project\\2048\\2048",
+  "projectName": "2048Game",
+  "debugBuildWorker": false
+}
+2018-09-15T17:52:04.598Z - normal: Building H:\Game_Project\Creator_Project\2048\2048
+2018-09-15T17:52:04.599Z - normal: Destination H:\Game_Project\Creator_Project\2048\2048\build\wechatgame
+2018-09-15T17:52:04.602Z - normal: Delete H:\Game_Project\Creator_Project\2048\2048\build\wechatgame\**\*
+2018-09-15T17:52:13.139Z - normal: Compiled project javascript file successfully
+2018-09-15T17:52:13.140Z - normal: Start building assets
+2018-09-15T17:52:13.140Z - normal: Start spawn build-worker
+2018-09-15T17:52:16.489Z - normal: Finish spawn build-worker
+2018-09-15T17:52:16.489Z - normal: Start init build-worker
+2018-09-15T17:52:24.600Z - normal: 1.9.2
+2018-09-15T17:52:24.817Z - normal: Finish init build-worker
+2018-09-15T17:52:24.818Z - normal: Start build-assets in worker
+2018-09-15T17:52:29.142Z - normal: Finish build-assets in worker
+2018-09-15T17:52:29.158Z - normal: Finish building assets
+2018-09-15T17:52:29.341Z - normal: Start building raw assets
+2018-09-15T17:52:29.343Z - normal: Start building plugin scripts
+2018-09-15T17:52:29.492Z - normal: Finish building raw assets
+2018-09-15T17:52:29.506Z - normal: Generating main.js from D:\Cocos\Cocos_Creator1.9.2\CocosCreator\resources\static\build-templates\shares\main.js
+2018-09-15T17:52:32.565Z - normal: Built to "H:\Game_Project\Creator_Project\2048\2048\build\wechatgame" successfully
