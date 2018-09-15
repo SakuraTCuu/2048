@@ -5,11 +5,19 @@ const { ccclass, property } = cc._decorator;
 @ccclass
 export default class Hall extends cc.Component {
 
+    @property(cc.Node)
+    hallNode: cc.Node = null;
 
+    @property(cc.Node)
+    loadingNode: cc.Node = null;
 
     onClickStart() {
+        this.hallNode.active = false;
+        this.loadingNode.active = true;
         cc.director.preloadScene("main", () => {
-            cc.director.loadScene("main");
+            this.scheduleOnce(()=>{
+                cc.director.loadScene("main");
+            },2.5);
         });
     }
 

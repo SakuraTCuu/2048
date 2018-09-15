@@ -38,7 +38,7 @@ export default class Game extends cc.Component {
     stepLab: cc.Label = null;
 
     @property(cc.Node)
-    gameOverNode: cc.Node = null;
+    effectNode: cc.Node = null;
 
     //上一次触摸点位置
     _pos: cc.Vec2 = null;
@@ -64,6 +64,15 @@ export default class Game extends cc.Component {
     //滑动方向 默认向左划
     _direction: direction = direction.left;
     _slide: slideDirection = slideDirection.LeftRight;
+
+    //当前龙骨动画的armature对象
+    _armature: dragonBones.Armature = null;
+
+    //上一次播放特效的id
+    _effectId: number = 0;
+
+    //上一次播放特效的时间
+    _preTime: number = null;
 
     _AudioMgr: AudioMgr = null;
 
@@ -97,6 +106,77 @@ export default class Game extends cc.Component {
         this.node.on(cc.Node.EventType.TOUCH_CANCEL, this.touchCancel, this);
         // this.node.on(cc.Node.EventType.TOUCH_MOVE, this.touchMove, this);
 
+        this.initEffect();
+    }
+
+    /**
+     * 初始化特效
+     */
+    initEffect() {
+        let dragon = this.effectNode.getComponent(dragonBones.ArmatureDisplay);
+        this._armature = dragon.armature();
+    }
+
+    /**
+     * 
+     * 根据名称播放指定特效
+     */
+    setEffectNode(name: string) {
+        this._armature.animation.fadeIn(name, -1, -1, 0, "normal");
+    }
+
+    /**
+     * 根据id获取特效名称
+     * dtongguan1
+     * dbgood
+     * dbgreat
+     * dbperfect
+     * dbunbele
+     * damazing
+     * dbnandu
+     * dbkaishi
+     * looding
+     * 设置特性
+     */
+    setEffectName(id: number) {
+        let effectName = "";
+        switch (id) {
+            case 1:
+                effectName = "dbgood";
+                break;
+            case 2:
+                effectName = "dbgreat";
+                break;
+            case 3:
+                effectName = "dbperfect";
+                break;
+            case 4:
+                effectName = "dbunbele";
+                break;
+            case 5:
+                effectName = "damazing";
+                break;
+            default:
+                effectName = "damazing";
+                break;
+        }
+        this.setEffectNode(effectName);
+    }
+
+    /**
+     * 设置合并和一些分数，及特效等中间状态
+     * @param num 此次消除的得分
+     */
+    setMergeTime(num: number) {
+        let currentTime = Date.now();
+        if (currentTime - this._preTime < 1000) {
+            //播放 特效
+            this.setEffectName(this._effectId++);
+        } else {
+            //特效置空
+            this._effectId = 0;
+        }
+        this._preTime = currentTime;
     }
 
     initGame() {
@@ -148,8 +228,8 @@ export default class Game extends cc.Component {
         //获取随机到的两个数的节点
         let item1 = this.content.getChildByName(location1.l + "" + location1.r);
         let item2 = this.content.getChildByName(location2.l + "" + location2.r);
-        item1.getComponent(Item).showNumber(grid1);
-        item2.getComponent(Item).showNumber(grid2);
+        item1.getComponent(Item).showNumber(grid1, true);
+        item2.getComponent(Item).showNumber(grid2, true);
 
         // let item0 = this.content.getChildByName("00");
         // let item1 = this.content.getChildByName("01");
@@ -274,7 +354,7 @@ export default class Game extends cc.Component {
      * 游戏结束
      */
     gameOver() {
-        this.gameOverNode.active = true;
+        // this.gameOverNode.active = true;
         // this.
 
         //设置分数和步数
@@ -371,6 +451,7 @@ export default class Game extends cc.Component {
                             targetNode = lineList[i - 1 - index];
                             oldNode.getComponent(Item).setHideNum(0);
                             targetNode.name = num * 2 + "";
+                            // targetNode.isMerge = true;
                             index++;
                         } else {
                             targetNode = lineList[i - index];
@@ -396,11 +477,16 @@ export default class Game extends cc.Component {
                         let preNum = lineList[flagList[i - 1]].getComponent(Item).getHideNum();
                         let curNum = oldNode.getComponent(Item).getHideNum();
                         if (preNum == curNum && curNum != 0) {
+
+
+
                             // targetNode = lineList[i - 1 - index];
                             targetNode = lineList[lineList.length - i + index];
                             oldNode.getComponent(Item).setHideNum(0);
                             targetNode.name = num * 2 + "";
                             index++;
+                            //合并两个 记住合并的时间
+                            this.setMergeTime(num * 2);
                         } else {
                             targetNode = lineList[lineList.length - i + index - 1];
                             targetNode.name = num + "";
@@ -507,11 +593,11 @@ export default class Game extends cc.Component {
         }
 
         //延迟0.2s
-        this.scheduleOnce(() => {
-            this._AudioMgr.playSFX("click.mp3");
-            nullList[index].getComponent(Item).showNumber(num);
-            this._clickFlag = true;
-        }, 0.2);
+        // this.scheduleOnce(() => {
+        this._AudioMgr.playSFX("click.mp3");
+        nullList[index].getComponent(Item).showNumber(num, true);
+        this._clickFlag = true;
+        // }, 0.3);
     }
 
     // /**
@@ -769,7 +855,12 @@ export default class Game extends cc.Component {
 
         let moveAct = cc.moveTo(0.2, targetNode.position);
         cloneNode.runAction(cc.sequence(moveAct, cc.callFunc(() => {
-            targetNode.getComponent(Item).showNumber(Number(targetNode.name));
+            if (targetNode.isMerge) {
+                targetNode.getComponent(Item).showNumber(Number(targetNode.name), true);
+                targetNode.isMerge = false;
+            } else {
+                targetNode.getComponent(Item).showNumber(Number(targetNode.name));
+            }
             this.content.removeChild(cloneNode);
             cloneNode.removeFromParent();
             cloneNode.destroy();
@@ -787,7 +878,6 @@ export default class Game extends cc.Component {
         this._score = 0;
         this._step = 0;
         this._clickFlag = true;
-        this.gameOverNode.active = false;
         this.initGame();
     }
 

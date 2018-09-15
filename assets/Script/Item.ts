@@ -18,7 +18,7 @@ export default class Item extends cc.Component {
 
     hideNum: number = 0;
 
-    showNumber(num: number) {
+    showNumber(num: number, isMerge: boolean = false) {
         this._num = num;
 
         if (num == 0) { //白块
@@ -53,6 +53,14 @@ export default class Item extends cc.Component {
 
         let numberAtlas = Game.instance.numberAtlas;
         this.numberSp.spriteFrame = numberAtlas.getSpriteFrame(num + "");
+
+        if (isMerge) {
+            //播放动画
+            this.numberSp.node.scale = 0.5;
+            let action = cc.scaleTo(0.1, 1);
+            // this.numberSp.node.runAction(cc.skewBy(0.5, 10, 10));
+            this.numberSp.node.runAction(action);
+        }
     }
 
     //播放粒子特效
