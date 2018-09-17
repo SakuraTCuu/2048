@@ -87,17 +87,32 @@ export default class AudioMgr {
         if (this.bgmAudioID > 0) {
             this.bgmCurrentTime = cc.audioEngine.getCurrentTime(this.bgmAudioID);
         }
-        cc.audioEngine.pauseAll();
-        // this.clearAll();
+        // cc.audioEngine.pauseAll();
+        let state = cc.audioEngine.getState(this.bgmAudioID);
+        if (state == cc.audioEngine.AudioState.PLAYING) {
+            // cc.audioEngine.stop(this.bgmAudioID);
+            cc.audioEngine.pause(this.bgmAudioID);
+        } else {
+            cc.log("bgm was paused");
+        }
+
     }
 
     resumeAll(): void {
-        cc.audioEngine.resumeAll();
-        if (this.bgmVolume > 0 && this.bgmAudioID > 0) {
-            // cc.audioEngine.resume(this.bgmAudioID);
-            // cc.audioEngine.resumeAll();
-            // this.bgmAudioID = cc.audioEngine.play(this.currentBGMUrl, true, this.bgmVolume);
+        // cc.audioEngine.resumeAll();
+        // if (this.bgmVolume > 0 && this.bgmAudioID > 0) {
+        //     // cc.audioEngine.resume(this.bgmAudioID);
+        //     // cc.audioEngine.resumeAll();
+        //     // this.bgmAudioID = cc.audioEngine.play(this.currentBGMUrl, true, this.bgmVolume);
+        //     cc.audioEngine.setCurrentTime(this.bgmAudioID, this.bgmCurrentTime);
+        // }
+
+        let state = cc.audioEngine.getState(this.bgmAudioID);
+        if (state == cc.audioEngine.AudioState.PAUSED) {
+            cc.audioEngine.resume(this.bgmAudioID);
             cc.audioEngine.setCurrentTime(this.bgmAudioID, this.bgmCurrentTime);
+        } else {
+            cc.log("bgm was playing");
         }
     }
 }
