@@ -3,7 +3,6 @@
   "appSecret": "",
   "encryptJs": true,
   "excludeScenes": [],
-  "fb-instant-games": {},
   "includeAnySDK": false,
   "includeSDKBox": false,
   "inlineSpriteFrames": true,
@@ -21,11 +20,6 @@
   },
   "packageName": "org.cocos2d.helloworld",
   "privateKey": "",
-  "qqplay": {
-    "REMOTE_SERVER_ROOT": "",
-    "orientation": "portrait"
-  },
-  "renderMode": "0",
   "startScene": "2d2f792f-a40c-49bb-a189-ed176a246e49",
   "title": "2048Game",
   "webOrientation": "auto",
@@ -34,5 +28,6 @@
     "orientation": "portrait"
   },
   "xxteaKey": "3e97cdb1-d8ed-4d",
-  "zipCompressJs": true
+  "zipCompressJs": true,
+  "renderMode": "0"
 }

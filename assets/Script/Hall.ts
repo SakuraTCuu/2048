@@ -1,4 +1,5 @@
 import AudioMgr from "./AudioMgr";
+import GameManager from "./GameManager";
 
 const { ccclass, property } = cc._decorator;
 
@@ -12,9 +13,8 @@ export default class Hall extends cc.Component {
     loadingNode: cc.Node = null;
 
     onLoad() {
-        let audioMgr = new AudioMgr();
-        audioMgr.init();
-        audioMgr.playBGM("BGM.mp3")
+        AudioMgr.init();
+        AudioMgr.playBGM("BGM.mp3");
     }
 
     onClickStart() {

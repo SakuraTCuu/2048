@@ -1,5 +1,6 @@
 import Item from "./Item";
 import AudioMgr from "./AudioMgr";
+import GameManager from "./GameManager";
 
 const { ccclass, property } = cc._decorator;
 export interface locationInfo {
@@ -76,8 +77,6 @@ export default class Game extends cc.Component {
     //播放音效的ID
     _audioID: number = -1;
 
-    _AudioMgr: AudioMgr = null;
-
     _clickFlag: boolean = true;
 
     private static _instance: Game = null;
@@ -94,8 +93,7 @@ export default class Game extends cc.Component {
      */
     onLoad() {
         Game._instance = this;
-        this._AudioMgr = new AudioMgr();
-        this._AudioMgr.StopBGM();
+        // AudioMgr.StopBGM();
         //大厅是不播放背景音乐的
         // this._AudioMgr.playBGM("BGM.mp3");
 
@@ -185,13 +183,12 @@ export default class Game extends cc.Component {
 
         //播放 特效
         this.setEffectName(this._audioID);
-        this._AudioMgr.playSFX("audio" + this._audioID + ".ogg");
+        AudioMgr.playSFX("audio" + this._audioID + ".ogg");
         //设置合并的步数
         this._mergeStep++;
     }
 
     initGame() {
-
         this._sqrt = new Array();
         this._sqrt2 = new Array();
 
@@ -260,13 +257,12 @@ export default class Game extends cc.Component {
         this.stepLab.string = this._step + "";
     }
 
-
     /**
      * 每一次移动之前都会触发的事件
      */
     everyTimeMoveCallback() {
         //播放滑动的视频
-        this._AudioMgr.playSFX("move.ogg");
+        AudioMgr.playSFX("move.ogg");
     }
 
     /**

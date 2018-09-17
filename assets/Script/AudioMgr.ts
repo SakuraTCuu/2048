@@ -1,116 +1,116 @@
 
 export default class AudioMgr {
-    bgmVolume: number = 0.5;
-    sfxVolume: number = 0.3;
-    bgmAudioID: number = 0;
+    static bgmVolume: number = 1;
+    static sfxVolume: number = 1;
+    static bgmAudioID: number = 0;
     //背景音乐播放的时间
-    bgmCurrentTime = 0
+    static bgmCurrentTime = 0
     //最大播放音乐数量
     //TODO  后边放到编辑器里初始化
-    MAX_AUDIO_NUM: number = 10;
-    constructor() {
+    static MAX_AUDIO_NUM: number = 10;
+
+    /**
+     * 初始化 音效
+     */
+    static init() {
+
         const bgm = cc.sys.localStorage.getItem("bgmVolume");
         if (bgm != null) {
-            this.bgmVolume = parseFloat(bgm);
+            AudioMgr.bgmVolume = parseFloat(bgm);
         }
         const sfx = cc.sys.localStorage.getItem("sfxVolume");
         if (sfx != null) {
-            this.sfxVolume = parseFloat(sfx);
+            AudioMgr.sfxVolume = parseFloat(sfx);
         }
 
-        cc.audioEngine.setMaxAudioInstance(this.MAX_AUDIO_NUM);
+        cc.audioEngine.setMaxAudioInstance(AudioMgr.MAX_AUDIO_NUM);
 
-    }
+        cc.log("sfxVolume--->>>", AudioMgr.sfxVolume);
+        cc.log("bgmVolume--->>>", AudioMgr.bgmVolume);
 
-    init() {
-        let self = this;
         cc.game.on(cc.game.EVENT_HIDE, function () {
-            console.log("cc.audioEngine.pauseAll1");
-            self.pauseAll();
+            AudioMgr.pauseAll();
         });
         cc.game.on(cc.game.EVENT_SHOW, function () {
-            console.log("cc.audioEngine.resumeAll2");
-            // cc.audioEngine.resumeAll();
-            self.resumeAll();
+            AudioMgr.resumeAll();
         });
     }
 
-    getUrl(url) {
-        cc.log(url);
+    static getUrl(url) {
         return cc.url.raw("resources/audio/effectAudio/" + url);
     }
 
-    playBGM(url) {
-        const audioUrl = this.getUrl(url);
+    static playBGM(url) {
+        const audioUrl = AudioMgr.getUrl(url);
         cc.log(audioUrl);
-        if (this.bgmAudioID >= 0) {
-            cc.audioEngine.stop(this.bgmAudioID);
+        if (AudioMgr.bgmAudioID >= 0) {
+            cc.audioEngine.stop(AudioMgr.bgmAudioID);
         }
-        this.bgmAudioID = cc.audioEngine.play(audioUrl, true, this.bgmVolume);
+        AudioMgr.bgmAudioID = cc.audioEngine.play(audioUrl, true, AudioMgr.bgmVolume);
     }
 
-
-    StopBGM() {
-        cc.audioEngine.stop(this.bgmAudioID);
+    static StopBGM() {
+        cc.audioEngine.stop(AudioMgr.bgmAudioID);
     }
 
-    playSFX(url) {
-        if (this.sfxVolume > 0) {
-            const audioUrl = this.getUrl(url);
-            cc.audioEngine.play(audioUrl, false, this.sfxVolume);
+    static playSFX(url) {
+        cc.log("sfxVolume-->>", AudioMgr.sfxVolume);
+        if (AudioMgr.sfxVolume > 0) {
+            const audioUrl = AudioMgr.getUrl(url);
+            cc.log("audioUrl--->>", audioUrl);
+            cc.audioEngine.play(audioUrl, false, AudioMgr.sfxVolume);
         }
     }
 
-    setSFXVolume(v) {
-        if (this.sfxVolume != v) {
+    static setSFXVolume(v) {
+        if (AudioMgr.sfxVolume != v) {
             cc.sys.localStorage.setItem("sfxVolume", v);
-            this.sfxVolume = v;
+            AudioMgr.sfxVolume = v;
         }
     }
 
-    setBGMVolume(v) {
-        if (this.bgmAudioID >= 0) {
+    static setBGMVolume(v) {
+        if (AudioMgr.bgmAudioID >= 0) {
             if (v > 0) {
-                cc.audioEngine.resume(this.bgmAudioID);
+                cc.audioEngine.resume(AudioMgr.bgmAudioID);
             } else {
-                cc.audioEngine.pause(this.bgmAudioID);
+                cc.audioEngine.pause(AudioMgr.bgmAudioID);
             }
         }
-        if (this.bgmVolume != v) {
+        if (AudioMgr.bgmVolume != v) {
             cc.sys.localStorage.setItem("bgmVolume", v);
-            this.bgmVolume = v;
-            cc.audioEngine.setVolume(this.bgmAudioID, v);
+            AudioMgr.bgmVolume = v;
+            cc.audioEngine.setVolume(AudioMgr.bgmAudioID, v);
         }
     }
 
-    pauseAll(): void {
-        if (this.bgmAudioID > 0) {
-            this.bgmCurrentTime = cc.audioEngine.getCurrentTime(this.bgmAudioID);
+    static pauseAll(): void {
+        cc.log("pauseAll---");
+        if (AudioMgr.bgmAudioID > 0) {
+            AudioMgr.bgmCurrentTime = cc.audioEngine.getCurrentTime(AudioMgr.bgmAudioID);
         }
         // cc.audioEngine.pauseAll();
-        let state = cc.audioEngine.getState(this.bgmAudioID);
+        let state = cc.audioEngine.getState(AudioMgr.bgmAudioID);
         if (state == cc.audioEngine.AudioState.PLAYING) {
-            // cc.audioEngine.stop(this.bgmAudioID);
-            cc.audioEngine.pause(this.bgmAudioID);
+            cc.audioEngine.pause(AudioMgr.bgmAudioID);
         } else {
             cc.log("bgm was paused");
         }
-
     }
 
-    resumeAll(): void {
+    static resumeAll(): void {
         // cc.audioEngine.resumeAll();
-        // if (this.bgmVolume > 0 && this.bgmAudioID > 0) {
-        //     // cc.audioEngine.resume(this.bgmAudioID);
+        // if (AudioMgr.bgmVolume > 0 && AudioMgr.bgmAudioID > 0) {
+        //     // cc.audioEngine.resume(AudioMgr.bgmAudioID);
         //     // cc.audioEngine.resumeAll();
-        //     // this.bgmAudioID = cc.audioEngine.play(this.currentBGMUrl, true, this.bgmVolume);
-        //     cc.audioEngine.setCurrentTime(this.bgmAudioID, this.bgmCurrentTime);
+        //     // AudioMgr.bgmAudioID = cc.audioEngine.play(AudioMgr.currentBGMUrl, true, AudioMgr.bgmVolume);
+        //     cc.audioEngine.setCurrentTime(AudioMgr.bgmAudioID, AudioMgr.bgmCurrentTime);
         // }
-
-        let state = cc.audioEngine.getState(this.bgmAudioID);
+        cc.log("resumeAll---");
+        let state = cc.audioEngine.getState(AudioMgr.bgmAudioID);
         if (state == cc.audioEngine.AudioState.PAUSED) {
-            cc.audioEngine.resume(this.bgmAudioID);
-            cc.audioEngine.setCurrentTime(this.bgmAudioID, this.bgmCurrentTime);
+            cc.audioEngine.resume(AudioMgr.bgmAudioID);
+            cc.audioEngine.setCurrentTime(AudioMgr.bgmAudioID, AudioMgr.bgmCurrentTime);
         } else {
             cc.log("bgm was playing");
         }
