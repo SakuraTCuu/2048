@@ -41,6 +41,9 @@ export default class Game extends cc.Component {
     @property(cc.Node)
     effectNode: cc.Node = null;
 
+    @property(cc.Prefab)
+    gameOverPrefab: cc.Prefab = null;
+
     //上一次触摸点位置
     _pos: cc.Vec2 = null;
 
@@ -93,7 +96,6 @@ export default class Game extends cc.Component {
      */
     onLoad() {
         Game._instance = this;
-        // AudioMgr.StopBGM();
         //大厅是不播放背景音乐的
         // this._AudioMgr.playBGM("BGM.mp3");
 
@@ -253,8 +255,8 @@ export default class Game extends cc.Component {
      * 设置面板信息
      */
     setLabInfo() {
-        this.scoreLab.string = this._score + "";
-        this.stepLab.string = this._step + "";
+        // this.scoreLab.string = this._score + "";
+        // this.stepLab.string = this._step + "";
     }
 
     /**
@@ -366,6 +368,7 @@ export default class Game extends cc.Component {
         if (this.checkGameOver()) {
             cc.log("游戏结束");
             this.gameOver();
+            this._clickFlag = true;
             return;
         }
 
@@ -410,7 +413,19 @@ export default class Game extends cc.Component {
         //设置分数和步数
 
         //重新开始按钮
-
+        let gameOver = cc.instantiate(this.gameOverPrefab);
+        this.node.addChild(gameOver);
+        // gameOver.position = cc.v2(this.node.x, gameOver.y + this.node.height);
+        //从小到大的动画
+        gameOver.scale = 0;
+        let mask = gameOver.getChildByName("mask");
+        mask.active = false;
+        gameOver.zIndex = 99;
+        let act = cc.scaleTo(0.3, 1).easing(cc.easeOut(3.0));
+        let seqAct = cc.sequence(act, cc.callFunc(() => {
+            mask.active = true;
+        }));
+        gameOver.runAction(seqAct);
     }
 
     /**
