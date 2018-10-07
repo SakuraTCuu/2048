@@ -1,6 +1,6 @@
 import Item from "./Item";
 import AudioMgr from "./AudioMgr";
-import GameManager from "./GameManager";
+import GameManager, { GameState } from "./GameManager";
 
 const { ccclass, property } = cc._decorator;
 export interface locationInfo {
@@ -32,11 +32,11 @@ export default class Game extends cc.Component {
     @property(cc.Node)
     content: cc.Node = null;
 
-    @property(cc.Label)
-    scoreLab: cc.Label = null;
+    // @property(cc.Label)
+    // scoreLab: cc.Label = null;
 
-    @property(cc.Label)
-    stepLab: cc.Label = null;
+    // @property(cc.Label)
+    // stepLab: cc.Label = null;
 
     @property(cc.Node)
     effectNode: cc.Node = null;
@@ -95,9 +95,11 @@ export default class Game extends cc.Component {
      * 2,4,8,16,32,64,128,256,512,1024,2048
      */
     onLoad() {
+        GameManager.gameState = GameState.Hall
         Game._instance = this;
         //大厅是不播放背景音乐的
         // this._AudioMgr.playBGM("BGM.mp3");
+
 
         //初始化
         this.initGame();
@@ -111,6 +113,30 @@ export default class Game extends cc.Component {
         // this.node.on(cc.Node.EventType.TOUCH_MOVE, this.touchMove, this);
 
         this.initEffect();
+    }
+
+    onReturnHall() {
+        cc.director.loadScene("Hall");
+    }
+
+    /**
+    * 音效开关
+     */
+    onClickMusic(e) {
+        let musicNode: cc.Node = e.target;
+        let on = musicNode.getChildByName("on");
+        let off = musicNode.getChildByName("off");
+        if (on.active) {
+            AudioMgr.setSFXVolume(0);
+            AudioMgr.setBGMVolume(0);
+            on.active = false;
+            off.active = true;
+        } else {
+            AudioMgr.setSFXVolume(1);
+            AudioMgr.setBGMVolume(1);
+            on.active = true;
+            off.active = false;
+        }
     }
 
     /**

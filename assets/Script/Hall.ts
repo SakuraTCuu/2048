@@ -1,5 +1,5 @@
 import AudioMgr from "./AudioMgr";
-import GameManager from "./GameManager";
+import GameManager, { GameState } from "./GameManager";
 
 const { ccclass, property } = cc._decorator;
 
@@ -20,6 +20,7 @@ export default class Hall extends cc.Component {
     _bgmVolume: number = 1;
 
     onLoad() {
+        GameManager.gameState = GameState.Hall
         AudioMgr.init();
         AudioMgr.playBGM("BGM.mp3");
     }

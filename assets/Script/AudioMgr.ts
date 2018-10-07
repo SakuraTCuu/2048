@@ -1,3 +1,4 @@
+import GameManager, { GameState } from "./GameManager";
 
 export default class AudioMgr {
     static bgmVolume: number = 1;
@@ -9,31 +10,33 @@ export default class AudioMgr {
     //TODO  后边放到编辑器里初始化
     static MAX_AUDIO_NUM: number = 10;
 
+    static audioUrl: string = '';
+
     /**
      * 初始化 音效
      */
     static init() {
 
-        const bgm = cc.sys.localStorage.getItem("bgmVolume");
-        if (bgm != null) {
-            AudioMgr.bgmVolume = parseFloat(bgm);
-        }
-        const sfx = cc.sys.localStorage.getItem("sfxVolume");
-        if (sfx != null) {
-            AudioMgr.sfxVolume = parseFloat(sfx);
-        }
+        // const bgm = cc.sys.localStorage.getItem("bgmVolume");
+        // if (bgm != null) {
+        //     AudioMgr.bgmVolume = parseFloat(bgm);
+        // }
+        // const sfx = cc.sys.localStorage.getItem("sfxVolume");
+        // if (sfx != null) {
+        //     AudioMgr.sfxVolume = parseFloat(sfx);
+        // }
 
         cc.audioEngine.setMaxAudioInstance(AudioMgr.MAX_AUDIO_NUM);
 
         cc.log("sfxVolume--->>>", AudioMgr.sfxVolume);
         cc.log("bgmVolume--->>>", AudioMgr.bgmVolume);
 
-        cc.game.on(cc.game.EVENT_HIDE, function () {
-            AudioMgr.pauseAll();
-        });
-        cc.game.on(cc.game.EVENT_SHOW, function () {
-            AudioMgr.resumeAll();
-        });
+        // cc.game.on(cc.game.EVENT_HIDE, function () {
+        //     AudioMgr.pauseAll();
+        // });
+        // cc.game.on(cc.game.EVENT_SHOW, function () {
+        //     AudioMgr.resumeAll();
+        // });
     }
 
     static getUrl(url) {
@@ -41,8 +44,8 @@ export default class AudioMgr {
     }
 
     static playBGM(url) {
+        AudioMgr.audioUrl = url;
         const audioUrl = AudioMgr.getUrl(url);
-        cc.log(audioUrl);
         if (AudioMgr.bgmAudioID >= 0) {
             cc.audioEngine.stop(AudioMgr.bgmAudioID);
         }
@@ -50,7 +53,7 @@ export default class AudioMgr {
     }
 
     static StopBGM() {
-        cc.audioEngine.stop(AudioMgr.bgmAudioID);
+        cc.audioEngine.pause(AudioMgr.bgmAudioID);
     }
 
     static playSFX(url) {
@@ -86,16 +89,17 @@ export default class AudioMgr {
 
     static pauseAll(): void {
         cc.log("pauseAll---");
-        if (AudioMgr.bgmAudioID > 0) {
-            AudioMgr.bgmCurrentTime = cc.audioEngine.getCurrentTime(AudioMgr.bgmAudioID);
-        }
-        // cc.audioEngine.pauseAll();
-        let state = cc.audioEngine.getState(AudioMgr.bgmAudioID);
-        if (state == cc.audioEngine.AudioState.PLAYING) {
-            cc.audioEngine.pause(AudioMgr.bgmAudioID);
-        } else {
-            cc.log("bgm was paused");
-        }
+        // if (AudioMgr.bgmAudioID > 0) {
+        //     AudioMgr.bgmCurrentTime = cc.audioEngine.getCurrentTime(AudioMgr.bgmAudioID);
+        // }
+        // // cc.audioEngine.pauseAll();
+        // let state = cc.audioEngine.getState(AudioMgr.bgmAudioID);
+        // if (state == cc.audioEngine.AudioState.PLAYING) {
+        //     cc.audioEngine.pause(AudioMgr.bgmAudioID);
+        // } else {
+        //     cc.log("bgm was paused");
+        // }
+        cc.audioEngine.stopAll();
     }
 
     static resumeAll(): void {
@@ -107,12 +111,22 @@ export default class AudioMgr {
         //     cc.audioEngine.setCurrentTime(AudioMgr.bgmAudioID, AudioMgr.bgmCurrentTime);
         // }
         cc.log("resumeAll---");
-        let state = cc.audioEngine.getState(AudioMgr.bgmAudioID);
-        if (state == cc.audioEngine.AudioState.PAUSED) {
-            cc.audioEngine.resume(AudioMgr.bgmAudioID);
-            cc.audioEngine.setCurrentTime(AudioMgr.bgmAudioID, AudioMgr.bgmCurrentTime);
+        cc.audioEngine.stopAll();
+        if (GameManager.gameState == GameState.Hall) {
+            // let state = cc.audioEngine.getState(AudioMgr.bgmAudioID);
+            // if (state == cc.audioEngine.AudioState.PAUSED) {
+            //     cc.audioEngine.resume(AudioMgr.bgmAudioID);
+            //     cc.audioEngine.setCurrentTime(AudioMgr.bgmAudioID, AudioMgr.bgmCurrentTime);
+            // } else {
+            //     cc.log("bgm was playing");
+            // }
+            if (AudioMgr.audioUrl != '') {
+                AudioMgr.playBGM(AudioMgr.audioUrl);
+            } else {
+
+            }
         } else {
-            cc.log("bgm was playing");
+            //不恢复播放背景音乐
         }
     }
 }
