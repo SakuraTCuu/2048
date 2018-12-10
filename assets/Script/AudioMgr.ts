@@ -17,19 +17,7 @@ export default class AudioMgr {
      */
     static init() {
 
-        // const bgm = cc.sys.localStorage.getItem("bgmVolume");
-        // if (bgm != null) {
-        //     AudioMgr.bgmVolume = parseFloat(bgm);
-        // }
-        // const sfx = cc.sys.localStorage.getItem("sfxVolume");
-        // if (sfx != null) {
-        //     AudioMgr.sfxVolume = parseFloat(sfx);
-        // }
-
         cc.audioEngine.setMaxAudioInstance(AudioMgr.MAX_AUDIO_NUM);
-
-        cc.log("sfxVolume--->>>", AudioMgr.sfxVolume);
-        cc.log("bgmVolume--->>>", AudioMgr.bgmVolume);
 
         // cc.game.on(cc.game.EVENT_HIDE, function () {
         //     AudioMgr.pauseAll();
@@ -57,10 +45,8 @@ export default class AudioMgr {
     }
 
     static playSFX(url) {
-        cc.log("sfxVolume-->>", AudioMgr.sfxVolume);
         if (AudioMgr.sfxVolume > 0) {
             const audioUrl = AudioMgr.getUrl(url);
-            cc.log("audioUrl--->>", audioUrl);
             cc.audioEngine.play(audioUrl, false, AudioMgr.sfxVolume);
         }
     }
@@ -88,38 +74,15 @@ export default class AudioMgr {
     }
 
     static pauseAll(): void {
-        cc.log("pauseAll---");
-        // if (AudioMgr.bgmAudioID > 0) {
-        //     AudioMgr.bgmCurrentTime = cc.audioEngine.getCurrentTime(AudioMgr.bgmAudioID);
-        // }
-        // // cc.audioEngine.pauseAll();
-        // let state = cc.audioEngine.getState(AudioMgr.bgmAudioID);
-        // if (state == cc.audioEngine.AudioState.PLAYING) {
-        //     cc.audioEngine.pause(AudioMgr.bgmAudioID);
-        // } else {
-        //     cc.log("bgm was paused");
-        // }
+  
         cc.audioEngine.stopAll();
     }
 
     static resumeAll(): void {
-        // cc.audioEngine.resumeAll();
-        // if (AudioMgr.bgmVolume > 0 && AudioMgr.bgmAudioID > 0) {
-        //     // cc.audioEngine.resume(AudioMgr.bgmAudioID);
-        //     // cc.audioEngine.resumeAll();
-        //     // AudioMgr.bgmAudioID = cc.audioEngine.play(AudioMgr.currentBGMUrl, true, AudioMgr.bgmVolume);
-        //     cc.audioEngine.setCurrentTime(AudioMgr.bgmAudioID, AudioMgr.bgmCurrentTime);
-        // }
-        cc.log("resumeAll---");
+      
         cc.audioEngine.stopAll();
         if (GameManager.gameState == GameState.Hall) {
-            // let state = cc.audioEngine.getState(AudioMgr.bgmAudioID);
-            // if (state == cc.audioEngine.AudioState.PAUSED) {
-            //     cc.audioEngine.resume(AudioMgr.bgmAudioID);
-            //     cc.audioEngine.setCurrentTime(AudioMgr.bgmAudioID, AudioMgr.bgmCurrentTime);
-            // } else {
-            //     cc.log("bgm was playing");
-            // }
+      
             if (AudioMgr.audioUrl != '') {
                 AudioMgr.playBGM(AudioMgr.audioUrl);
             } else {

@@ -10,6 +10,11 @@ export default class popUI extends cc.Component {
      */
     onResetGame() {
         Game.instance.reSetGame();
+        this.onCloseBtn();
+    }
+
+    onReturnHall() {
+        Game.instance.onReturnHall();
     }
 
     /**
