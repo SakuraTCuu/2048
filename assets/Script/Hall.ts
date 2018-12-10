@@ -1,5 +1,6 @@
 import AudioMgr from "./AudioMgr";
 import GameManager, { GameState } from "./GameManager";
+import GameUtils from "./GameUtils";
 
 const { ccclass, property } = cc._decorator;
 
@@ -15,14 +16,21 @@ export default class Hall extends cc.Component {
     @property(cc.Node)
     loadingNode: cc.Node = null;
 
-    //音量
-    _sfxVolume: number = 1;
-    _bgmVolume: number = 1;
+    @property(cc.Node)
+    musicNode: cc.Node = null;
 
     onLoad() {
         GameManager.gameState = GameState.Hall
         AudioMgr.init();
         AudioMgr.playBGM("BGM.mp3");
+
+        //设置音效状态
+        if (AudioMgr.bgmVolume == 0) {
+            let on = this.musicNode.getChildByName("on");
+            let off = this.musicNode.getChildByName("off");
+            on.active = false;
+            off.active = true;
+        }
     }
 
     onClickStart() {
@@ -61,12 +69,12 @@ export default class Hall extends cc.Component {
         let on = musicNode.getChildByName("on");
         let off = musicNode.getChildByName("off");
         if (on.active) {
-            AudioMgr.setSFXVolume(0);
+            // AudioMgr.setSFXVolume(0);
             AudioMgr.setBGMVolume(0);
             on.active = false;
             off.active = true;
         } else {
-            AudioMgr.setSFXVolume(1);
+            // AudioMgr.setSFXVolume(1);
             AudioMgr.setBGMVolume(1);
             on.active = true;
             off.active = false;
@@ -76,10 +84,20 @@ export default class Hall extends cc.Component {
     /**
      * 更多游戏
      */
+    _preTime: number = null;
     onClickMoreGame() {
+        let curTime = Date.now();
+        if (curTime - this._preTime <= 1500) {
+            return;
+        }
+        this._preTime = curTime;
         //小游戏
         if (cc.sys.platform == cc.sys.WECHAT_GAME) {
             //预留着
+        } else {
+
         }
+        //弹出框
+        GameUtils.popTips(this.node.getChildByName('popLayer'), '功能暂未开放');
     }
 }

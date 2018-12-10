@@ -82,6 +82,9 @@ export default class Game extends cc.Component {
 
     _clickFlag: boolean = true;
 
+    //游戏状态
+    _gameState: boolean = true;
+
     private static _instance: Game = null;
 
     public static get instance(): Game {
@@ -99,7 +102,6 @@ export default class Game extends cc.Component {
         Game._instance = this;
         //大厅是不播放背景音乐的
         // this._AudioMgr.playBGM("BGM.mp3");
-
 
         //初始化
         this.initGame();
@@ -128,12 +130,12 @@ export default class Game extends cc.Component {
         let off = musicNode.getChildByName("off");
         if (on.active) {
             AudioMgr.setSFXVolume(0);
-            AudioMgr.setBGMVolume(0);
+            // AudioMgr.setBGMVolume(0);
             on.active = false;
             off.active = true;
         } else {
             AudioMgr.setSFXVolume(1);
-            AudioMgr.setBGMVolume(1);
+            // AudioMgr.setBGMVolume(1);
             on.active = true;
             off.active = false;
         }
@@ -148,7 +150,6 @@ export default class Game extends cc.Component {
     }
 
     /**
-     * 
      * 根据名称播放指定特效
      */
     setEffectNode(name: string) {
@@ -198,14 +199,13 @@ export default class Game extends cc.Component {
      * 播放特效
      */
     playAudioEffect() {
-        cc.log("播放特效id---->>>", this._audioID);
+        // cc.log("播放特效id---->>>", this._audioID);
         if (this._audioID > 12) {
             this._audioID = -1;//
             cc.log("你太牛逼了..连销12个..厉害了，从0继续吧");
             return;
         }
         if (this._audioID <= 0) {
-            cc.log("下一次就有声音了哦");
             return;
         }
 
@@ -321,7 +321,7 @@ export default class Game extends cc.Component {
             this._step++;
             this.setLabInfo();
         } else {
-            cc.log("你点的太快了");
+            // cc.log("你点的太快了");
         }
 
     }
@@ -341,7 +341,7 @@ export default class Game extends cc.Component {
             this._step++;
             this.setLabInfo();
         } else {
-            cc.log("你点的太快了");
+            // cc.log("你点的太快了");
         }
     }
 
@@ -390,23 +390,12 @@ export default class Game extends cc.Component {
      * @param sd  滑动方向
      */
     slideSquare() {
-        //判断游戏是否该结束
-        if (this.checkGameOver()) {
-            cc.log("游戏结束");
-            this.gameOver();
-            this._clickFlag = true;
-            return;
-        }
-
         //移动位置  所有块往一个方向移动
         this.moveSqrt();
         this.everyTimeEndCallback();
 
         if (this._isMerge) {
-            //本次有合并成功的
-            //   音效id++
             this._audioID++;
-            //播放音效
             this.playAudioEffect();
             this.everyTimeMergeCallBack();
         } else {
@@ -414,6 +403,8 @@ export default class Game extends cc.Component {
             this._audioID = -1;
         }
         this._isMerge = false;
+
+
 
         this.scheduleOnce(() => {
             //检测合并
@@ -425,6 +416,15 @@ export default class Game extends cc.Component {
             // } else {
             //随机生成 数字块
             this.randomSqrtInNULL();
+
+            //判断游戏是否该结束
+            if (this.checkGameOver() && this._gameState) {
+                this._gameState = false;
+                cc.log("游戏结束");
+                this.gameOver();
+                this._clickFlag = true;
+                return;
+            }
             // }
         }, 0.2);
     }
@@ -588,44 +588,44 @@ export default class Game extends cc.Component {
     }
 
     //检测所有的合并项
-    checkAllMerge() {
-        let flag = false;
-        //排完序后  在检测 相同数字合并
-        for (let i = 0; i < this.squareNum; i++) {
-            for (let j = 0; j < this.squareNum; j++) {
-                if (this._direction == direction.left) {
-                    if (j < this.squareNum - 1) {
-                        let isModify = this.checkTwoMerge(this._sqrt[i][j], this._sqrt[i][j + 1]);
-                        if (isModify) {
-                            flag = true;
-                        }
-                    }
-                } else if (this._direction == direction.right) {
-                    if (j < this.squareNum - 1) {
-                        let isModify = this.checkTwoMerge(this._sqrt[i][this.squareNum - j - 1], this._sqrt[i][this.squareNum - j - 2]);
-                        if (isModify) {
-                            flag = true;
-                        }
-                    }
-                } else if (this._direction == direction.up) {
-                    if (j < this.squareNum - 1) {
-                        let isModify = this.checkTwoMerge(this._sqrt2[i][j], this._sqrt2[i][j + 1]);
-                        if (isModify) {
-                            flag = true;
-                        }
-                    }
-                } else if (this._direction == direction.down) {
-                    if (j < this.squareNum - 1) {
-                        let isModify = this.checkTwoMerge(this._sqrt2[i][this.squareNum - j - 1], this._sqrt2[i][this.squareNum - j - 2]);
-                        if (isModify) {
-                            flag = true;
-                        }
-                    }
-                }
-            }
-        }
-        return flag;
-    }
+    // checkAllMerge() {
+    //     let flag = false;
+    //     //排完序后  在检测 相同数字合并
+    //     for (let i = 0; i < this.squareNum; i++) {
+    //         for (let j = 0; j < this.squareNum; j++) {
+    //             if (this._direction == direction.left) {
+    //                 if (j < this.squareNum - 1) {
+    //                     let isModify = this.checkTwoMerge(this._sqrt[i][j], this._sqrt[i][j + 1]);
+    //                     if (isModify) {
+    //                         flag = true;
+    //                     }
+    //                 }
+    //             } else if (this._direction == direction.right) {
+    //                 if (j < this.squareNum - 1) {
+    //                     let isModify = this.checkTwoMerge(this._sqrt[i][this.squareNum - j - 1], this._sqrt[i][this.squareNum - j - 2]);
+    //                     if (isModify) {
+    //                         flag = true;
+    //                     }
+    //                 }
+    //             } else if (this._direction == direction.up) {
+    //                 if (j < this.squareNum - 1) {
+    //                     let isModify = this.checkTwoMerge(this._sqrt2[i][j], this._sqrt2[i][j + 1]);
+    //                     if (isModify) {
+    //                         flag = true;
+    //                     }
+    //                 }
+    //             } else if (this._direction == direction.down) {
+    //                 if (j < this.squareNum - 1) {
+    //                     let isModify = this.checkTwoMerge(this._sqrt2[i][this.squareNum - j - 1], this._sqrt2[i][this.squareNum - j - 2]);
+    //                     if (isModify) {
+    //                         flag = true;
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     }
+    //     return flag;
+    // }
 
     checkGameOverAllMerge() {
         //排完序后  在检测 相同数字合并
@@ -663,9 +663,7 @@ export default class Game extends cc.Component {
     //在空白块中随机生成一个 数字块
     randomSqrtInNULL() {
         let len = this.content.childrenCount;
-
-        let nullList = new Array();
-
+        let nullList: cc.Node[] = new Array();
         for (let i = 0; i < len; i++) {
             let item = this.content.children[i]
             let isNum = item.getComponent(Item).isNum();
@@ -966,7 +964,9 @@ export default class Game extends cc.Component {
         this._score = 0;
         this._step = 0;
         this._clickFlag = true;
+        this._gameState = true;
         this.initGame();
+        this.setEffectNode('dbkaishi');
     }
 
     /**
