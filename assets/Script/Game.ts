@@ -44,6 +44,12 @@ export default class Game extends cc.Component {
     @property(cc.Prefab)
     gameOverPrefab: cc.Prefab = null;
 
+    @property(cc.Node)
+    successNode: cc.Node = null;
+
+    @property(cc.Node)
+    parentSuccessNode: cc.Node = null;
+
     //上一次触摸点位置
     _pos: cc.Vec2 = null;
 
@@ -71,8 +77,12 @@ export default class Game extends cc.Component {
     _direction: direction = direction.left;
     _slide: slideDirection = slideDirection.LeftRight;
 
-    //当前龙骨动画的armature对象
-    _armature: dragonBones.Armature = null;
+    //当前特效龙骨动画的armature对象
+    _effect_armature: dragonBones.Armature = null;
+    _success_armature: dragonBones.Armature = null;
+
+    // 是否播放过成功动画
+    _isplaySuccess: boolean = false;
 
     //本次是否进行过合并
     _isMerge: boolean = false;
@@ -145,15 +155,38 @@ export default class Game extends cc.Component {
      * 初始化特效
      */
     initEffect() {
-        let dragon = this.effectNode.getComponent(dragonBones.ArmatureDisplay);
-        this._armature = dragon.armature();
+        let dragon_effect = this.effectNode.getComponent(dragonBones.ArmatureDisplay);
+        this._effect_armature = dragon_effect.armature();
     }
 
     /**
      * 根据名称播放指定特效
      */
     setEffectNode(name: string) {
-        this._armature.animation.fadeIn(name, -1, -1, 0, "normal");
+        this._effect_armature.animation.fadeIn(name, -1, -1, 0, "normal");
+    }
+
+    /**
+     * 播放成功特效
+     * @param id 
+     */
+    showSuccessNode() {
+        this.parentSuccessNode.active = true;
+
+        let dragon_success = this.successNode.getComponent(dragonBones.ArmatureDisplay);
+        this._success_armature = dragon_success.armature();
+
+        this._success_armature.addEventListener(dragonBones.EventObject.COMPLETE, () => {
+            if (!this._isplaySuccess) {
+                this._isplaySuccess = true;
+                this._success_armature.animation.fadeIn('jiangbei2048jingzhi', -1, -1, 0, "normal");
+            } else {
+                //隐藏，并弹出结算面板
+                this.parentSuccessNode.active = false;
+            }
+        }, this);
+
+        this._success_armature.animation.fadeIn('jiangbei2048chuxian', -1, -1, 0, "normal");
     }
 
     /**
@@ -262,19 +295,40 @@ export default class Game extends cc.Component {
         let grid2 = this.randomNumber();
 
         //获取随机到的两个数的节点
-        let item1 = this.content.getChildByName(location1.l + "" + location1.r);
-        let item2 = this.content.getChildByName(location2.l + "" + location2.r);
-        item1.getComponent(Item).showNumber(grid1, true);
-        item2.getComponent(Item).showNumber(grid2, true);
+        // let item1 = this.content.getChildByName(location1.l + "" + location1.r);
+        // let item2 = this.content.getChildByName(location2.l + "" + location2.r);
+        // item1.getComponent(Item).showNumber(grid1, true);
+        // item2.getComponent(Item).showNumber(grid2, true);
 
-        // let item0 = this.content.getChildByName("00");
-        // let item1 = this.content.getChildByName("01");
+        let item0 = this.content.getChildByName("00");
+        let item1 = this.content.getChildByName("01");
         // let item2 = this.content.getChildByName("02");
         // let item3 = this.content.getChildByName("03");
-        // item0.getComponent(Item).showNumber(4);
-        // item1.getComponent(Item).showNumber(16);
-        // item2.getComponent(Item).showNumber(16);
-        // item3.getComponent(Item).showNumber(4);
+        // let item10 = this.content.getChildByName("10");
+        // let item11 = this.content.getChildByName("11");
+        // let item12 = this.content.getChildByName("12");
+        // let item13 = this.content.getChildByName("13");
+        // let item20 = this.content.getChildByName("20");
+        // let item21 = this.content.getChildByName("21");
+        // let item22 = this.content.getChildByName("22");
+        // let item23 = this.content.getChildByName("23");
+        // let item30 = this.content.getChildByName("30");
+        // let item31 = this.content.getChildByName("31");
+        // let item32 = this.content.getChildByName("32");
+        // let item33 = this.content.getChildByName("33");
+        item0.getComponent(Item).showNumber(512);
+        item1.getComponent(Item).showNumber(512);
+        // item2.getComponent(Item).showNumber(64);
+        // item3.getComponent(Item).showNumber(256);
+        // item12.getComponent(Item).showNumber(32);
+        // item13.getComponent(Item).showNumber(512);
+        // item21.getComponent(Item).showNumber(2);
+        // item22.getComponent(Item).showNumber(16);
+        // item23.getComponent(Item).showNumber(1024);
+        // item30.getComponent(Item).showNumber(2);
+        // item31.getComponent(Item).showNumber(4);
+        // item32.getComponent(Item).showNumber(8);
+        // item33.getComponent(Item).showNumber(2048);
     }
 
     /**
@@ -951,6 +1005,12 @@ export default class Game extends cc.Component {
             cloneNode.removeFromParent();
             cloneNode.destroy();
         })));
+
+        //检测是否成功！
+        if (Number(targetNode.name) >= 1024 && !this._isplaySuccess) {
+            console.log('成功，gameover')
+            this.showSuccessNode();
+        }
     }
 
     /**
