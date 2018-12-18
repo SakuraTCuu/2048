@@ -50,6 +50,9 @@ export default class Game extends cc.Component {
     @property(cc.Node)
     parentSuccessNode: cc.Node = null;
 
+    @property(cc.Node)
+    exitGameNode: cc.Node = null;
+
     //上一次触摸点位置
     _pos: cc.Vec2 = null;
 
@@ -129,6 +132,10 @@ export default class Game extends cc.Component {
 
     onReturnHall() {
         cc.director.loadScene("Hall");
+    }
+
+    onClickExitBtn() {
+        this.exitGameNode.active = true;
     }
 
     /**
@@ -295,13 +302,13 @@ export default class Game extends cc.Component {
         let grid2 = this.randomNumber();
 
         //获取随机到的两个数的节点
-        // let item1 = this.content.getChildByName(location1.l + "" + location1.r);
-        // let item2 = this.content.getChildByName(location2.l + "" + location2.r);
-        // item1.getComponent(Item).showNumber(grid1, true);
-        // item2.getComponent(Item).showNumber(grid2, true);
+        let item1 = this.content.getChildByName(location1.l + "" + location1.r);
+        let item2 = this.content.getChildByName(location2.l + "" + location2.r);
+        item1.getComponent(Item).showNumber(grid1, true);
+        item2.getComponent(Item).showNumber(grid2, true);
 
-        let item0 = this.content.getChildByName("00");
-        let item1 = this.content.getChildByName("01");
+        // let item0 = this.content.getChildByName("00");
+        // let item1 = this.content.getChildByName("01");
         // let item2 = this.content.getChildByName("02");
         // let item3 = this.content.getChildByName("03");
         // let item10 = this.content.getChildByName("10");
@@ -316,8 +323,8 @@ export default class Game extends cc.Component {
         // let item31 = this.content.getChildByName("31");
         // let item32 = this.content.getChildByName("32");
         // let item33 = this.content.getChildByName("33");
-        item0.getComponent(Item).showNumber(512);
-        item1.getComponent(Item).showNumber(512);
+        // item0.getComponent(Item).showNumber(512);
+        // item1.getComponent(Item).showNumber(512);
         // item2.getComponent(Item).showNumber(64);
         // item3.getComponent(Item).showNumber(256);
         // item12.getComponent(Item).showNumber(32);

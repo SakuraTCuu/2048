@@ -17,6 +17,11 @@ export default class popUI extends cc.Component {
         Game.instance.onReturnHall();
     }
 
+     //继续游戏
+     onContinueGame() {
+        this.onCloseBtn();
+    }
+
     /**
      * 关闭本界面
      */
