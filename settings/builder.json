@@ -20,16 +20,17 @@
   },
   "packageName": "org.cocos2d.helloworld",
   "privateKey": "",
+  "renderMode": "0",
   "startScene": "2d2f792f-a40c-49bb-a189-ed176a246e49",
   "title": "2048Game",
   "webOrientation": "auto",
   "wechatgame": {
     "appid": "wx55ef2a54fabc2e27",
-    "orientation": "portrait"
+    "orientation": "portrait",
+    "subContext": "openContext"
   },
   "xxteaKey": "3e97cdb1-d8ed-4d",
   "zipCompressJs": true,
-  "renderMode": "0",
   "qqplay": {
     "orientation": "portrait",
     "REMOTE_SERVER_ROOT": ""

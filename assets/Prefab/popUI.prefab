@@ -3,10 +3,12 @@
     "__type__": "cc.Prefab",
     "_name": "",
     "_objFlags": 0,
-    "_rawFiles": null,
+    "_native": "",
     "data": {
       "__id__": 1
-    }
+    },
+    "optimizationPolicy": 0,
+    "asyncLoadAssets": false
   },
   {
     "__type__": "cc.Node",
@@ -173,7 +175,7 @@
       "__id__": 2
     },
     "_enabled": true,
-    "isAlignOnce": true,
+    "alignMode": 0,
     "_target": null,
     "_alignFlags": 45,
     "_left": 0,
@@ -372,7 +374,7 @@
       "__id__": 8
     },
     "_enabled": true,
-    "isAlignOnce": true,
+    "alignMode": 0,
     "_target": null,
     "_alignFlags": 1,
     "_left": 0,
@@ -508,7 +510,7 @@
       "__id__": 12
     },
     "_enabled": true,
-    "isAlignOnce": true,
+    "alignMode": 0,
     "_target": null,
     "_alignFlags": 1,
     "_left": 0,
@@ -628,7 +630,9 @@
       "__id__": 17
     },
     "_enabled": true,
-    "isAlignOnce": true,
+    "alignMode": 1,
+    "_wasAlignOnce": {},
+    "isAlignOnce": {},
     "_target": null,
     "_alignFlags": 41,
     "_left": 116.5,
@@ -751,7 +755,7 @@
       "__id__": 21
     },
     "_enabled": true,
-    "isAlignOnce": true,
+    "alignMode": 0,
     "_target": null,
     "_alignFlags": 41,
     "_left": 117,
@@ -1185,7 +1189,9 @@
       "__id__": 35
     },
     "_enabled": true,
-    "isAlignOnce": true,
+    "alignMode": 1,
+    "_wasAlignOnce": {},
+    "isAlignOnce": {},
     "_target": null,
     "_alignFlags": 33,
     "_left": 0,
@@ -1313,7 +1319,7 @@
       "__id__": 7
     },
     "_enabled": true,
-    "isAlignOnce": true,
+    "alignMode": 0,
     "_target": null,
     "_alignFlags": 45,
     "_left": 101.5,
@@ -1350,7 +1356,7 @@
       "__id__": 1
     },
     "_enabled": true,
-    "isAlignOnce": true,
+    "alignMode": 0,
     "_target": null,
     "_alignFlags": 45,
     "_left": 0,

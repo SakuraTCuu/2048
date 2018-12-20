@@ -1,6 +1,8 @@
 import Item from "./Item";
 import AudioMgr from "./AudioMgr";
 import GameManager, { GameState } from "./GameManager";
+import HintUI, { HintUIType } from "./HintUI";
+import config from "./config";
 
 const { ccclass, property } = cc._decorator;
 export interface locationInfo {
@@ -17,6 +19,14 @@ export enum direction {
     right,
     up,
     down,
+}
+
+enum successType {
+    success_2048 = 2048,
+    success_4096 = 4096,
+    success_8192 = 8192,
+    success_16384 = 16384,
+    success_32768 = 32768
 }
 
 
@@ -53,6 +63,26 @@ export default class Game extends cc.Component {
     @property(cc.Node)
     exitGameNode: cc.Node = null;
 
+    @property(dragonBones.ArmatureDisplay)
+    successDrag: dragonBones.ArmatureDisplay = null;
+
+    @property(cc.Node)
+    maskNode: cc.Node = null;
+
+    /**2048 4096 8192...  面板 */
+    @property(cc.Node)
+    continueNode: cc.Node = null;
+
+    //提示面板
+    @property(cc.Node)
+    hintUINode: cc.Node = null;
+
+    @property(cc.Label)
+    targetLab: cc.Label = null;
+
+    // 最近一阶段的成功的数字   用于判断是否达成过
+    _successPhase: successType = successType.success_2048;
+
     //上一次触摸点位置
     _pos: cc.Vec2 = null;
 
@@ -84,8 +114,7 @@ export default class Game extends cc.Component {
     _effect_armature: dragonBones.Armature = null;
     _success_armature: dragonBones.Armature = null;
 
-    // 是否播放过成功动画
-    _isplaySuccess: boolean = false;
+    _successDrag: dragonBones.ArmatureDisplay = null;
 
     //本次是否进行过合并
     _isMerge: boolean = false;
@@ -122,12 +151,13 @@ export default class Game extends cc.Component {
         this.content.width = this._sqrt[0][0].width * this.squareNum + (this.squareNum + 1) * 20;
         this.content.height = this._sqrt[0][0].height * this.squareNum + (this.squareNum + 1) * 20;
 
-        this.node.on(cc.Node.EventType.TOUCH_END, this.touchEnd, this);
-        this.node.on(cc.Node.EventType.TOUCH_START, this.touchStart, this);
-        this.node.on(cc.Node.EventType.TOUCH_CANCEL, this.touchCancel, this);
+        this.content.on(cc.Node.EventType.TOUCH_END, this.touchEnd, this);
+        this.content.on(cc.Node.EventType.TOUCH_START, this.touchStart, this);
+        this.content.on(cc.Node.EventType.TOUCH_CANCEL, this.touchCancel, this);
         // this.node.on(cc.Node.EventType.TOUCH_MOVE, this.touchMove, this);
 
         this.initEffect();
+        this.initView();
     }
 
     onReturnHall() {
@@ -158,12 +188,99 @@ export default class Game extends cc.Component {
         }
     }
 
+    initView() {
+        this.targetLab.string = "目标: " + this._successPhase;
+    }
+
     /**
      * 初始化特效
      */
     initEffect() {
+        this.parentSuccessNode.active = true;
         let dragon_effect = this.effectNode.getComponent(dragonBones.ArmatureDisplay);
         this._effect_armature = dragon_effect.armature();
+
+        this._successDrag = this.successNode.getComponent(dragonBones.ArmatureDisplay);
+        this._success_armature = this._successDrag.armature();
+
+        this._success_armature.addEventListener(dragonBones.EventObject.COMPLETE, this.successEventHandler, this)
+        // this._success_armature.addEventListener(dragonBones.EventObject.FADE_OUT_COMPLETE, this.successEventHandler, this)
+        this.parentSuccessNode.active = false;
+
+        this.maskNode.on(cc.Node.EventType.TOUCH_END, () => {
+            //是否继续?
+            this.continueNode.active = true;
+            this.parentSuccessNode.active = false;
+        }, this)
+    }
+
+    /**成功龙骨动画播放回调 */
+    successEventHandler(event: cc.Event.EventCustom) {
+        cc.log(this._success_armature.animation.lastAnimationName);
+        let animName = this._success_armature.animation.lastAnimationName;
+
+        switch (animName) {
+            case 'fenxiang1':
+
+                this.maskNode.active = true;
+                let effectName = this.getEffectNameByType();
+                //更改等级阶段
+                this._successPhase = this.getTargetScoreByType(this._successPhase);
+                this._success_armature.animation.fadeIn(effectName, -1, -1, 0);
+
+                break;
+            case 'jiangbei2048chuxian':
+
+                this._success_armature.animation.fadeIn('jiangbei2048jingzhi', -1, -1, 0, 'normal');
+
+                break;
+            case 'jiangbei4096chuxian':
+
+                this._success_armature.animation.fadeIn('jiangbei4096jingzhi', -1, -1, 0, 'normal');
+
+                break;
+            case 'jiangbei8192chuxian':
+
+                this._success_armature.animation.fadeIn('jiangbei8192jingzhi', -1, -1, 0, 'normal');
+
+                break;
+            case 'jiangbei16384chuxian':
+
+                this._success_armature.animation.fadeIn('jiangbei16384jingzhi', -1, -1, 0, 'normal');
+
+                break;
+            case 'jiangbei32768chuxian':
+
+                this._success_armature.animation.fadeIn('jiangbei32768jingzhi', -1, -1, 0, 'normal');
+
+                break;
+        }
+    }
+
+    /**更具当前达成的阶段分数来展示特效 */
+    getEffectNameByType() {
+        if (this._successPhase === 2048) {
+            return 'jiangbei2048chuxian'
+        } else if (this._successPhase === 4096) {
+            return 'jiangbei4096chuxian'
+        } else if (this._successPhase === 8192) {
+            return 'jiangbei8192chuxian'
+        } else if (this._successPhase === 16384) {
+            return 'jiangbei16384chuxian'
+        } else if (this._successPhase === 32768) {
+            return 'jiangbei32768chuxian'
+        }
+    }
+
+    /**
+   * 播放成功特效
+   * @param id 
+   */
+    showSuccessNode() {
+        cc.log('showSuccessNode--')
+        this.parentSuccessNode.active = true;
+        this._success_armature.animation.fadeIn('fenxiang1', -1, -1, 0);
+
     }
 
     /**
@@ -173,28 +290,7 @@ export default class Game extends cc.Component {
         this._effect_armature.animation.fadeIn(name, -1, -1, 0, "normal");
     }
 
-    /**
-     * 播放成功特效
-     * @param id 
-     */
-    showSuccessNode() {
-        this.parentSuccessNode.active = true;
 
-        let dragon_success = this.successNode.getComponent(dragonBones.ArmatureDisplay);
-        this._success_armature = dragon_success.armature();
-
-        this._success_armature.addEventListener(dragonBones.EventObject.COMPLETE, () => {
-            if (!this._isplaySuccess) {
-                this._isplaySuccess = true;
-                this._success_armature.animation.fadeIn('jiangbei2048jingzhi', -1, -1, 0, "normal");
-            } else {
-                //隐藏，并弹出结算面板
-                this.parentSuccessNode.active = false;
-            }
-        }, this);
-
-        this._success_armature.animation.fadeIn('jiangbei2048chuxian', -1, -1, 0, "normal");
-    }
 
     /**
      * 根据id获取特效名称
@@ -229,7 +325,6 @@ export default class Game extends cc.Component {
                 break;
         }
         if (effectName == "") {
-
         } else {
             this.setEffectNode(effectName);
         }
@@ -323,19 +418,22 @@ export default class Game extends cc.Component {
         // let item31 = this.content.getChildByName("31");
         // let item32 = this.content.getChildByName("32");
         // let item33 = this.content.getChildByName("33");
-        // item0.getComponent(Item).showNumber(512);
-        // item1.getComponent(Item).showNumber(512);
-        // item2.getComponent(Item).showNumber(64);
-        // item3.getComponent(Item).showNumber(256);
-        // item12.getComponent(Item).showNumber(32);
-        // item13.getComponent(Item).showNumber(512);
-        // item21.getComponent(Item).showNumber(2);
-        // item22.getComponent(Item).showNumber(16);
+        // item0.getComponent(Item).showNumber(1024);
+        // item1.getComponent(Item).showNumber(1024);
+        // item2.getComponent(Item).showNumber(1024);
+        // item3.getComponent(Item).showNumber(1024);
+        // item10.getComponent(Item).showNumber(8192);
+        // item11.getComponent(Item).showNumber(8192);
+        // item12.getComponent(Item).showNumber(8192);
+        // item13.getComponent(Item).showNumber(1024);
+        // item20.getComponent(Item).showNumber(1024);
+        // item21.getComponent(Item).showNumber(1024);
+        // item22.getComponent(Item).showNumber(1024);
         // item23.getComponent(Item).showNumber(1024);
-        // item30.getComponent(Item).showNumber(2);
-        // item31.getComponent(Item).showNumber(4);
-        // item32.getComponent(Item).showNumber(8);
-        // item33.getComponent(Item).showNumber(2048);
+        // item30.getComponent(Item).showNumber(1024);
+        // item31.getComponent(Item).showNumber(1024);
+        // item32.getComponent(Item).showNumber(1024);
+        // item33.getComponent(Item).showNumber(1024);
     }
 
     /**
@@ -499,6 +597,9 @@ export default class Game extends cc.Component {
 
         //设置分数和步数
 
+        //获取最后的合并的最大的数字
+        this.getTheEndBigMergeNumber();
+
         //重新开始按钮
         let gameOver = cc.instantiate(this.gameOverPrefab);
         this.node.addChild(gameOver);
@@ -513,6 +614,29 @@ export default class Game extends cc.Component {
             mask.active = true;
         }));
         gameOver.runAction(seqAct);
+
+        //微信后台保存数据
+        let score = this.getTheEndBigMergeNumber()
+        config.submitScoreToWX(score);
+    }
+
+    /**
+     * 获取最后的合并的最大的数字
+     */
+    getTheEndBigMergeNumber() {
+        let len = this.content.childrenCount;
+        let lastMergeNumber = 0;
+        for (let i = 0; i < len; i++) {
+            let item = this.content.children[i]
+            let itemTs = item.getComponent(Item);
+            if (itemTs.isNum()) {
+                let curNum = itemTs.getNum();
+                if (curNum > lastMergeNumber) {
+                    lastMergeNumber = curNum;
+                }
+            }
+        }
+        return lastMergeNumber;
     }
 
     /**
@@ -522,7 +646,7 @@ export default class Game extends cc.Component {
         let len = this.content.childrenCount;
         let flag = true;
         for (let i = 0; i < len; i++) {
-            let item = this.content.children[i]
+            let item = this.content.children[i];
             let isNum = item.getComponent(Item).isNum();
             if (!isNum) {
                 flag = false;
@@ -594,7 +718,6 @@ export default class Game extends cc.Component {
                 let num = oldNode.getComponent(Item).getNum();
                 targetNode.name = num + "";
                 oldNode.getComponent(Item).setHideNum(num);
-
                 if (i > 0) {
                     if (lineList[flagList[i - 1]]) {
                         let preNum = lineList[flagList[i - 1]].getComponent(Item).getHideNum();
@@ -630,7 +753,6 @@ export default class Game extends cc.Component {
                         let preNum = lineList[flagList[i - 1]].getComponent(Item).getHideNum();
                         let curNum = oldNode.getComponent(Item).getHideNum();
                         if (preNum == curNum && curNum != 0) {
-
                             // targetNode = lineList[i - 1 - index];
                             targetNode = lineList[lineList.length - i + index];
                             oldNode.getComponent(Item).setHideNum(0);
@@ -747,164 +869,6 @@ export default class Game extends cc.Component {
         // }, 0.3);
     }
 
-    // /**
-    //  * 计算水平滑动
-    //  * 计算一行内所有数字块的位置,并进行 移动
-    //  * @param line 行
-    //  */
-    // calcHorizontalSlidePosition(line: number) {
-    //     this.calcSlidePosition(line);
-    //     return;
-    //     let lineList = this._sqrt[line];
-    //     let flagList = new Array();
-
-    //     if (this._direction == direction.left) {
-    //         for (let i = 0; i < lineList.length; i++) {
-    //             let isNum = lineList[i].getComponent(Item).isNum();
-    //             if (isNum) {
-    //                 flagList.push(i);
-    //             }
-    //         }
-    //     } else {
-    //         for (let i = lineList.length - 1; i >= 0; i--) {
-    //             let isNum = lineList[i].getComponent(Item).isNum();
-    //             if (isNum) {
-    //                 flagList.push(i);
-    //             }
-    //         }
-    //     }
-
-    //     let index = 0;
-    //     //从左0开始依次把数字块 按顺序排
-    //     //根据方向排列
-
-    //     if (this._direction == direction.left) {
-    //         for (let i = 0; i < flagList.length; i++) {
-    //             let oldNode: cc.Node = null;
-    //             let targetNode: cc.Node = null;
-
-    //             oldNode = lineList[flagList[i]];
-    //             targetNode = lineList[i];
-    //             let num = oldNode.getComponent(Item).getNum();
-    //             targetNode.name = num + "";
-    //             oldNode.getComponent(Item).setHideNum(num);
-
-    //             if (i > 0) {
-    //                 if (lineList[flagList[i - 1]]) {
-    //                     let preNum = lineList[flagList[i - 1]].getComponent(Item).getHideNum();
-    //                     let curNum = oldNode.getComponent(Item).getHideNum();
-    //                     if (preNum == curNum && curNum != 0) {
-    //                         targetNode = lineList[i - 1 - index];
-    //                         oldNode.getComponent(Item).setHideNum(0);
-    //                         targetNode.name = num * 2 + "";
-    //                         index++;
-    //                     } else {
-    //                         targetNode = lineList[i - index];
-    //                     }
-    //                 }
-    //             }
-    //             this.positionMoveAction(oldNode, targetNode, num);
-    //         }
-    //     } else {
-    //         for (let i = 0; i < flagList.length; i++) {
-    //             let oldNode: cc.Node = null;
-    //             let targetNode: cc.Node = null;
-
-    //             oldNode = lineList[flagList[i]];
-    //             targetNode = lineList[lineList.length - i - 1];
-    //             let num = oldNode.getComponent(Item).getNum();
-    //             targetNode.name = num + "";
-    //             oldNode.getComponent(Item).setHideNum(num);
-
-    //             if (i > 0) {
-    //                 if (lineList[flagList[i - 1]]) {
-    //                     let preNum = lineList[flagList[i - 1]].getComponent(Item).getHideNum();
-    //                     let curNum = oldNode.getComponent(Item).getHideNum();
-    //                     if (preNum == curNum && curNum != 0) {
-    //                         // targetNode = lineList[i - 1 - index];
-    //                         targetNode = lineList[lineList.length - i + index];
-    //                         oldNode.getComponent(Item).setHideNum(0);
-    //                         targetNode.name = num * 2 + "";
-    //                         index++;
-    //                     } else {
-    //                         targetNode = lineList[lineList.length - i + index - 1];
-    //                     }
-    //                 }
-    //             }
-    //             this.positionMoveAction(oldNode, targetNode, num);
-    //         }
-    //     }
-    // }
-
-    // /**
-    //  * 竖直滑动
-    //  * 计算一列内所有数字块的位置,并进行 移动
-    //  */
-    // calcVerticalSlidePosition(row: number) {
-    //     this.calcSlidePosition(row);
-    //     return;
-    //     let rowList = this._sqrt2[row];
-    //     let flagList = new Array();
-    //     for (let i = 0; i < rowList.length; i++) {
-    //         let isNum = rowList[i].getComponent(Item).isNum();
-    //         if (isNum) {
-    //             flagList.push(i);
-    //         }
-    //     }
-
-    //     //从左0开始依次把数字块 按顺序排
-    //     //根据方向排列
-    //     for (let i = 0; i < flagList.length; i++) {
-    //         let oldNode: cc.Node = null;
-    //         // let cloneNode: cc.Node = cc.instantiate(this.squareItem);
-    //         let targetNode: cc.Node = null;
-
-    //         if (this._direction == direction.up) {
-    //             // let num = rowList[flagList[i]].getComponent(Item).getNum();
-    //             // rowList[i].getComponent(Item).showNumber(num);
-
-    //             oldNode = rowList[flagList[i]];
-    //             let num = oldNode.getComponent(Item).getNum();
-    //             // cloneNode.getComponent(Item).showNumber(num);
-    //             // cloneNode.position = oldNode.position;
-    //             // cloneNode.name = num + "";
-    //             oldNode.name = num + "";
-    //             targetNode = rowList[i];
-    //             oldNode.getComponent(Item).showNumber(0);
-    //         } else if (this._direction == direction.down) {
-    //             // let num = rowList[flagList[flagList.length - i - 1]].getComponent(Item).getNum();
-    //             // rowList[rowList.length - i - 1].getComponent(Item).showNumber(num);
-
-    //             oldNode = rowList[flagList[flagList.length - i - 1]];
-    //             let num = oldNode.getComponent(Item).getNum();
-    //             oldNode.name = num + "";
-    //             // cloneNode.getComponent(Item).showNumber(num);
-    //             // cloneNode.position = oldNode.position;
-    //             // cloneNode.name = num + "";
-    //             targetNode = rowList[rowList.length - i - 1];
-    //             oldNode.getComponent(Item).showNumber(0);
-    //         }
-
-    //         //A克隆一个节点A1,然后把节点A置空,然后移动到指定节点B位置
-    //         // cloneNode = cc.instantiate(lineList[flagList[i]]);
-    //         // this.content.addChild(cloneNode);
-    //         // this.positionMoveAction(oldNode, targetNode);
-    //     }
-
-    //     //置空 之前的块
-    //     // for (let i = 0; i < rowList.length; i++) {
-    //     //     if (this._direction == direction.up) {
-    //     //         if (i > flagList.length - 1) {
-    //     //             rowList[i].getComponent(Item).showNumber(0);
-    //     //         }
-    //     //     } else if (this._direction == direction.down) {
-    //     //         if (i < rowList.length - flagList.length) {
-    //     //             rowList[i].getComponent(Item).showNumber(0);
-    //     //         }
-    //     //     }
-    //     // }
-    // }
-
     /**
      * 随机一个数字  2/4
      */
@@ -1002,9 +966,9 @@ export default class Game extends cc.Component {
 
         let moveAct = cc.moveTo(0.2, targetNode.position);
         cloneNode.runAction(cc.sequence(moveAct, cc.callFunc(() => {
-            if (targetNode.isMerge) {
+            if (targetNode['isMerge']) {
                 targetNode.getComponent(Item).showNumber(Number(targetNode.name), true);
-                targetNode.isMerge = false;
+                targetNode['isMerge'] = false;
             } else {
                 targetNode.getComponent(Item).showNumber(Number(targetNode.name));
             }
@@ -1013,10 +977,49 @@ export default class Game extends cc.Component {
             cloneNode.destroy();
         })));
 
-        //检测是否成功！
-        if (Number(targetNode.name) >= 1024 && !this._isplaySuccess) {
-            console.log('成功，gameover')
+        if (Number(targetNode.name) === this._successPhase) {
             this.showSuccessNode();
+        }
+
+        //检测是否成功！
+        if (Number(targetNode.name) > this._successPhase) {
+            this.setTheSuccessType(Number(targetNode.name));
+        }
+
+    }
+
+    /**
+     * 通过类型获取分数
+     */
+    getTargetScoreByType(type: successType) {
+        switch (type) {
+            case successType.success_2048:
+                return successType.success_4096;
+            case successType.success_4096:
+                return successType.success_8192;
+            case successType.success_8192:
+                return successType.success_16384;
+            case successType.success_16384:
+                return successType.success_32768;
+            case successType.success_32768:
+                return successType.success_32768;
+        }
+    }
+
+    //当分数设置直接高过2048时  主要用于测试   不排除后续开发bigNumber 合成游戏
+    setTheSuccessType(num: number) {
+        if (num >= 0 && num < 2048) {
+            this._successPhase = successType.success_2048;
+        } else if (num >= 2048 && num < 4096) {
+            this._successPhase = successType.success_4096;
+        } else if (num >= 4096 && num < 8192) {
+            this._successPhase = successType.success_8192;
+        } else if (num >= 8192 && num < 16384) {
+            this._successPhase = successType.success_16384;
+        } else if (num >= 16384 && num < 32768) {
+            this._successPhase = successType.success_32768;
+        } else {
+            this.showHintUI(HintUIType.Failure, '啊哦,出错误了');
         }
     }
 
@@ -1034,6 +1037,49 @@ export default class Game extends cc.Component {
         this._gameState = true;
         this.initGame();
         this.setEffectNode('dbkaishi');
+    }
+
+    /** 完成一阶段了 继续下一阶段 */
+    onClickContinueGame() {
+        this.scheduleOnce(() => {
+            this.continueNode.active = false;
+            //达成条件 触发 升级
+            this.initView();
+            this.showHintUI(HintUIType.Success, '目标已更新!');
+        }, 0.1)
+    }
+
+    /**分享按钮 */
+    onClickShareBtn() {
+        if (cc.sys.platform === cc.sys.WECHAT_GAME) {
+            //微信小游戏  分享
+            wx.shareAppMessage({
+                title: '来看看谁的得分最高!',
+                imageUrl: config.shareImg_url,
+                success: () => {
+                    console.log('转发成功!');
+                    this.showHintUI(HintUIType.Success, "转发成功,多谢你的支持!");
+                },
+                fail(res) {
+                    console.log('转发失败--->>', res);
+                    this.showHintUI(HintUIType.Failure, "转发失败!");
+                }
+            })
+        } else {
+            this.showHintUI(HintUIType.Failure, "该平台不支持分享!");
+        }
+    }
+
+    /**
+    * 大厅信息提示 框
+    * @param hintUIType 
+    * @param msg 信息
+    */
+    showHintUI(hintUIType: HintUIType, msg?: string) {
+        const failureJS = this.hintUINode.getComponent(HintUI);
+        if (failureJS.isShowing()) return false;
+        failureJS.show(hintUIType, msg);
+        return true;
     }
 
     /**

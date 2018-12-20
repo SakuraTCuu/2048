@@ -17487,8 +17487,8 @@ declare namespace dragonBones {
          * @language zh_CN
          * 淡入播放指定名称的动画。
          * @param animationName 动画数据的名称。
-         * @param playTimes 循环播放的次数。 [-1: 使用数据默认值, 0: 无限循环播放, [1~N]: 循环播放 N 次]
          * @param fadeInTime 淡入的时间。 [-1: 使用数据默认值, [0~N]: N 秒淡入完毕] (以秒为单位)
+         * @param playTimes 循环播放的次数。 [-1: 使用数据默认值, 0: 无限循环播放, [1~N]: 循环播放 N 次]
          * @param layer 混合的图层，图层高会优先获取混合权重。
          * @param group 混合的组，用于给动画状态编组，方便混合淡出控制。
          * @param fadeOutMode 淡出的模式。
