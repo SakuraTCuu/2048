@@ -3,6 +3,7 @@ import AudioMgr from "./AudioMgr";
 import GameManager, { GameState } from "./GameManager";
 import HintUI, { HintUIType } from "./HintUI";
 import config from "./config";
+import GameProp from "./GameProp";
 
 const { ccclass, property } = cc._decorator;
 export interface locationInfo {
@@ -29,6 +30,21 @@ enum successType {
     success_32768 = 32768
 }
 
+enum PlayState {
+    stop,  //游戏暂停
+    useItem, //使用道具
+    normal,  //正常情况
+    dead,  //游戏死亡  可以复活
+    over,  //游戏结束
+}
+
+export enum ItemType {
+    hummer,
+    brush,
+    change,
+    regret,
+    none
+}
 
 @ccclass
 export default class Game extends cc.Component {
@@ -42,6 +58,8 @@ export default class Game extends cc.Component {
     @property(cc.Node)
     content: cc.Node = null;
 
+    @property(cc.Node)
+    uiLayer: cc.Node = null;
     // @property(cc.Label)
     // scoreLab: cc.Label = null;
 
@@ -53,6 +71,9 @@ export default class Game extends cc.Component {
 
     @property(cc.Prefab)
     gameOverPrefab: cc.Prefab = null;
+
+    @property(cc.Prefab)
+    showItemPrefab: cc.Prefab = null;
 
     @property(cc.Node)
     successNode: cc.Node = null;
@@ -80,18 +101,29 @@ export default class Game extends cc.Component {
     @property(cc.Label)
     targetLab: cc.Label = null;
 
+    @property(cc.Label)
+    currentLab: cc.Label = null;
+
+    @property(cc.Label)
+    historyLab: cc.Label = null;
+
+
     // 最近一阶段的成功的数字   用于判断是否达成过
     _successPhase: successType = successType.success_2048;
 
     //上一次触摸点位置
     _pos: cc.Vec2 = null;
-
-    _endPos: cc.Vec2 = null; //结束点
-    _startPos: cc.Vec2 = null;//开始点
-    _cancelPos: cc.Vec2 = null;//取消点
+    //结束点
+    _endPos: cc.Vec2 = null;
+    //开始点
+    _startPos: cc.Vec2 = null;
+    //取消点
+    _cancelPos: cc.Vec2 = null;
 
     //分数
     _score: number = 0;
+    //历史分数
+    _historyScore: string = null;
     //步数
     _step: number = 0;
     //合并的步数
@@ -122,10 +154,18 @@ export default class Game extends cc.Component {
     //播放音效的ID
     _audioID: number = -1;
 
+    //点击判断
     _clickFlag: boolean = true;
 
+
     //游戏状态
-    _gameState: boolean = true;
+    _gameState: PlayState = PlayState.normal;
+
+    //道具类型
+    _itemType: ItemType = ItemType.none;
+
+    //合并的数组
+    _mergeNode: Array<cc.Node> = new Array();
 
     private static _instance: Game = null;
 
@@ -189,7 +229,7 @@ export default class Game extends cc.Component {
     }
 
     initView() {
-        this.targetLab.string = "目标: " + this._successPhase;
+        this.targetLab.string = this._successPhase + "";
     }
 
     /**
@@ -379,6 +419,8 @@ export default class Game extends cc.Component {
             this.initGrid();
         }, 0.2);
 
+        this.setLabInfo();
+        this.setHistoryLab();
     }
 
     //初始化位置 ，不用layout组件
@@ -440,8 +482,24 @@ export default class Game extends cc.Component {
      * 设置面板信息
      */
     setLabInfo() {
-        // this.scoreLab.string = this._score + "";
+        this.currentLab.string = this._score + "";
         // this.stepLab.string = this._step + "";
+    }
+
+    /**
+     * 设置历史信息
+     */
+    setHistoryLab() {
+        this._historyScore = cc.sys.localStorage.getItem('score');
+        this.historyLab.string = this._historyScore ? this._historyScore : '0';
+    }
+
+    //保存历史信息
+    saveHistoryScore() {
+        //当  当前分大于历史成绩才触发
+        if (this._score > Number(this._historyScore)) {
+            cc.sys.localStorage.setItem('score', this._score);
+        }
     }
 
     /**
@@ -466,39 +524,45 @@ export default class Game extends cc.Component {
      * 每次合并都会触发的事件
      */
     everyTimeMergeCallBack() {
+        cc.log(this._mergeNode);
 
-
+        for (let i = 0; i < this._mergeNode.length; i++) {
+            this._score += Number(this._mergeNode[i].name);
+        }
+        //合并分数
+        this.setLabInfo();
     }
 
     touchEnd(event) {
-        if (this._clickFlag) {
+        if (this._clickFlag && this._gameState === PlayState.normal) {
             this._clickFlag = false;
             let pos = event.getLocation()
             this._endPos = cc.v2(pos.x, pos.y);
             this.everyTimeMoveCallback();
             this.checkSlideDirection(this._endPos);
             this._step++;
-            this.setLabInfo();
         } else {
             // cc.log("你点的太快了");
         }
-
     }
 
     touchStart(event) {
-        let pos = event.getLocation()
-        this._startPos = cc.v2(pos.x, pos.y);
+        if (this._clickFlag && this._gameState === PlayState.normal) {
+            let pos = event.getLocation()
+            this._startPos = cc.v2(pos.x, pos.y);
+        } else {
+            // cc.log("你点的太快了");
+        }
     }
 
     touchCancel(event) {
-        if (this._clickFlag) {
+        if (this._clickFlag && this._gameState === PlayState.normal) {
             this._clickFlag = false;
             let pos = event.getLocation()
             this._cancelPos = cc.v2(pos.x, pos.y);
             this.everyTimeMoveCallback();
             this.checkSlideDirection(this._cancelPos);
             this._step++;
-            this.setLabInfo();
         } else {
             // cc.log("你点的太快了");
         }
@@ -549,6 +613,7 @@ export default class Game extends cc.Component {
      * @param sd  滑动方向
      */
     slideSquare() {
+        this._mergeNode.length = 0;
         //移动位置  所有块往一个方向移动
         this.moveSqrt();
         this.everyTimeEndCallback();
@@ -577,8 +642,8 @@ export default class Game extends cc.Component {
             this.randomSqrtInNULL();
 
             //判断游戏是否该结束
-            if (this.checkGameOver() && this._gameState) {
-                this._gameState = false;
+            if (this.checkGameOver()) {
+                this._gameState = PlayState.over;
                 cc.log("游戏结束");
                 this.gameOver();
                 this._clickFlag = true;
@@ -597,8 +662,7 @@ export default class Game extends cc.Component {
 
         //设置分数和步数
 
-        //获取最后的合并的最大的数字
-        this.getTheEndBigMergeNumber();
+        this.saveHistoryScore();
 
         //重新开始按钮
         let gameOver = cc.instantiate(this.gameOverPrefab);
@@ -727,8 +791,10 @@ export default class Game extends cc.Component {
                             oldNode.getComponent(Item).setHideNum(0);
                             targetNode.name = num * 2 + "";
                             // targetNode.isMerge = true;
+                            targetNode['isMerge'] = true;
                             index++;
                             this._isMerge = true;
+                            this._mergeNode.push(targetNode);
                         } else {
                             targetNode = lineList[i - index];
                             targetNode.name = num + "";
@@ -757,8 +823,10 @@ export default class Game extends cc.Component {
                             targetNode = lineList[lineList.length - i + index];
                             oldNode.getComponent(Item).setHideNum(0);
                             targetNode.name = num * 2 + "";
+                            targetNode['isMerge'] = true;
                             index++;
                             this._isMerge = true;
+                            this._mergeNode.push(targetNode);
                         } else {
                             targetNode = lineList[lineList.length - i + index - 1];
                             targetNode.name = num + "";
@@ -910,43 +978,42 @@ export default class Game extends cc.Component {
     /**
      * 检测两个合并   能合并就合并
      */
-    checkTwoMerge(one: cc.Node, two: cc.Node): boolean {
-        let item1 = one.getComponent(Item);
-        let item2 = two.getComponent(Item);
+    // checkTwoMerge(one: cc.Node, two: cc.Node): boolean {
+    //     let item1 = one.getComponent(Item);
+    //     let item2 = two.getComponent(Item);
 
-        let oneFlag = item1.isNum();
-        let twoFlag = item2.isNum();
+    //     let oneFlag = item1.isNum();
+    //     let twoFlag = item2.isNum();
 
-        if (oneFlag && twoFlag) {
-            let num1 = item1.getNum();
-            let num2 = item2.getNum();
-            if (num1 == num2) {
-                //合并两个
-                item1.showNumber(num1 * 2);
-                item2.showNumber(0);
-                // let cloneNode: cc.Node = cc.instantiate(this.squareItem);
-                // cloneNode.getComponent(Item).showNumber(num2);
-                // cloneNode.position = two.position;
-                // cloneNode.name = num2 + "";
-                two.name = num2 * 2 + "";
-                // this.positionMoveAction(two, one);
-                //进行飞行动作
-                this._score += num1;
-                cc.log("合并两个--->>>");
-                item1.playParticle();
-                return true;
-            }
-        } else if (!oneFlag && twoFlag) {
-            let num = item2.getNum();
-            item1.showNumber(num);
-            item2.showNumber(0);
-            return true;
-        } else {
-            // this._isContinue = false;
-            return false;
-        }
-        return false;
-    }
+    //     if (oneFlag && twoFlag) {
+    //         let num1 = item1.getNum();
+    //         let num2 = item2.getNum();
+    //         if (num1 == num2) {
+    //             //合并两个
+    //             item1.showNumber(num1 * 2);
+    //             item2.showNumber(0);
+    //             // let cloneNode: cc.Node = cc.instantiate(this.squareItem);
+    //             // cloneNode.getComponent(Item).showNumber(num2);
+    //             // cloneNode.position = two.position;
+    //             // cloneNode.name = num2 + "";
+    //             two.name = num2 * 2 + "";
+    //             //进行飞行动作
+    //             this._score += num1;
+    //             cc.log("合并两个--->>>");
+    //             item1.playParticle();
+    //             return true;
+    //         }
+    //     } else if (!oneFlag && twoFlag) {
+    //         let num = item2.getNum();
+    //         item1.showNumber(num);
+    //         item2.showNumber(0);
+    //         return true;
+    //     } else {
+    //         // this._isContinue = false;
+    //         return false;
+    //     }
+    //     return false;
+    // }
 
     /**
      * move动作
@@ -957,12 +1024,12 @@ export default class Game extends cc.Component {
         cloneNode.getComponent(Item).showNumber(num);
         cloneNode.position = oldNode.position;
         this.content.addChild(cloneNode);
-        let runTime;
-        if (this._slide == slideDirection.LeftRight) {
-            runTime = Math.floor(Math.abs(oldNode.x - targetNode.x) / cloneNode.height) * 0.1;
-        } else {
-            runTime = Math.floor(Math.abs(oldNode.y - targetNode.y) / cloneNode.height) * 0.1;
-        }
+        // let runTime;
+        // if (this._slide == slideDirection.LeftRight) {
+        //     runTime = Math.floor(Math.abs(oldNode.x - targetNode.x) / cloneNode.height) * 0.1;
+        // } else {
+        //     runTime = Math.floor(Math.abs(oldNode.y - targetNode.y) / cloneNode.height) * 0.1;
+        // }
 
         let moveAct = cc.moveTo(0.2, targetNode.position);
         cloneNode.runAction(cc.sequence(moveAct, cc.callFunc(() => {
@@ -1034,7 +1101,7 @@ export default class Game extends cc.Component {
         this._score = 0;
         this._step = 0;
         this._clickFlag = true;
-        this._gameState = true;
+        this._gameState = PlayState.normal;
         this.initGame();
         this.setEffectNode('dbkaishi');
     }
@@ -1089,4 +1156,55 @@ export default class Game extends cc.Component {
         cc.director.loadScene("main");
     }
 
+    //------------------------------------------------------Tools Methods---------------------------------
+    /**
+     *  使用锤子道具    消除一个指定的道具
+     */
+    useHemmerItem(event) {
+        this._gameState = PlayState.useItem;
+        this._itemType = ItemType.hummer;
+        this.useItemManage(event.currentTarget);
+
+        //先判断 道具数量够不够
+        //不够了去买钻石
+        //钻石数量够不够/
+        //不够了去看广告去,看完给你发钻石..ok?
+        //展示阴影部分
+
+        //点击一个道具 消灭它
+    }
+
+    /**
+     * 刷子      给一个数字快随机一个数字
+     */
+    useBrushItem(event) {
+        this._gameState = PlayState.useItem;
+        this._itemType = ItemType.brush;
+        this.useItemManage(event.currentTarget);
+    }
+
+    /**
+     * 换位工具   两个数字块相互换位
+     */
+    useChangeItem(event) {
+        this._gameState = PlayState.useItem;
+        this._itemType = ItemType.change;
+        this.useItemManage(event.currentTarget);
+    }
+
+    /**
+     * 返回上一步  返回上一步状态
+     */
+    useRegretItem(event) {
+        this._gameState = PlayState.useItem;
+        this._itemType = ItemType.regret;
+        this.useItemManage(event.currentTarget);
+    }
+
+
+    useItemManage(target: cc.Node) {
+        let item = cc.instantiate(this.showItemPrefab);
+        item.getComponent(GameProp).init(this._itemType, target);
+        this.uiLayer.addChild(item);
+    }
 }

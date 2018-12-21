@@ -1,0 +1,7 @@
+{
+  "ver": "1.0.0",
+  "uuid": "8c8276a1-0604-4433-93f6-57a2bf2618c8",
+  "atlasJson": "{\"imagePath\":\"IconAnim_ske_tex.png\",\"width\":1024,\"SubTexture\":[{\"frameX\":-24,\"frameHeight\":96,\"y\":179,\"frameY\":-8,\"frameWidth\":401,\"width\":338,\"height\":83,\"name\":\"logo_font_1_看图王_3\",\"x\":555},{\"frameX\":-7,\"frameHeight\":274,\"y\":1,\"frameY\":-14,\"frameWidth\":503,\"width\":484,\"height\":260,\"name\":\"fengmian/fm07\",\"x\":1},{\"width\":240,\"y\":1,\"height\":176,\"name\":\"fengmian/fm06\",\"x\":487},{\"width\":123,\"y\":1,\"height\":130,\"name\":\"fengmian/fm05\",\"x\":865},{\"width\":134,\"y\":1,\"height\":157,\"name\":\"fengmian/fm04\",\"x\":729},{\"frameX\":-2,\"frameHeight\":207,\"y\":263,\"frameY\":-1,\"frameWidth\":556,\"width\":552,\"height\":206,\"name\":\"fengmian/fm08\",\"x\":1}],\"height\":512,\"name\":\"IconAnim_ske\"}",
+  "texture": "13e21d27-cdb7-407c-b4b4-7eeeaa2949ef",
+  "subMetas": {}
+}

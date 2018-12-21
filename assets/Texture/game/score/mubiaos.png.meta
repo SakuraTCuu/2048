@@ -1,0 +1,30 @@
+{
+  "ver": "2.0.0",
+  "uuid": "4c86c2a1-e5f5-40b4-8443-b8f2f840180f",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "subMetas": {
+    "mubiaos": {
+      "ver": "1.0.3",
+      "uuid": "9e09f684-6730-48f7-a8d3-d2a26a8fa98c",
+      "rawTextureUuid": "4c86c2a1-e5f5-40b4-8443-b8f2f840180f",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "trimX": 0,
+      "trimY": 0,
+      "width": 6,
+      "height": 126,
+      "rawWidth": 6,
+      "rawHeight": 126,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}

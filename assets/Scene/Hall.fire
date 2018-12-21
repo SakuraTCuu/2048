@@ -335,7 +335,7 @@
     "_position": {
       "__type__": "cc.Vec2",
       "x": 0,
-      "y": 392
+      "y": 358
     },
     "_skewX": 0,
     "_skewY": 0,
@@ -356,10 +356,10 @@
     "_animationName": "logo",
     "playTimes": -1,
     "_N$dragonAsset": {
-      "__uuid__": "2c439c34-96e0-4a4d-a5f2-4b86101bcba7"
+      "__uuid__": "a42c96f1-0b41-47c1-b0ee-aff5dfbfd668"
     },
     "_N$dragonAtlasAsset": {
-      "__uuid__": "32f16c9f-44ee-4c70-aef1-f5886c461c87"
+      "__uuid__": "8c8276a1-0604-4433-93f6-57a2bf2618c8"
     },
     "_N$_defaultArmatureIndex": 0,
     "_N$_animationIndex": 1,

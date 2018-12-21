@@ -18,6 +18,21 @@ export default class Item extends cc.Component {
 
     hideNum: number = 0;
 
+
+    onLoad() {
+        this.node.on(cc.Node.EventType.TOUCH_END, this.onClick, this)
+    }
+
+    /**
+     * 判断类型
+     */
+    onClick() {
+        //默认是锤子
+        this.showNumber(0);
+
+        //做特效
+    }
+
     showNumber(num: number, isMerge: boolean = false) {
         this._num = num;
 
@@ -25,7 +40,6 @@ export default class Item extends cc.Component {
             this.bg.active = true;
             this.numberSp.spriteFrame = null;
             return;
-            // this.node.color = cc.color(150, 150, 150);
         }
 
         let numberAtlas = Game.instance.numberAtlas;
@@ -33,8 +47,8 @@ export default class Item extends cc.Component {
 
         if (isMerge) {
             //播放动画
-            this.numberSp.node.scale = 0.5;
-            let action = cc.scaleTo(0.1, 1);
+            this.numberSp.node.scale = 0.8;
+            let action = cc.scaleTo(0.2, 1);
             // this.numberSp.node.runAction(cc.skewBy(0.5, 10, 10));
             this.numberSp.node.runAction(action);
         }
@@ -71,4 +85,5 @@ export default class Item extends cc.Component {
     getHideNum() {
         return this.hideNum;
     }
+
 }
