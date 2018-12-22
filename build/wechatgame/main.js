@@ -14,6 +14,7 @@
 
 
     function boot () {
+
         var settings = window._CCSettings;
         window._CCSettings = undefined;
 
