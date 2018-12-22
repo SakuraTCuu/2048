@@ -1,4 +1,5 @@
 import Game from "./Game";
+import GameManager, { ItemType, PlayState } from "./GameManager";
 
 const { ccclass, property } = cc._decorator;
 
@@ -18,22 +19,54 @@ export default class Item extends cc.Component {
 
     hideNum: number = 0;
 
+    _preClickTime: number = null;
+
+    _act: cc.Action = null;
 
     onLoad() {
-        this.node.on(cc.Node.EventType.TOUCH_END, this.onClick, this)
+        this.node.on(cc.Node.EventType.TOUCH_END, this.onClick, this);
     }
 
     /**
      * 判断类型
      */
     onClick() {
-        //默认是锤子
-        this.showNumber(0);
+        let currentTime = Date.now();
+        if (currentTime - this._preClickTime < 2000) { return }
+        this._preClickTime = currentTime;
+        if (this._num !== 0 && GameManager.PLAYSTATE !== PlayState.normal) {
+            if (GameManager.ITEMTYPE == ItemType.hummer) {
+                Game.instance.hummerTarNode = this.node;
+                Game.instance.startItemEffect(this.node.position);
 
+            } else if (GameManager.ITEMTYPE == ItemType.brush) {
+                Game.instance.brushTarNode = this.node;
+                Game.instance.startItemEffect(this.node.position);
+
+            } else if (GameManager.ITEMTYPE == ItemType.change) {
+                //先记录一个数字块
+                Game.instance.changeTarNode1 = this.node;
+                GameManager.ITEMTYPE = ItemType.change_1;
+                this.playLightEffect();
+                cc.log('第一个选中')
+            } else if (GameManager.ITEMTYPE == ItemType.change_1) {
+                if (Game.instance.changeTarNode1 === this.node) {
+                    this.hideLightEffect();
+                } else {
+                    //再记录一个数字块
+                    Game.instance.changeTarNode2 = this.node;
+                    //开始换位置;
+                    Game.instance.changeEventEffect();
+                }
+            } else if (GameManager.ITEMTYPE == ItemType.regret) {
+                this.showNumber(0);
+            }
+        }
+        //默认是锤子
         //做特效
     }
 
-    showNumber(num: number, isMerge: boolean = false) {
+    showNumber(num: number, isGen: boolean = false, isMerge: boolean = false) {
         this._num = num;
 
         if (num == 0) { //白块
@@ -42,15 +75,44 @@ export default class Item extends cc.Component {
             return;
         }
 
+
         let numberAtlas = Game.instance.numberAtlas;
         this.numberSp.spriteFrame = numberAtlas.getSpriteFrame(num + "");
 
-        if (isMerge) {
-            //播放动画
-            this.numberSp.node.scale = 0.8;
+        if (isGen) {
+            this.numberSp.node.scale = 0.6;
             let action = cc.scaleTo(0.2, 1);
-            // this.numberSp.node.runAction(cc.skewBy(0.5, 10, 10));
             this.numberSp.node.runAction(action);
+        }
+
+        if (isMerge) {
+            this.numberSp.node.stopAllActions();
+            let scaAction1 = cc.scaleTo(0.15, 0.1, 1);
+            let scaAction2 = cc.scaleTo(0.15, 1, 1);
+
+            let callFun2 = cc.callFunc(() => {
+                this.playAnimEffect();
+            });
+
+            let seqAct = cc.sequence(scaAction1, scaAction2, callFun2);
+
+            this.numberSp.node.runAction(seqAct);
+        }
+    }
+
+    /**
+     * 随机一个数字  
+     * 刷子生成
+     */
+    showRandomNumber() {
+        let index = Math.floor(Math.random() * 10);
+        let num = GameManager.STATICARR[index];
+        cc.log("index-->>", index);
+        cc.log("num-->>", num);
+        if (this._num === num) {
+            this.showRandomNumber();
+        } else {
+            this.showNumber(num, false, true);
         }
     }
 
@@ -65,6 +127,46 @@ export default class Item extends cc.Component {
             this.particleNode.enabled = false;
         }, 0.5);
         // this.particleNode.
+    }
+
+    /**
+     * 播放小星星特效
+     */
+    playAnimEffect() {
+        let anim = cc.instantiate(Game.instance.animPrefab);
+        this.node.addChild(anim);
+        this.scheduleOnce(() => {
+            anim.stopAllActions();
+            anim.destroy();
+        }, 0.8);
+    }
+
+    /**
+     * 播放选中特效
+     */
+    playLightEffect() {
+        let numberAtlas = Game.instance.numberAtlas;
+        this.numberSp.spriteFrame = numberAtlas.getSpriteFrame(this._num + "_a");
+
+        //放大缩小特效
+        let scale1 = cc.scaleTo(0.6, 1.05, 1.05);
+        let scale2 = cc.scaleTo(0.6, 0.95, 0.95);
+
+        let act = cc.repeatForever(cc.sequence(scale1, scale2));
+        this._act = this.node.runAction(act);
+    }
+
+    /**
+     * 隐藏选中特效
+     */
+    hideLightEffect() {
+        //去掉换位道具的闪光效果
+        let numberAtlas = Game.instance.numberAtlas;
+        this.numberSp.spriteFrame = numberAtlas.getSpriteFrame(this._num + "");
+
+        if (this._act) {
+            this.node.stopAction(this._act);
+        }
     }
 
     /**
@@ -85,5 +187,4 @@ export default class Item extends cc.Component {
     getHideNum() {
         return this.hideNum;
     }
-
 }

@@ -1,6 +1,6 @@
 import Item from "./Item";
 import AudioMgr from "./AudioMgr";
-import GameManager, { GameState } from "./GameManager";
+import GameManager, { GameState, PlayState, ItemType } from "./GameManager";
 import HintUI, { HintUIType } from "./HintUI";
 import config from "./config";
 import GameProp from "./GameProp";
@@ -30,22 +30,6 @@ enum successType {
     success_32768 = 32768
 }
 
-enum PlayState {
-    stop,  //游戏暂停
-    useItem, //使用道具
-    normal,  //正常情况
-    dead,  //游戏死亡  可以复活
-    over,  //游戏结束
-}
-
-export enum ItemType {
-    hummer,
-    brush,
-    change,
-    regret,
-    none
-}
-
 @ccclass
 export default class Game extends cc.Component {
 
@@ -66,26 +50,15 @@ export default class Game extends cc.Component {
     // @property(cc.Label)
     // stepLab: cc.Label = null;
 
-    @property(cc.Node)
-    effectNode: cc.Node = null;
 
     @property(cc.Prefab)
     gameOverPrefab: cc.Prefab = null;
 
-    @property(cc.Prefab)
-    showItemPrefab: cc.Prefab = null;
-
     @property(cc.Node)
-    successNode: cc.Node = null;
-
-    @property(cc.Node)
-    parentSuccessNode: cc.Node = null;
+    showItemNode: cc.Node = null;
 
     @property(cc.Node)
     exitGameNode: cc.Node = null;
-
-    @property(dragonBones.ArmatureDisplay)
-    successDrag: dragonBones.ArmatureDisplay = null;
 
     @property(cc.Node)
     maskNode: cc.Node = null;
@@ -107,6 +80,20 @@ export default class Game extends cc.Component {
     @property(cc.Label)
     historyLab: cc.Label = null;
 
+    @property(dragonBones.ArmatureDisplay)
+    startEffectDrag: dragonBones.ArmatureDisplay = null;
+
+    @property(dragonBones.ArmatureDisplay)
+    successEffectDrag: dragonBones.ArmatureDisplay = null;
+
+    @property(dragonBones.ArmatureDisplay)
+    hummerEffectDrag: dragonBones.ArmatureDisplay = null;
+
+    @property(dragonBones.ArmatureDisplay)
+    brushEffectDrag: dragonBones.ArmatureDisplay = null;
+
+    @property(cc.Prefab)
+    animPrefab: cc.Prefab = null;
 
     // 最近一阶段的成功的数字   用于判断是否达成过
     _successPhase: successType = successType.success_2048;
@@ -145,8 +132,19 @@ export default class Game extends cc.Component {
     //当前特效龙骨动画的armature对象
     _effect_armature: dragonBones.Armature = null;
     _success_armature: dragonBones.Armature = null;
+    _hummer_armature: dragonBones.Armature = null;
+    _brush_armature: dragonBones.Armature = null;
 
-    _successDrag: dragonBones.ArmatureDisplay = null;
+
+    //使用锤子后点击的数字块节点
+    hummerTarNode: cc.Node = null;
+
+    //使用刷子后点击的数字块的节点
+    brushTarNode: cc.Node = null;
+
+    //互换的两个节点
+    changeTarNode1: cc.Node = null;
+    changeTarNode2: cc.Node = null;
 
     //本次是否进行过合并
     _isMerge: boolean = false;
@@ -156,13 +154,6 @@ export default class Game extends cc.Component {
 
     //点击判断
     _clickFlag: boolean = true;
-
-
-    //游戏状态
-    _gameState: PlayState = PlayState.normal;
-
-    //道具类型
-    _itemType: ItemType = ItemType.none;
 
     //合并的数组
     _mergeNode: Array<cc.Node> = new Array();
@@ -182,8 +173,6 @@ export default class Game extends cc.Component {
     onLoad() {
         GameManager.gameState = GameState.Hall
         Game._instance = this;
-        //大厅是不播放背景音乐的
-        // this._AudioMgr.playBGM("BGM.mp3");
 
         //初始化
         this.initGame();
@@ -194,10 +183,17 @@ export default class Game extends cc.Component {
         this.content.on(cc.Node.EventType.TOUCH_END, this.touchEnd, this);
         this.content.on(cc.Node.EventType.TOUCH_START, this.touchStart, this);
         this.content.on(cc.Node.EventType.TOUCH_CANCEL, this.touchCancel, this);
-        // this.node.on(cc.Node.EventType.TOUCH_MOVE, this.touchMove, this);
+
+
+        this.maskNode.on(cc.Node.EventType.TOUCH_END, () => {
+            //是否继续?
+            this.continueNode.active = true;
+            this.successEffectDrag.node.parent.active = false;
+        }, this);
 
         this.initEffect();
         this.initView();
+
     }
 
     onReturnHall() {
@@ -217,12 +213,10 @@ export default class Game extends cc.Component {
         let off = musicNode.getChildByName("off");
         if (on.active) {
             AudioMgr.setSFXVolume(0);
-            // AudioMgr.setBGMVolume(0);
             on.active = false;
             off.active = true;
         } else {
             AudioMgr.setSFXVolume(1);
-            // AudioMgr.setBGMVolume(1);
             on.active = true;
             off.active = false;
         }
@@ -230,28 +224,136 @@ export default class Game extends cc.Component {
 
     initView() {
         this.targetLab.string = this._successPhase + "";
+        this.setLabInfo();
+        this.setHistoryLab();
     }
 
     /**
-     * 初始化特效
+     * 初始化 龙骨动画特效
      */
     initEffect() {
-        this.parentSuccessNode.active = true;
-        let dragon_effect = this.effectNode.getComponent(dragonBones.ArmatureDisplay);
-        this._effect_armature = dragon_effect.armature();
+        this.hummerEffectDrag.node.active = true;
+        this.brushEffectDrag.node.active = true;
+        this.startEffectDrag.node.parent.active = true;
+        this.successEffectDrag.node.active = true;
 
-        this._successDrag = this.successNode.getComponent(dragonBones.ArmatureDisplay);
-        this._success_armature = this._successDrag.armature();
+        // 开始和后续消除次数 的特效
+        this._effect_armature = this.startEffectDrag.armature();
+        //成功达到一个阶段的特效
+        this._success_armature = this.successEffectDrag.armature();
+        //锤子特效
+        this._hummer_armature = this.hummerEffectDrag.armature();
+        //刷子特效
+        this._brush_armature = this.brushEffectDrag.armature();
 
-        this._success_armature.addEventListener(dragonBones.EventObject.COMPLETE, this.successEventHandler, this)
-        // this._success_armature.addEventListener(dragonBones.EventObject.FADE_OUT_COMPLETE, this.successEventHandler, this)
-        this.parentSuccessNode.active = false;
 
-        this.maskNode.on(cc.Node.EventType.TOUCH_END, () => {
-            //是否继续?
-            this.continueNode.active = true;
-            this.parentSuccessNode.active = false;
-        }, this)
+        this.successEffectDrag.addEventListener(dragonBones.EventObject.COMPLETE, this.successEventHandler, this);
+        this.hummerEffectDrag.addEventListener(dragonBones.EventObject.COMPLETE, this.hummerEventHandler, this);
+        this.brushEffectDrag.addEventListener(dragonBones.EventObject.COMPLETE, this.brushEventHandler, this);
+
+        this.successEffectDrag.node.parent.active = false;
+        this.hummerEffectDrag.node.active = false;
+        this.brushEffectDrag.node.active = false;
+    }
+
+    /**
+     * 刷子动画回调
+     */
+    brushEventHandler(event: cc.Event.EventCustom) {
+        cc.log('custom---', event.detail.animationState.name);
+        //刷子特效完成, 开始消除数字块;
+        if (this.brushTarNode) {
+            this.brushTarNode.getComponent(Item).showRandomNumber();
+            this.brushEffectDrag.node.active = false;
+        }
+        //结束使用道具状态;
+        GameManager.PLAYSTATE = PlayState.normal;
+        GameManager.ITEMTYPE = ItemType.none;
+    }
+
+    /**
+     * 锤子动画回调
+     * @param event 
+     */
+    hummerEventHandler(event) {
+        cc.log('custom---', event.detail.animationState.name);
+        if (this.hummerTarNode) {
+            this.hummerTarNode.getComponent(Item).showNumber(0);
+            this.hummerEffectDrag.node.active = false;
+        }
+        //结束使用道具状态;
+        GameManager.PLAYSTATE = PlayState.normal;
+        GameManager.ITEMTYPE = ItemType.none;
+    }
+
+    /**
+     * 换位道具特效
+     */
+    changeEventEffect() {
+        if (this.changeTarNode1 && this.changeTarNode2) {
+            let pos1 = this.changeTarNode1.position;
+            let pos2 = this.changeTarNode2.position;
+            let callFun1 = cc.callFunc(() => {
+                this.content.removeChild(cloneNode1);
+                cloneNode1.removeFromParent();
+                cloneNode1.destroy();
+            });
+            let callFun2 = cc.callFunc(() => {
+                this.content.removeChild(cloneNode2);
+                cloneNode2.removeFromParent();
+                cloneNode2.destroy();
+            });
+            let moveAvt1 = cc.moveTo(0.5, pos2).easing(cc.easeOut(3.0));
+            let moveAvt2 = cc.moveTo(0.5, pos1).easing(cc.easeOut(3.0));
+
+            let seqAct1 = cc.sequence(moveAvt1, callFun1);
+            let seqAct2 = cc.sequence(moveAvt2, callFun2);
+
+            let num1 = this.changeTarNode1.getComponent(Item).getNum();
+            let num2 = this.changeTarNode2.getComponent(Item).getNum();
+
+            this.changeTarNode1.getComponent(Item).showNumber(0);
+            this.changeTarNode2.getComponent(Item).showNumber(0);
+
+            let cloneNode1: cc.Node = cc.instantiate(this.squareItem);
+            cloneNode1.getComponent(Item).showNumber(num1);
+            cloneNode1.getComponent(Item).numberSp.spriteFrame = this.numberAtlas.getSpriteFrame(num1 + "_a");
+            cloneNode1.position = pos1;
+            this.content.addChild(cloneNode1);
+
+            let cloneNode2: cc.Node = cc.instantiate(this.squareItem);
+            cloneNode2.getComponent(Item).showNumber(num2);
+            cloneNode2.position = pos2;
+            this.content.addChild(cloneNode2);
+
+            cloneNode1.runAction(seqAct1);
+            cloneNode2.runAction(seqAct2);
+
+            this.scheduleOnce(() => {
+                this.changeTarNode1.getComponent(Item).showNumber(num2);
+                this.changeTarNode2.getComponent(Item).showNumber(num1);
+                this.changeTarNode1.getComponent(Item).hideLightEffect();
+                this.changeTarNode1.getComponent(Item).hideLightEffect();
+                //重置状态 
+                GameManager.PLAYSTATE = PlayState.normal;
+                GameManager.ITEMTYPE = ItemType.none;
+                this.hideMaskItem();
+            }, 0.5)
+        } else {
+            cc.log('err-->>换位节点没选完啊')
+        }
+    }
+
+    /**
+     * 停止切换特效
+     */
+    stopChangeEvent() {
+        if (this.changeTarNode1) {
+            this.changeTarNode1.getComponent(Item).hideLightEffect();
+            //重置状态
+            GameManager.PLAYSTATE = PlayState.normal;
+            GameManager.ITEMTYPE = ItemType.none;
+        }
     }
 
     /**成功龙骨动画播放回调 */
@@ -297,6 +399,43 @@ export default class Game extends cc.Component {
         }
     }
 
+
+    /**
+     *  event.getLocation()  返回的节点已经是世界坐标系下的节点,不需要额外的转换
+     * 
+     * 
+     * 处理 道具使用
+     */
+    startItemEffect(pos: cc.Vec2) {
+
+        //转换坐标系
+        let worldPos = this.content.convertToWorldSpaceAR(pos);
+        let localPos = this.brushEffectDrag.node.parent.convertToNodeSpaceAR(worldPos);
+        //使用道具
+        if (GameManager.ITEMTYPE === ItemType.hummer) {
+
+            this.hummerEffectDrag.node.active = true;
+            this._hummer_armature.animation.fadeIn('daoju1', -1, -1);
+            this.hummerEffectDrag.node.position = localPos;
+
+        } else if (GameManager.ITEMTYPE === ItemType.brush) {
+
+            this.brushEffectDrag.node.active = true;
+            this._brush_armature.animation.fadeIn('ddjshuazi', -1, -1);
+            this.brushEffectDrag.node.position = localPos;
+
+        } else if (GameManager.ITEMTYPE === ItemType.change) {
+
+        } else if (GameManager.ITEMTYPE === ItemType.regret) {
+
+        } else if (GameManager.ITEMTYPE === ItemType.none) {
+            cc.log('报错了? 状态没设置对')
+        } else {
+            cc.log('有鬼?')
+        }
+        this.hideMaskItem();
+    }
+
     /**更具当前达成的阶段分数来展示特效 */
     getEffectNameByType() {
         if (this._successPhase === 2048) {
@@ -318,7 +457,7 @@ export default class Game extends cc.Component {
    */
     showSuccessNode() {
         cc.log('showSuccessNode--')
-        this.parentSuccessNode.active = true;
+        this.successEffectDrag.node.parent.active = true;
         this._success_armature.animation.fadeIn('fenxiang1', -1, -1, 0);
 
     }
@@ -329,8 +468,6 @@ export default class Game extends cc.Component {
     setEffectNode(name: string) {
         this._effect_armature.animation.fadeIn(name, -1, -1, 0, "normal");
     }
-
-
 
     /**
      * 根据id获取特效名称
@@ -419,8 +556,6 @@ export default class Game extends cc.Component {
             this.initGrid();
         }, 0.2);
 
-        this.setLabInfo();
-        this.setHistoryLab();
     }
 
     //初始化位置 ，不用layout组件
@@ -524,7 +659,6 @@ export default class Game extends cc.Component {
      * 每次合并都会触发的事件
      */
     everyTimeMergeCallBack() {
-        cc.log(this._mergeNode);
 
         for (let i = 0; i < this._mergeNode.length; i++) {
             this._score += Number(this._mergeNode[i].name);
@@ -534,7 +668,7 @@ export default class Game extends cc.Component {
     }
 
     touchEnd(event) {
-        if (this._clickFlag && this._gameState === PlayState.normal) {
+        if (this._clickFlag && GameManager.PLAYSTATE === PlayState.normal) {
             this._clickFlag = false;
             let pos = event.getLocation()
             this._endPos = cc.v2(pos.x, pos.y);
@@ -542,21 +676,20 @@ export default class Game extends cc.Component {
             this.checkSlideDirection(this._endPos);
             this._step++;
         } else {
-            // cc.log("你点的太快了");
         }
     }
 
     touchStart(event) {
-        if (this._clickFlag && this._gameState === PlayState.normal) {
+        if (this._clickFlag && GameManager.PLAYSTATE === PlayState.normal) {
             let pos = event.getLocation()
             this._startPos = cc.v2(pos.x, pos.y);
+        } else if (this._clickFlag && GameManager.PLAYSTATE === PlayState.useItem) {
         } else {
-            // cc.log("你点的太快了");
         }
     }
 
     touchCancel(event) {
-        if (this._clickFlag && this._gameState === PlayState.normal) {
+        if (this._clickFlag && GameManager.PLAYSTATE === PlayState.normal) {
             this._clickFlag = false;
             let pos = event.getLocation()
             this._cancelPos = cc.v2(pos.x, pos.y);
@@ -564,7 +697,6 @@ export default class Game extends cc.Component {
             this.checkSlideDirection(this._cancelPos);
             this._step++;
         } else {
-            // cc.log("你点的太快了");
         }
     }
 
@@ -643,7 +775,7 @@ export default class Game extends cc.Component {
 
             //判断游戏是否该结束
             if (this.checkGameOver()) {
-                this._gameState = PlayState.over;
+                GameManager.PLAYSTATE = PlayState.over;
                 cc.log("游戏结束");
                 this.gameOver();
                 this._clickFlag = true;
@@ -1034,7 +1166,7 @@ export default class Game extends cc.Component {
         let moveAct = cc.moveTo(0.2, targetNode.position);
         cloneNode.runAction(cc.sequence(moveAct, cc.callFunc(() => {
             if (targetNode['isMerge']) {
-                targetNode.getComponent(Item).showNumber(Number(targetNode.name), true);
+                targetNode.getComponent(Item).showNumber(Number(targetNode.name), false, true);
                 targetNode['isMerge'] = false;
             } else {
                 targetNode.getComponent(Item).showNumber(Number(targetNode.name));
@@ -1101,7 +1233,7 @@ export default class Game extends cc.Component {
         this._score = 0;
         this._step = 0;
         this._clickFlag = true;
-        this._gameState = PlayState.normal;
+        GameManager.PLAYSTATE = PlayState.normal;
         this.initGame();
         this.setEffectNode('dbkaishi');
     }
@@ -1161,8 +1293,8 @@ export default class Game extends cc.Component {
      *  使用锤子道具    消除一个指定的道具
      */
     useHemmerItem(event) {
-        this._gameState = PlayState.useItem;
-        this._itemType = ItemType.hummer;
+        GameManager.PLAYSTATE = PlayState.useItem;
+        GameManager.ITEMTYPE = ItemType.hummer;
         this.useItemManage(event.currentTarget);
 
         //先判断 道具数量够不够
@@ -1178,8 +1310,8 @@ export default class Game extends cc.Component {
      * 刷子      给一个数字快随机一个数字
      */
     useBrushItem(event) {
-        this._gameState = PlayState.useItem;
-        this._itemType = ItemType.brush;
+        GameManager.PLAYSTATE = PlayState.useItem;
+        GameManager.ITEMTYPE = ItemType.brush;
         this.useItemManage(event.currentTarget);
     }
 
@@ -1187,8 +1319,8 @@ export default class Game extends cc.Component {
      * 换位工具   两个数字块相互换位
      */
     useChangeItem(event) {
-        this._gameState = PlayState.useItem;
-        this._itemType = ItemType.change;
+        GameManager.PLAYSTATE = PlayState.useItem;
+        GameManager.ITEMTYPE = ItemType.change;
         this.useItemManage(event.currentTarget);
     }
 
@@ -1196,15 +1328,21 @@ export default class Game extends cc.Component {
      * 返回上一步  返回上一步状态
      */
     useRegretItem(event) {
-        this._gameState = PlayState.useItem;
-        this._itemType = ItemType.regret;
+        GameManager.PLAYSTATE = PlayState.useItem;
+        GameManager.ITEMTYPE = ItemType.regret;
         this.useItemManage(event.currentTarget);
     }
 
 
     useItemManage(target: cc.Node) {
-        let item = cc.instantiate(this.showItemPrefab);
-        item.getComponent(GameProp).init(this._itemType, target);
-        this.uiLayer.addChild(item);
+        // let item = cc.instantiate(this.showItemNode);
+        this.showItemNode.active = true;
+        this.showItemNode.getComponent(GameProp).init(GameManager.ITEMTYPE, target);
+        // this.uiLayer.addChild(item);
+    }
+
+    //隐藏道具使用
+    hideMaskItem() {
+        this.showItemNode.active = false;
     }
 }

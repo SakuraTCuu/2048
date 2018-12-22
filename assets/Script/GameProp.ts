@@ -1,4 +1,5 @@
-import { ItemType } from "./Game";
+import GameManager, { ItemType } from "./GameManager";
+import Game from "./Game";
 
 const { ccclass, property } = cc._decorator;
 
@@ -35,13 +36,16 @@ export default class GameProp extends cc.Component {
     onClickMask() {
         //关闭道具使用
         this.node.active = false;
+        if (GameManager.ITEMTYPE == ItemType.change_1) {
+            //停止动作;
+            Game.instance.stopChangeEvent();
+        }
     }
 
     init(type: ItemType, targetNode: cc.Node) {
         let worldPos = targetNode.parent.convertToWorldSpaceAR(targetNode.position);
         let pos = this.showItemSp.node.parent.convertToNodeSpaceAR(worldPos);
         let sp = targetNode.getComponent(cc.Sprite).spriteFrame;
-        cc.log(targetNode);
         switch (type) {
             case ItemType.hummer:
                 this.showItemSp.spriteFrame = sp;
