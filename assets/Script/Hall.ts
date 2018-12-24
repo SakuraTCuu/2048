@@ -27,6 +27,9 @@ export default class Hall extends cc.Component {
     @property(cc.Sprite)
     rankingScrollView: cc.Sprite = null;
 
+    @property(cc.Node)
+    giftNode: cc.Node = null;
+
     tex: cc.Texture2D = null;
 
     onLoad() {
@@ -43,6 +46,7 @@ export default class Hall extends cc.Component {
             on.active = false;
             off.active = true;
         }
+
     }
 
     initWX() {
@@ -74,6 +78,10 @@ export default class Hall extends cc.Component {
                 }
             });
         }
+    }
+
+    onClickGiftBtn() {
+        this.giftNode.active = true;
     }
 
     onClickStart() {

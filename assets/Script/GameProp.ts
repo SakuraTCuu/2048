@@ -36,7 +36,7 @@ export default class GameProp extends cc.Component {
     onClickMask() {
         //关闭道具使用
         this.node.active = false;
-        if (GameManager.ITEMTYPE == ItemType.change_1) {
+        if (GameManager.ITEMTYPE == ItemType.change_1 || GameManager.ITEMTYPE == ItemType.change) {
             //停止动作;
             Game.instance.stopChangeEvent();
         }

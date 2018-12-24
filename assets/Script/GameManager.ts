@@ -8,7 +8,7 @@ export enum PlayState {
     stop = 1,  //游戏暂停
     useItem = 2, //使用道具
     normal = 3,  //正常情况
-    dead = 4,  //游戏死亡  可以复活
+    dead = 4,  //游戏死亡  可以复活  待复活状态
     over = 5,  //游戏结束
 }
 

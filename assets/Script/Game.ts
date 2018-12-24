@@ -50,15 +50,17 @@ export default class Game extends cc.Component {
     // @property(cc.Label)
     // stepLab: cc.Label = null;
 
-
-    @property(cc.Prefab)
-    gameOverPrefab: cc.Prefab = null;
+    @property(cc.Node)
+    gameOverNode: cc.Node = null;
 
     @property(cc.Node)
     showItemNode: cc.Node = null;
 
     @property(cc.Node)
-    exitGameNode: cc.Node = null;
+    pauseGameNode: cc.Node = null;
+
+    @property(cc.Node)
+    reliveNode: cc.Node = null;
 
     @property(cc.Node)
     maskNode: cc.Node = null;
@@ -92,8 +94,16 @@ export default class Game extends cc.Component {
     @property(dragonBones.ArmatureDisplay)
     brushEffectDrag: dragonBones.ArmatureDisplay = null;
 
+    /**========================= 特效预制体============================= */
     @property(cc.Prefab)
-    animPrefab: cc.Prefab = null;
+    mergePrefab: cc.Prefab = null;
+
+    @property(cc.Prefab)
+    hummerPrefab: cc.Prefab = null;
+
+    @property(cc.Prefab)
+    popStarPrefab: cc.Prefab = null;
+
 
     // 最近一阶段的成功的数字   用于判断是否达成过
     _successPhase: successType = successType.success_2048;
@@ -150,7 +160,7 @@ export default class Game extends cc.Component {
     _isMerge: boolean = false;
 
     //播放音效的ID
-    _audioID: number = -1;
+    _audioID: number = 0;
 
     //点击判断
     _clickFlag: boolean = true;
@@ -193,20 +203,29 @@ export default class Game extends cc.Component {
 
         this.initEffect();
         this.initView();
-
     }
 
     onReturnHall() {
         cc.director.loadScene("Hall");
     }
 
-    onClickExitBtn() {
-        this.exitGameNode.active = true;
+    onClickPauseBtn() {
+        this.pauseGameNode.active = true;
+    }
+
+    //关闭复活界面
+    onClickReliveCloseBtn() {
+        this.reliveNode.active = false;
+        this.showGameOverUI();
+    }
+
+    showReliveUI() {
+        this.reliveNode.active = true;
     }
 
     /**
-    * 音效开关
-     */
+   * 音效开关
+    */
     onClickMusic(e) {
         let musicNode: cc.Node = e.target;
         let on = musicNode.getChildByName("on");
@@ -220,6 +239,52 @@ export default class Game extends cc.Component {
             on.active = true;
             off.active = false;
         }
+    }
+
+    /**
+     * 暂停后继续游戏
+     */
+    onClickContinueGame() {
+        this.pauseGameNode.active = false;
+    }
+
+    /** 完成一阶段了 继续下一阶段 */
+    onClickContinueGameNextPhase() {
+        this.scheduleOnce(() => {
+            this.continueNode.active = false;
+            //达成条件 触发 升级
+            this.initView();
+            this.showHintUI(HintUIType.Success, '目标已更新!');
+        }, 0.1)
+    }
+
+    /**
+     * 复活  
+     * 消除2 和 4
+     */
+    onClickReliveBtn() {
+        GameManager.PLAYSTATE = PlayState.dead;
+        this.reliveNode.active = false;
+        this._clickFlag = true;
+        let len = this.content.childrenCount;
+        for (let i = 0; i < len; i++) {
+            let num = this.content.children[i].getComponent(Item).getNum();
+            if (num === 2 || num === 4) {
+                //消除
+                // this.content.children[i].getComponent(Item).showNumber(0, false, true);
+                this.content.children[i].getComponent(Item).playPopEffect();
+                this.content.children[i].getComponent(Item).playHummerEffect();
+            } else if (num !== 0) {
+
+            }
+        }
+
+        //重置游戏状态
+        this.scheduleOnce(() => {
+            GameManager.PLAYSTATE = PlayState.normal;
+            cc.log('@@', GameManager.PLAYSTATE);
+            cc.log('@@@!', GameManager.ITEMTYPE);
+        }, 1);
     }
 
     initView() {
@@ -278,7 +343,8 @@ export default class Game extends cc.Component {
     hummerEventHandler(event) {
         cc.log('custom---', event.detail.animationState.name);
         if (this.hummerTarNode) {
-            this.hummerTarNode.getComponent(Item).showNumber(0);
+            this.hummerTarNode.getComponent(Item).playHummerEffect();
+            // this.hummerTarNode.getComponent(Item).showNumber(0);
             this.hummerEffectDrag.node.active = false;
         }
         //结束使用道具状态;
@@ -353,7 +419,11 @@ export default class Game extends cc.Component {
             //重置状态
             GameManager.PLAYSTATE = PlayState.normal;
             GameManager.ITEMTYPE = ItemType.none;
+        } else {
+
         }
+        GameManager.PLAYSTATE = PlayState.normal;
+        GameManager.ITEMTYPE = ItemType.none;
     }
 
     /**成功龙骨动画播放回调 */
@@ -513,7 +583,7 @@ export default class Game extends cc.Component {
     playAudioEffect() {
         // cc.log("播放特效id---->>>", this._audioID);
         if (this._audioID > 12) {
-            this._audioID = -1;//
+            this._audioID = 0;//
             cc.log("你太牛逼了..连销12个..厉害了，从0继续吧");
             return;
         }
@@ -642,7 +712,7 @@ export default class Game extends cc.Component {
      */
     everyTimeMoveCallback() {
         //播放滑动的视频
-        AudioMgr.playSFX("move.ogg");
+        // AudioMgr.playSFX("move.ogg");
     }
 
     /**
@@ -735,7 +805,6 @@ export default class Game extends cc.Component {
                 this._direction = direction.up;
             }
         }
-
         this.slideSquare();
     }
 
@@ -756,25 +825,18 @@ export default class Game extends cc.Component {
             this.everyTimeMergeCallBack();
         } else {
             //本次没有合并成功的..音效id从开始
-            this._audioID = -1;
+            this._audioID = 0;
+            AudioMgr.playSFX("move.ogg");
         }
         this._isMerge = false;
 
-
-
         this.scheduleOnce(() => {
             //检测合并
-            // let flag = this.checkAllMerge();
-            // this.randomSqrtInNULL();
-            // cc.log("flag--->>>", flag);
-            // if (flag) {
-            //     this.slideSquare();
-            // } else {
             //随机生成 数字块
             this.randomSqrtInNULL();
 
             //判断游戏是否该结束
-            if (this.checkGameOver()) {
+            if (this.checkGameOver() && GameManager.PLAYSTATE === PlayState.normal) {
                 GameManager.PLAYSTATE = PlayState.over;
                 cc.log("游戏结束");
                 this.gameOver();
@@ -789,31 +851,21 @@ export default class Game extends cc.Component {
      * 游戏结束
      */
     gameOver() {
-        // this.gameOverNode.active = true;
-        // this.
-
         //设置分数和步数
-
         this.saveHistoryScore();
 
-        //重新开始按钮
-        let gameOver = cc.instantiate(this.gameOverPrefab);
-        this.node.addChild(gameOver);
-        // gameOver.position = cc.v2(this.node.x, gameOver.y + this.node.height);
-        //从小到大的动画
-        gameOver.scale = 0;
-        let mask = gameOver.getChildByName("mask");
-        mask.active = false;
-        gameOver.zIndex = 99;
-        let act = cc.scaleTo(0.3, 1).easing(cc.easeOut(3.0));
-        let seqAct = cc.sequence(act, cc.callFunc(() => {
-            mask.active = true;
-        }));
-        gameOver.runAction(seqAct);
+        if (CC_WECHATGAME) {
+            //微信后台保存数据
+            let score = this.getTheEndBigMergeNumber()
+            config.submitScoreToWX(score);
+        }
 
-        //微信后台保存数据
-        let score = this.getTheEndBigMergeNumber()
-        config.submitScoreToWX(score);
+        //添加新的游戏结束画面
+        this.showReliveUI();
+    }
+
+    showGameOverUI() {
+        this.gameOverNode.active = true;
     }
 
     /**
@@ -1184,7 +1236,6 @@ export default class Game extends cc.Component {
         if (Number(targetNode.name) > this._successPhase) {
             this.setTheSuccessType(Number(targetNode.name));
         }
-
     }
 
     /**
@@ -1226,6 +1277,9 @@ export default class Game extends cc.Component {
      * 重新开始游戏
      */
     reSetGame() {
+        this.gameOverNode.active = false;
+        this.pauseGameNode.active = false;
+        this.reliveNode.active = false;
         this.content.removeAllChildren();
         this._sqrt = null;
         this._sqrt2 = null;
@@ -1234,19 +1288,11 @@ export default class Game extends cc.Component {
         this._step = 0;
         this._clickFlag = true;
         GameManager.PLAYSTATE = PlayState.normal;
+        GameManager.ITEMTYPE = ItemType.none;
         this.initGame();
         this.setEffectNode('dbkaishi');
     }
 
-    /** 完成一阶段了 继续下一阶段 */
-    onClickContinueGame() {
-        this.scheduleOnce(() => {
-            this.continueNode.active = false;
-            //达成条件 触发 升级
-            this.initView();
-            this.showHintUI(HintUIType.Success, '目标已更新!');
-        }, 0.1)
-    }
 
     /**分享按钮 */
     onClickShareBtn() {

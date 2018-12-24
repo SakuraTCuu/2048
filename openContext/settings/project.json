@@ -14,7 +14,9 @@
   "design-resolution-height": 1280,
   "design-resolution-width": 720.1,
   "excluded-modules": [
+    "Mask",
     "CCSpriteDistortion",
+    "LabelOutline",
     "ParticleSystem",
     "TiledMap",
     "Spine Skeleton",
@@ -33,13 +35,16 @@
     "Animation",
     "MotionStreak",
     "Collider",
+    "Action",
+    "Audio",
     "Graphics",
     "DragonBones",
     "Physics",
     "StudioComponent",
     "RenderTexture",
     "Camera",
-    "Intersection"
+    "Intersection",
+    "Native NetWork"
   ],
   "fit-height": true,
   "fit-width": false,
@@ -52,6 +57,5 @@
     "width": 960
   },
   "use-customize-simulator": false,
-  "use-project-simulator-setting": false,
-  "start-scene": "current"
+  "use-project-simulator-setting": false
 }

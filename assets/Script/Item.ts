@@ -38,6 +38,7 @@ export default class Item extends cc.Component {
             if (GameManager.ITEMTYPE == ItemType.hummer) {
                 Game.instance.hummerTarNode = this.node;
                 Game.instance.startItemEffect(this.node.position);
+                // this.playHummerEffect();
 
             } else if (GameManager.ITEMTYPE == ItemType.brush) {
                 Game.instance.brushTarNode = this.node;
@@ -130,16 +131,42 @@ export default class Item extends cc.Component {
     }
 
     /**
-     * 播放小星星特效
+     * 播放合并后小星星特效
      */
     playAnimEffect() {
-        let anim = cc.instantiate(Game.instance.animPrefab);
+        let anim = cc.instantiate(Game.instance.mergePrefab);
         this.node.addChild(anim);
         this.scheduleOnce(() => {
             anim.stopAllActions();
             anim.destroy();
         }, 0.8);
     }
+
+    /**
+     * 播放2和4消除的特效
+     */
+    playPopEffect() {
+        let anim = cc.instantiate(Game.instance.popStarPrefab);
+        this.node.addChild(anim);
+        this.scheduleOnce(() => {
+            // anim.stopAllActions();
+            anim.destroy();
+        }, 0.6);
+    }
+
+    /**
+     * 播放 锤子敲击之后的特效
+     */
+    playHummerEffect() {
+        let hummer = cc.instantiate(Game.instance.hummerPrefab);
+        this.node.addChild(hummer);
+        this.scheduleOnce(() => {
+            // hummer.stopAllActions();
+            hummer.destroy();
+            this.showNumber(0);
+        }, 0.3);
+    }
+
 
     /**
      * 播放选中特效
