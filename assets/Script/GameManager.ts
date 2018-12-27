@@ -1,3 +1,4 @@
+import userModel from "./model/userModel";
 
 export enum GameState {
     Hall,
@@ -30,6 +31,7 @@ export default class GameManager {
     /**使用道具类型 */
     static ITEMTYPE: ItemType = ItemType.none;
 
-    static STATICARR: Array<number> = [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024]
+    static STATICARR: Array<number> = [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024];
 
+    static userInfo: userModel = null;
 }

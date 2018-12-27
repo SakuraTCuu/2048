@@ -11575,6 +11575,15 @@
     },
     "popStarPrefab": {
       "__uuid__": "059a32f3-5b04-448c-945c-2968dc48d41b"
+    },
+    "brushLab": {
+      "__id__": 81
+    },
+    "hummerLab": {
+      "__id__": 89
+    },
+    "changeLab": {
+      "__id__": 97
     }
   }
 ]

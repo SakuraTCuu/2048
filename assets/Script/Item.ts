@@ -31,10 +31,13 @@ export default class Item extends cc.Component {
      * 判断类型
      */
     onClick() {
+        if (GameManager.PLAYSTATE === PlayState.normal) {
+            return;
+        }
         let currentTime = Date.now();
         if (currentTime - this._preClickTime < 2000) { return }
         this._preClickTime = currentTime;
-        if (this._num !== 0 && GameManager.PLAYSTATE !== PlayState.normal) {
+        if (this._num !== 0) {
             if (GameManager.ITEMTYPE == ItemType.hummer) {
                 Game.instance.hummerTarNode = this.node;
                 Game.instance.startItemEffect(this.node.position);
@@ -108,8 +111,6 @@ export default class Item extends cc.Component {
     showRandomNumber() {
         let index = Math.floor(Math.random() * 10);
         let num = GameManager.STATICARR[index];
-        cc.log("index-->>", index);
-        cc.log("num-->>", num);
         if (this._num === num) {
             this.showRandomNumber();
         } else {

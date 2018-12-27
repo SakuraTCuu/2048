@@ -4,6 +4,7 @@ import GameManager, { GameState, PlayState, ItemType } from "./GameManager";
 import HintUI, { HintUIType } from "./HintUI";
 import config from "./config";
 import GameProp from "./GameProp";
+import HTTPMgr from "./net/HTTPMgr";
 
 const { ccclass, property } = cc._decorator;
 export interface locationInfo {
@@ -104,6 +105,16 @@ export default class Game extends cc.Component {
     @property(cc.Prefab)
     popStarPrefab: cc.Prefab = null;
 
+    /**========================底部道具列表节点========================================== */
+
+    @property(cc.Label)
+    brushLab: cc.Label = null;
+
+    @property(cc.Label)
+    hummerLab: cc.Label = null;
+
+    @property(cc.Label)
+    changeLab: cc.Label = null;
 
     // 最近一阶段的成功的数字   用于判断是否达成过
     _successPhase: successType = successType.success_2048;
@@ -205,6 +216,165 @@ export default class Game extends cc.Component {
         this.initView();
     }
 
+
+    /**==================================游戏初始化===================================================== */
+
+    initGame() {
+        this._sqrt = new Array();
+        this._sqrt2 = new Array();
+
+        //多维数组不能直接定义多维，只能层层定义，很多高级语言都是如此
+        for (let i = 0; i < this.squareNum; i++) {
+            this._sqrt2[i] = new Array();//多维数组层层定义
+        }
+
+        for (let i = 0; i < this.squareNum; i++) {
+            this._sqrt[i] = new Array();//多维数组层层定义
+            for (let j = 0; j < this.squareNum; j++) {
+                let item = cc.instantiate(this.squareItem);
+                item.name = i + "" + j;
+                this._sqrt[i][j] = item;
+                this._sqrt2[j][i] = item;
+                this.content.addChild(item);
+                //计算位置
+                this.initPos(item, i, j);
+            }
+        }
+
+        this.scheduleOnce(() => {
+            //随机两个存在的数字
+            this.initGrid();
+        }, 0.2);
+
+    }
+
+    //初始化位置 ，不用layout组件
+    initPos(item: cc.Node, i: number, j: number) {
+        // let x = item.width * i + item.width / 2 + (i + 1) * 20;
+        // let y = item.height * j + item.width / 2 + (j + 1) * 20;
+        let x = item.width * j + item.width / 2 + (j + 1) * 20;
+        let y = item.height * i + item.width / 2 + (i + 1) * 20 + 20;
+        item.position = cc.v2(x, -y);
+    }
+
+    initGrid() {
+        let location1 = this.randomLocation();
+        let location2 = this.randomLocation();
+        let grid1 = this.randomNumber();
+        let grid2 = this.randomNumber();
+
+        //获取随机到的两个数的节点
+        let item1 = this.content.getChildByName(location1.l + "" + location1.r);
+        let item2 = this.content.getChildByName(location2.l + "" + location2.r);
+        item1.getComponent(Item).showNumber(grid1, true);
+        item2.getComponent(Item).showNumber(grid2, true);
+
+        // let item0 = this.content.getChildByName("00");
+        // let item1 = this.content.getChildByName("01");
+        // let item2 = this.content.getChildByName("02");
+        // let item3 = this.content.getChildByName("03");
+        // let item10 = this.content.getChildByName("10");
+        // let item11 = this.content.getChildByName("11");
+        // let item12 = this.content.getChildByName("12");
+        // let item13 = this.content.getChildByName("13");
+        // let item20 = this.content.getChildByName("20");
+        // let item21 = this.content.getChildByName("21");
+        // let item22 = this.content.getChildByName("22");
+        // let item23 = this.content.getChildByName("23");
+        // let item30 = this.content.getChildByName("30");
+        // let item31 = this.content.getChildByName("31");
+        // let item32 = this.content.getChildByName("32");
+        // let item33 = this.content.getChildByName("33");
+        // item0.getComponent(Item).showNumber(1024);
+        // item1.getComponent(Item).showNumber(1024);
+        // item2.getComponent(Item).showNumber(1024);
+        // item3.getComponent(Item).showNumber(1024);
+        // item10.getComponent(Item).showNumber(8192);
+        // item11.getComponent(Item).showNumber(8192);
+        // item12.getComponent(Item).showNumber(8192);
+        // item13.getComponent(Item).showNumber(1024);
+        // item20.getComponent(Item).showNumber(1024);
+        // item21.getComponent(Item).showNumber(1024);
+        // item22.getComponent(Item).showNumber(1024);
+        // item23.getComponent(Item).showNumber(1024);
+        // item30.getComponent(Item).showNumber(1024);
+        // item31.getComponent(Item).showNumber(1024);
+        // item32.getComponent(Item).showNumber(1024);
+        // item33.getComponent(Item).showNumber(1024);
+    }
+
+    initView() {
+        this.targetLab.string = this._successPhase + "";
+        this.setLabInfo();
+        this.setHistoryLab();
+        this.initBottomItem();
+    }
+
+    /**
+     * 初始化底部道具列表
+     */
+    initBottomItem() {
+        let userInfo = GameManager.userInfo;
+        this.brushLab.string = userInfo.brush + "";
+        this.hummerLab.string = userInfo.hummer + "";
+        this.changeLab.string = userInfo.change + "";
+    }
+
+    /**
+    * 设置面板信息
+    */
+    setLabInfo() {
+        this.currentLab.string = this._score + "";
+        // this.stepLab.string = this._step + "";
+    }
+
+    /**
+     * 设置历史信息
+     */
+    setHistoryLab() {
+        this._historyScore = cc.sys.localStorage.getItem('score');
+        this.historyLab.string = this._historyScore ? this._historyScore : '0';
+    }
+
+    //保存历史信息
+    saveHistoryScore() {
+        //当  当前分大于历史成绩才触发
+        if (this._score > Number(this._historyScore)) {
+            cc.sys.localStorage.setItem('score', this._score);
+        }
+    }
+
+    /**
+     * 初始化 龙骨动画特效
+     */
+    initEffect() {
+        this.hummerEffectDrag.node.active = true;
+        this.brushEffectDrag.node.active = true;
+        this.startEffectDrag.node.parent.active = true;
+        this.successEffectDrag.node.parent.active = true;
+
+        // 开始和后续消除次数 的特效
+        this._effect_armature = this.startEffectDrag.armature();
+        //成功达到一个阶段的特效
+        this._success_armature = this.successEffectDrag.armature();
+        //锤子特效
+        this._hummer_armature = this.hummerEffectDrag.armature();
+        //刷子特效
+        this._brush_armature = this.brushEffectDrag.armature();
+
+
+        this.successEffectDrag.addEventListener(dragonBones.EventObject.COMPLETE, this.successEventHandler, this);
+        this.hummerEffectDrag.addEventListener(dragonBones.EventObject.COMPLETE, this.hummerEventHandler, this);
+        this.brushEffectDrag.addEventListener(dragonBones.EventObject.COMPLETE, this.brushEventHandler, this);
+
+        this.successEffectDrag.node.parent.active = false;
+        this.hummerEffectDrag.node.active = false;
+        this.brushEffectDrag.node.active = false;
+    }
+
+
+
+    /**==================================事件 函数===================================================== */
     onReturnHall() {
         cc.director.loadScene("Hall");
     }
@@ -271,7 +441,6 @@ export default class Game extends cc.Component {
             let num = this.content.children[i].getComponent(Item).getNum();
             if (num === 2 || num === 4) {
                 //消除
-                // this.content.children[i].getComponent(Item).showNumber(0, false, true);
                 this.content.children[i].getComponent(Item).playPopEffect();
                 this.content.children[i].getComponent(Item).playHummerEffect();
             } else if (num !== 0) {
@@ -282,44 +451,35 @@ export default class Game extends cc.Component {
         //重置游戏状态
         this.scheduleOnce(() => {
             GameManager.PLAYSTATE = PlayState.normal;
-            cc.log('@@', GameManager.PLAYSTATE);
-            cc.log('@@@!', GameManager.ITEMTYPE);
+            // cc.log('@@', GameManager.PLAYSTATE);
+            // cc.log('@@@!', GameManager.ITEMTYPE);
         }, 1);
     }
 
-    initView() {
-        this.targetLab.string = this._successPhase + "";
-        this.setLabInfo();
-        this.setHistoryLab();
+
+
+    /**分享按钮 */
+    onClickShareBtn() {
+        if (cc.sys.platform === cc.sys.WECHAT_GAME) {
+            //微信小游戏  分享
+            wx.shareAppMessage({
+                title: '来看看谁的得分最高!',
+                imageUrl: config.shareImg_url,
+                success: () => {
+                    console.log('转发成功!');
+                    this.showHintUI(HintUIType.Success, "转发成功,多谢你的支持!");
+                },
+                fail(res) {
+                    console.log('转发失败--->>', res);
+                    this.showHintUI(HintUIType.Failure, "转发失败!");
+                }
+            })
+        } else {
+            this.showHintUI(HintUIType.Failure, "该平台不支持分享!");
+        }
     }
 
-    /**
-     * 初始化 龙骨动画特效
-     */
-    initEffect() {
-        this.hummerEffectDrag.node.active = true;
-        this.brushEffectDrag.node.active = true;
-        this.startEffectDrag.node.parent.active = true;
-        this.successEffectDrag.node.active = true;
-
-        // 开始和后续消除次数 的特效
-        this._effect_armature = this.startEffectDrag.armature();
-        //成功达到一个阶段的特效
-        this._success_armature = this.successEffectDrag.armature();
-        //锤子特效
-        this._hummer_armature = this.hummerEffectDrag.armature();
-        //刷子特效
-        this._brush_armature = this.brushEffectDrag.armature();
-
-
-        this.successEffectDrag.addEventListener(dragonBones.EventObject.COMPLETE, this.successEventHandler, this);
-        this.hummerEffectDrag.addEventListener(dragonBones.EventObject.COMPLETE, this.hummerEventHandler, this);
-        this.brushEffectDrag.addEventListener(dragonBones.EventObject.COMPLETE, this.brushEventHandler, this);
-
-        this.successEffectDrag.node.parent.active = false;
-        this.hummerEffectDrag.node.active = false;
-        this.brushEffectDrag.node.active = false;
-    }
+    /**==================================特效处理===================================================== */
 
     /**
      * 刷子动画回调
@@ -334,6 +494,9 @@ export default class Game extends cc.Component {
         //结束使用道具状态;
         GameManager.PLAYSTATE = PlayState.normal;
         GameManager.ITEMTYPE = ItemType.none;
+
+        //触发 道具计算
+        this.calcUserItem(ItemType.brush);
     }
 
     /**
@@ -344,12 +507,14 @@ export default class Game extends cc.Component {
         cc.log('custom---', event.detail.animationState.name);
         if (this.hummerTarNode) {
             this.hummerTarNode.getComponent(Item).playHummerEffect();
-            // this.hummerTarNode.getComponent(Item).showNumber(0);
             this.hummerEffectDrag.node.active = false;
         }
         //结束使用道具状态;
         GameManager.PLAYSTATE = PlayState.normal;
         GameManager.ITEMTYPE = ItemType.none;
+
+        //
+        this.calcUserItem(ItemType.hummer);
     }
 
     /**
@@ -404,6 +569,7 @@ export default class Game extends cc.Component {
                 GameManager.PLAYSTATE = PlayState.normal;
                 GameManager.ITEMTYPE = ItemType.none;
                 this.hideMaskItem();
+                this.calcUserItem(ItemType.change);
             }, 0.5)
         } else {
             cc.log('err-->>换位节点没选完啊')
@@ -598,114 +764,7 @@ export default class Game extends cc.Component {
         this._mergeStep++;
     }
 
-    initGame() {
-        this._sqrt = new Array();
-        this._sqrt2 = new Array();
-
-        //多维数组不能直接定义多维，只能层层定义，很多高级语言都是如此
-        for (let i = 0; i < this.squareNum; i++) {
-            this._sqrt2[i] = new Array();//多维数组层层定义
-        }
-
-        for (let i = 0; i < this.squareNum; i++) {
-            this._sqrt[i] = new Array();//多维数组层层定义
-            for (let j = 0; j < this.squareNum; j++) {
-                let item = cc.instantiate(this.squareItem);
-                item.name = i + "" + j;
-                // item.getComponent(Item).showNumber(2);
-                this._sqrt[i][j] = item;
-                this._sqrt2[j][i] = item;
-                this.content.addChild(item);
-                //计算位置
-                this.initPos(item, i, j);
-            }
-        }
-
-        this.scheduleOnce(() => {
-            //随机两个存在的数字
-            this.initGrid();
-        }, 0.2);
-
-    }
-
-    //初始化位置 ，不用layout组件
-    initPos(item: cc.Node, i: number, j: number) {
-        // let x = item.width * i + item.width / 2 + (i + 1) * 20;
-        // let y = item.height * j + item.width / 2 + (j + 1) * 20;
-        let x = item.width * j + item.width / 2 + (j + 1) * 20;
-        let y = item.height * i + item.width / 2 + (i + 1) * 20 + 20;
-        item.position = cc.v2(x, -y);
-    }
-
-    initGrid() {
-        let location1 = this.randomLocation();
-        let location2 = this.randomLocation();
-        let grid1 = this.randomNumber();
-        let grid2 = this.randomNumber();
-
-        //获取随机到的两个数的节点
-        let item1 = this.content.getChildByName(location1.l + "" + location1.r);
-        let item2 = this.content.getChildByName(location2.l + "" + location2.r);
-        item1.getComponent(Item).showNumber(grid1, true);
-        item2.getComponent(Item).showNumber(grid2, true);
-
-        // let item0 = this.content.getChildByName("00");
-        // let item1 = this.content.getChildByName("01");
-        // let item2 = this.content.getChildByName("02");
-        // let item3 = this.content.getChildByName("03");
-        // let item10 = this.content.getChildByName("10");
-        // let item11 = this.content.getChildByName("11");
-        // let item12 = this.content.getChildByName("12");
-        // let item13 = this.content.getChildByName("13");
-        // let item20 = this.content.getChildByName("20");
-        // let item21 = this.content.getChildByName("21");
-        // let item22 = this.content.getChildByName("22");
-        // let item23 = this.content.getChildByName("23");
-        // let item30 = this.content.getChildByName("30");
-        // let item31 = this.content.getChildByName("31");
-        // let item32 = this.content.getChildByName("32");
-        // let item33 = this.content.getChildByName("33");
-        // item0.getComponent(Item).showNumber(1024);
-        // item1.getComponent(Item).showNumber(1024);
-        // item2.getComponent(Item).showNumber(1024);
-        // item3.getComponent(Item).showNumber(1024);
-        // item10.getComponent(Item).showNumber(8192);
-        // item11.getComponent(Item).showNumber(8192);
-        // item12.getComponent(Item).showNumber(8192);
-        // item13.getComponent(Item).showNumber(1024);
-        // item20.getComponent(Item).showNumber(1024);
-        // item21.getComponent(Item).showNumber(1024);
-        // item22.getComponent(Item).showNumber(1024);
-        // item23.getComponent(Item).showNumber(1024);
-        // item30.getComponent(Item).showNumber(1024);
-        // item31.getComponent(Item).showNumber(1024);
-        // item32.getComponent(Item).showNumber(1024);
-        // item33.getComponent(Item).showNumber(1024);
-    }
-
-    /**
-     * 设置面板信息
-     */
-    setLabInfo() {
-        this.currentLab.string = this._score + "";
-        // this.stepLab.string = this._step + "";
-    }
-
-    /**
-     * 设置历史信息
-     */
-    setHistoryLab() {
-        this._historyScore = cc.sys.localStorage.getItem('score');
-        this.historyLab.string = this._historyScore ? this._historyScore : '0';
-    }
-
-    //保存历史信息
-    saveHistoryScore() {
-        //当  当前分大于历史成绩才触发
-        if (this._score > Number(this._historyScore)) {
-            cc.sys.localStorage.setItem('score', this._score);
-        }
-    }
+    /**==================================触摸事件 及游戏主循环逻辑=============================== */
 
     /**
      * 每一次移动之前都会触发的事件
@@ -913,6 +972,7 @@ export default class Game extends cc.Component {
 
     /**
    * 将所有块往一个方向移动
+   * 并检查合并  动作等
    */
     moveSqrt() {
         for (let i = 0; i < this.squareNum; i++) {
@@ -953,6 +1013,7 @@ export default class Game extends cc.Component {
             }
         }
 
+        //合并的个数  这个值很关键
         let index = 0;
         //从左0开始依次把数字块 按顺序排
         //根据方向排列
@@ -1021,46 +1082,6 @@ export default class Game extends cc.Component {
             }
         }
     }
-
-    //检测所有的合并项
-    // checkAllMerge() {
-    //     let flag = false;
-    //     //排完序后  在检测 相同数字合并
-    //     for (let i = 0; i < this.squareNum; i++) {
-    //         for (let j = 0; j < this.squareNum; j++) {
-    //             if (this._direction == direction.left) {
-    //                 if (j < this.squareNum - 1) {
-    //                     let isModify = this.checkTwoMerge(this._sqrt[i][j], this._sqrt[i][j + 1]);
-    //                     if (isModify) {
-    //                         flag = true;
-    //                     }
-    //                 }
-    //             } else if (this._direction == direction.right) {
-    //                 if (j < this.squareNum - 1) {
-    //                     let isModify = this.checkTwoMerge(this._sqrt[i][this.squareNum - j - 1], this._sqrt[i][this.squareNum - j - 2]);
-    //                     if (isModify) {
-    //                         flag = true;
-    //                     }
-    //                 }
-    //             } else if (this._direction == direction.up) {
-    //                 if (j < this.squareNum - 1) {
-    //                     let isModify = this.checkTwoMerge(this._sqrt2[i][j], this._sqrt2[i][j + 1]);
-    //                     if (isModify) {
-    //                         flag = true;
-    //                     }
-    //                 }
-    //             } else if (this._direction == direction.down) {
-    //                 if (j < this.squareNum - 1) {
-    //                     let isModify = this.checkTwoMerge(this._sqrt2[i][this.squareNum - j - 1], this._sqrt2[i][this.squareNum - j - 2]);
-    //                     if (isModify) {
-    //                         flag = true;
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //     }
-    //     return flag;
-    // }
 
     checkGameOverAllMerge() {
         //排完序后  在检测 相同数字合并
@@ -1159,61 +1180,22 @@ export default class Game extends cc.Component {
         return false;
     }
 
-    /**
-     * 检测两个合并   能合并就合并
-     */
-    // checkTwoMerge(one: cc.Node, two: cc.Node): boolean {
-    //     let item1 = one.getComponent(Item);
-    //     let item2 = two.getComponent(Item);
-
-    //     let oneFlag = item1.isNum();
-    //     let twoFlag = item2.isNum();
-
-    //     if (oneFlag && twoFlag) {
-    //         let num1 = item1.getNum();
-    //         let num2 = item2.getNum();
-    //         if (num1 == num2) {
-    //             //合并两个
-    //             item1.showNumber(num1 * 2);
-    //             item2.showNumber(0);
-    //             // let cloneNode: cc.Node = cc.instantiate(this.squareItem);
-    //             // cloneNode.getComponent(Item).showNumber(num2);
-    //             // cloneNode.position = two.position;
-    //             // cloneNode.name = num2 + "";
-    //             two.name = num2 * 2 + "";
-    //             //进行飞行动作
-    //             this._score += num1;
-    //             cc.log("合并两个--->>>");
-    //             item1.playParticle();
-    //             return true;
-    //         }
-    //     } else if (!oneFlag && twoFlag) {
-    //         let num = item2.getNum();
-    //         item1.showNumber(num);
-    //         item2.showNumber(0);
-    //         return true;
-    //     } else {
-    //         // this._isContinue = false;
-    //         return false;
-    //     }
-    //     return false;
-    // }
 
     /**
      * move动作
      */
     positionMoveAction(oldNode: cc.Node, targetNode: cc.Node, num) {
+        // 先判断是否需要移动
+        if (oldNode === targetNode && !targetNode['isMerge']) {
+            return;
+            //说明不需要移动.直接return
+        }
+
         oldNode.getComponent(Item).showNumber(0);
         let cloneNode: cc.Node = cc.instantiate(this.squareItem);
         cloneNode.getComponent(Item).showNumber(num);
         cloneNode.position = oldNode.position;
         this.content.addChild(cloneNode);
-        // let runTime;
-        // if (this._slide == slideDirection.LeftRight) {
-        //     runTime = Math.floor(Math.abs(oldNode.x - targetNode.x) / cloneNode.height) * 0.1;
-        // } else {
-        //     runTime = Math.floor(Math.abs(oldNode.y - targetNode.y) / cloneNode.height) * 0.1;
-        // }
 
         let moveAct = cc.moveTo(0.2, targetNode.position);
         cloneNode.runAction(cc.sequence(moveAct, cc.callFunc(() => {
@@ -1237,6 +1219,8 @@ export default class Game extends cc.Component {
             this.setTheSuccessType(Number(targetNode.name));
         }
     }
+
+    /**==================================功能函数=============================== */
 
     /**
      * 通过类型获取分数
@@ -1293,28 +1277,6 @@ export default class Game extends cc.Component {
         this.setEffectNode('dbkaishi');
     }
 
-
-    /**分享按钮 */
-    onClickShareBtn() {
-        if (cc.sys.platform === cc.sys.WECHAT_GAME) {
-            //微信小游戏  分享
-            wx.shareAppMessage({
-                title: '来看看谁的得分最高!',
-                imageUrl: config.shareImg_url,
-                success: () => {
-                    console.log('转发成功!');
-                    this.showHintUI(HintUIType.Success, "转发成功,多谢你的支持!");
-                },
-                fail(res) {
-                    console.log('转发失败--->>', res);
-                    this.showHintUI(HintUIType.Failure, "转发失败!");
-                }
-            })
-        } else {
-            this.showHintUI(HintUIType.Failure, "该平台不支持分享!");
-        }
-    }
-
     /**
     * 大厅信息提示 框
     * @param hintUIType 
@@ -1334,11 +1296,15 @@ export default class Game extends cc.Component {
         cc.director.loadScene("main");
     }
 
-    //------------------------------------------------------Tools Methods---------------------------------
+    /**---------------------------------------------------道具使用---------------------------------*/
     /**
      *  使用锤子道具    消除一个指定的道具
      */
     useHemmerItem(event) {
+        if (!this.judgeItemEnough(ItemType.hummer)) {
+            this.showHintUI(HintUIType.Failure, '道具不足');
+            return
+        }
         GameManager.PLAYSTATE = PlayState.useItem;
         GameManager.ITEMTYPE = ItemType.hummer;
         this.useItemManage(event.currentTarget);
@@ -1356,6 +1322,10 @@ export default class Game extends cc.Component {
      * 刷子      给一个数字快随机一个数字
      */
     useBrushItem(event) {
+        if (!this.judgeItemEnough(ItemType.brush)) {
+            this.showHintUI(HintUIType.Failure, '道具不足');
+            return
+        }
         GameManager.PLAYSTATE = PlayState.useItem;
         GameManager.ITEMTYPE = ItemType.brush;
         this.useItemManage(event.currentTarget);
@@ -1365,6 +1335,10 @@ export default class Game extends cc.Component {
      * 换位工具   两个数字块相互换位
      */
     useChangeItem(event) {
+        if (!this.judgeItemEnough(ItemType.change)) {
+            this.showHintUI(HintUIType.Failure, '道具不足');
+            return
+        }
         GameManager.PLAYSTATE = PlayState.useItem;
         GameManager.ITEMTYPE = ItemType.change;
         this.useItemManage(event.currentTarget);
@@ -1379,7 +1353,6 @@ export default class Game extends cc.Component {
         this.useItemManage(event.currentTarget);
     }
 
-
     useItemManage(target: cc.Node) {
         // let item = cc.instantiate(this.showItemNode);
         this.showItemNode.active = true;
@@ -1390,5 +1363,59 @@ export default class Game extends cc.Component {
     //隐藏道具使用
     hideMaskItem() {
         this.showItemNode.active = false;
+    }
+
+    /**
+     * 道具使用后 给服务器发消息
+     */
+    calcUserItem(type: ItemType) {
+        cc.log("使用了道具");
+        let userInfo = GameManager.userInfo;
+        //前端扣除 然后再给服务器发消息
+        if (type === ItemType.hummer) {
+            userInfo.hummer -= 1;
+            if (userInfo.hummer < 0) {
+                userInfo.hummer = 0;
+                cc.log('err-->>>锤子道具数量小于零');
+            }
+        } else if (type === ItemType.brush) {
+            userInfo.brush -= 1;
+            if (userInfo.brush < 0) {
+                userInfo.brush = 0;
+                cc.log('err-->>>刷子道具数量小于零');
+            }
+        } else if (type === ItemType.change) {
+            userInfo.change -= 1;
+            if (userInfo.change < 0) {
+                userInfo.change = 0;
+                cc.log('err-->>>换位道具数量小于零');
+            }
+        }
+        //更新界面展示
+        this.initBottomItem();
+
+        // let param = {
+        //     itemType: type
+        // }
+
+        // HTTPMgr.post('userItem', param).then((res) => {
+
+        // }).catch((err) => {
+
+        // });
+    }
+
+    /**
+     * 判断道具是否足够
+     */
+    judgeItemEnough(type: ItemType) {
+        let userInfo = GameManager.userInfo;
+        if (type === ItemType.brush) {
+            return userInfo.brush >= 1;
+        } else if (type === ItemType.hummer) {
+            return userInfo.hummer >= 1;
+        } else if (type === ItemType.change) {
+            return userInfo.change >= 1;
+        }
     }
 }

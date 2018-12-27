@@ -3,6 +3,8 @@ import GameManager, { GameState } from "./GameManager";
 import GameUtils from "./GameUtils";
 import HintUI, { HintUIType } from "./HintUI";
 import config from "./config";
+import HTTPMgr from "./net/HTTPMgr";
+import userModel from "./model/userModel";
 
 const { ccclass, property } = cc._decorator;
 
@@ -30,15 +32,37 @@ export default class Hall extends cc.Component {
     @property(cc.Node)
     giftNode: cc.Node = null;
 
+    // @property(cc.Node)
+    // wxLoginNode: cc.Node = null;
+
+    @property(cc.Node)
+    AuthorizeBtnNode: cc.Node = null;
+
     tex: cc.Texture2D = null;
 
+    _wxCode: string = null;
+
+    //是否已经授权
+    _auth: boolean = false;
+
     onLoad() {
+        // let code = {
+        //     code: 'xsxxxxxxxxxxx'
+        // };
+        // HTTPMgr.post('wxCode', code).then((res) => {
+        //     console.log(res);
+        // }).catch((err) => {
+        //     console.log(err);
+        // });
+
         GameManager.gameState = GameState.Hall
         AudioMgr.init();
         AudioMgr.playBGM("BGM.mp3");
 
         this.initWX();
-
+        // if (!CC_WECHATGAME) {
+        this.initUserInfo();
+        // }
         //设置音效状态
         if (AudioMgr.bgmVolume == 0) {
             let on = this.musicNode.getChildByName("on");
@@ -46,12 +70,23 @@ export default class Hall extends cc.Component {
             on.active = false;
             off.active = true;
         }
+    }
 
+    initUserInfo() {
+        let user: userModel = {
+            userName: 'other',
+            userId: 'xxxxxxx',
+            hummer: 2,
+            brush: 2,
+            change: 2
+        }
+        GameManager.userInfo = user;
     }
 
     initWX() {
         let self = this;
         if (CC_WECHATGAME) {
+            // this.initWXLogin();
             window['wx'].showShareMenu({ withShareTicket: true });//设置分享按钮，方便获取群id展示群排行榜
             this.tex = new cc.Texture2D();
             window['sharedCanvas'].width = 720;
@@ -80,11 +115,41 @@ export default class Hall extends cc.Component {
         }
     }
 
+    initWXLogin() {
+        // 登录
+        wx.login({
+            success: res => {
+                this._wxCode = res.code;
+            }
+        });
+
+        // let userInfo = wx.getStorageSync('userInfo');
+        // if (userInfo) {
+        //     //已经有userId了
+        //     GameManager.userInfo.userId = userInfo['userId'];
+        // } else {
+        //     //没有
+        // }
+        // wx.getSetting({
+        //     success: (res) => {
+        //         console.log('是否授权', res.authSetting['scope.userInfo'] !== undefined);
+        //         this._auth = res.authSetting['scope.userInfo'] !== undefined
+        //         if (this._auth) {
+        //             //获取用户信息
+        //         } else {
+        //             // this.wxLoginNode.active = true;
+        //             this.createAuthorizeBtn(this.AuthorizeBtnNode);
+        //         }
+        //     }
+        // });
+        this.createAuthorizeBtn(this.AuthorizeBtnNode);
+    }
+
     onClickGiftBtn() {
         this.giftNode.active = true;
     }
 
-    onClickStart() {
+    startGame() {
         this.hallNode.active = false;
         this.loadingNode.active = true;
         cc.director.preloadScene("main", () => {
@@ -93,6 +158,25 @@ export default class Hall extends cc.Component {
                 cc.director.loadScene("main");
             }, 2.5);
         });
+    }
+
+    onClickStart() {
+        // this.hallNode.active = false;
+        // this.loadingNode.active = true;
+        // cc.director.preloadScene("main", () => {
+        //     this.scheduleOnce(() => {
+        //         AudioMgr.StopBGM();
+        //         cc.director.loadScene("main");
+        //     }, 2.5);
+        // });
+        // if (CC_WECHATGAME) {
+        //     if (this._auth) {
+        //         this.startGame();
+        //     }
+        // } else {
+        //     this.startGame();
+        // }
+        this.startGame();
     }
 
     /**
@@ -232,5 +316,70 @@ export default class Hall extends cc.Component {
         }
     }
 
+    createAuthorizeBtn(btnNode: cc.Node) {
+        let btnSize = cc.size(btnNode.width + 10, btnNode.height + 10);
+        let frameSize = cc.view.getFrameSize();
+        let winSize = cc.director.getWinSize();
+        // console.log("winSize: ",winSize);
+        // console.log("frameSize: ",frameSize);
+        //适配不同机型来创建微信授权按钮
+        let left = (winSize.width * 0.5 + btnNode.x - btnSize.width * 0.5) / winSize.width * frameSize.width;
+        let top = (winSize.height * 0.5 - btnNode.y - btnSize.height * 0.5) / winSize.height * frameSize.height;
+        let width = btnSize.width / winSize.width * frameSize.width;
+        let height = btnSize.height / winSize.height * frameSize.height;
+        // console.log("button pos: ",cc.v2(left,top));
+        // console.log("button size: ",cc.size(width,height));
+        let btnAuthorize = wx.createUserInfoButton({
+            type: 'text',
+            text: '',
+            style: {
+                left: left,
+                top: top,
+                width: width,
+                height: height,
+                lineHeight: 0,
+                backgroundColor: '',
+                color: '#ffffff',
+                textAlign: 'center',
+                fontSize: 16,
+                borderRadius: 4
+            }
+        })
 
+        btnAuthorize.onTap((uinfo) => {
+            console.log("onTap uinfo: ", uinfo);
+            if (uinfo.userInfo) {
+                console.log("wxLogin auth success");
+
+                let iv = uinfo.iv;
+                let encryptedData = uinfo.encryptedData;
+                let userName = uinfo.userInfo.nickName;
+
+                let param = {
+                    userName: userName,
+                    iv: iv,
+                    encryptedData: encryptedData,
+                    code: this._wxCode
+                }
+
+                //把code 发送到服务器
+                if (this._wxCode) {
+                    HTTPMgr.post('wxCode', param).then((res) => {
+                        console.log(res);
+                        GameManager.userInfo = res['data'];
+                        this.showHintUI(HintUIType.Success, "登录成功");
+                        wx.setStorageSync('userInfo', res['data']);
+                        this.startGame();
+                    }).catch((err) => {
+                        console.log("登录失败-->>>", err);
+                        this.showHintUI(HintUIType.Success, "登录失败");
+                    });
+                }
+            } else {
+                console.log("wxLogin auth fail");
+                // wx.showToast({ title: "授权失败" });
+                this.showHintUI(HintUIType.Failure, "授权失败");
+            }
+        });
+    }
 }
