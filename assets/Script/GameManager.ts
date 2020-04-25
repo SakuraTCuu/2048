@@ -1,4 +1,5 @@
 import userModel from "./model/userModel";
+import VideoAd from "./VideoAd";
 
 export enum GameState {
     Hall,
@@ -34,4 +35,10 @@ export default class GameManager {
     static STATICARR: Array<number> = [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024];
 
     static userInfo: userModel = null;
+
+    // static pinus: any = window['pinus'];
+
+    // static NETSTATE: boolean = false;
+
+    static VIDEOAD  = VideoAd.instance;
 }

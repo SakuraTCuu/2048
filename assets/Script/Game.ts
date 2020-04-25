@@ -74,6 +74,10 @@ export default class Game extends cc.Component {
     @property(cc.Node)
     hintUINode: cc.Node = null;
 
+    //获取道具面板
+    @property(cc.Node)
+    getItemView: cc.Node = null;
+
     @property(cc.Label)
     targetLab: cc.Label = null;
 
@@ -115,6 +119,7 @@ export default class Game extends cc.Component {
 
     @property(cc.Label)
     changeLab: cc.Label = null;
+
 
     // 最近一阶段的成功的数字   用于判断是否达成过
     _successPhase: successType = successType.success_2048;
@@ -389,6 +394,10 @@ export default class Game extends cc.Component {
         this.showGameOverUI();
     }
 
+    onClickLookVideoClose() {
+        this.getItemView.active = false;
+    }
+
     showReliveUI() {
         this.reliveNode.active = true;
     }
@@ -428,11 +437,139 @@ export default class Game extends cc.Component {
         }, 0.1)
     }
 
+    // /**
+    //  * 复活  
+    //  * 消除2 和 4
+    //  */
+    // onClickReliveBtn() {
+    //     GameManager.PLAYSTATE = PlayState.dead;
+    //     this.reliveNode.active = false;
+    //     this._clickFlag = true;
+    //     let len = this.content.childrenCount;
+    //     for (let i = 0; i < len; i++) {
+    //         let num = this.content.children[i].getComponent(Item).getNum();
+    //         if (num === 2 || num === 4) {
+    //             //消除
+    //             this.content.children[i].getComponent(Item).playPopEffect();
+    //             this.content.children[i].getComponent(Item).playHummerEffect();
+    //         } else if (num !== 0) {
+
+    //         }
+    //     }
+
+    //     //重置游戏状态
+    //     this.scheduleOnce(() => {
+    //         GameManager.PLAYSTATE = PlayState.normal;
+    //         // cc.log('@@', GameManager.PLAYSTATE);
+    //         // cc.log('@@@!', GameManager.ITEMTYPE);
+    //     }, 1);
+    // }
+
     /**
      * 复活  
      * 消除2 和 4
      */
     onClickReliveBtn() {
+        //弹出广告的
+        let videoAd = GameManager.VIDEOAD.getRewardedVideoAd();
+
+        videoAd.load()
+
+        // 用户触发广告后，显示激励视频广告
+        videoAd.show().catch(() => {
+            // 失败重试
+            videoAd.load()
+                .then(() => videoAd.show())
+                .catch(err => {
+                    console.log('激励视频 广告显示失败')
+                    wx.showToast('激励视频 广告显示失败')
+                })
+        })
+
+
+        //捕捉错误
+        videoAd.onError(err => {
+            console.log(err);
+            wx.showToast("今日广告已经看完了！明日再来吧");
+        })
+
+        //关闭视频的回调函数
+        videoAd.onClose(res => {
+            // 用户点击了【关闭广告】按钮
+            // 小于 2.1.0 的基础库版本，res 是一个 undefined
+            console.log(res)
+            if (res && res.isEnded || res === undefined) {
+                // 正常播放结束，可以下发游戏奖励  初始化下一个广告
+                GameManager.VIDEOAD.getRewardedVideoAd();
+                //消除2和4
+                if (true) {
+                    this.clear2Or4();
+                }
+            } else {
+                wx.showToast('您的视频还没看完，无法获得奖励');
+                // 播放中途退出，不下发游戏奖励
+                //退出就结束游戏
+                this.showGameOverUI();
+            }
+        })
+    }
+
+    //观看广告
+    onClickVideoLook() {
+        //弹出广告的
+        let videoAd = GameManager.VIDEOAD.getRewardedVideoAd();
+
+        videoAd.load()
+
+        // 用户触发广告后，显示激励视频广告
+        videoAd.show().catch(() => {
+            // 失败重试
+            videoAd.load()
+                .then(() => videoAd.show())
+                .catch(err => {
+                    console.log('激励视频 广告显示失败')
+                    wx.showToast('激励视频 广告显示失败')
+                })
+        })
+
+
+        //捕捉错误
+        videoAd.onError(err => {
+            console.log(err);
+            wx.showToast("今日广告已经看完了！明日再来吧");
+        })
+
+        //关闭视频的回调函数
+        videoAd.onClose(res => {
+            // 用户点击了【关闭广告】按钮
+            // 小于 2.1.0 的基础库版本，res 是一个 undefined
+            console.log(res)
+            if (res && res.isEnded || res === undefined) {
+                // 正常播放结束，可以下发游戏奖励  初始化下一个广告
+                GameManager.VIDEOAD.getRewardedVideoAd();
+                //消除2和4
+                if (true) {
+                    this.getItemByVideo();
+                }
+            } else {
+                wx.showToast('您的视频还没看完，无法获得奖励');
+                // 播放中途退出，不下发游戏奖励
+                // this.showGameOverUI();
+            }
+        })
+    }
+
+    //通过广告赚取道具
+    getItemByVideo() {
+        this.getItemView.active = false;
+        //所有道具+2;
+        GameManager.userInfo.brush += 2;
+        GameManager.userInfo.hummer += 2;
+        GameManager.userInfo.change += 2;
+        this.initBottomItem();
+    }
+
+    clear2Or4() {
         GameManager.PLAYSTATE = PlayState.dead;
         this.reliveNode.active = false;
         this._clickFlag = true;
@@ -1289,6 +1426,10 @@ export default class Game extends cc.Component {
         return true;
     }
 
+    showGetItemView() {
+        this.getItemView.active = true;
+    }
+
     /**
      * 返回大厅
      */
@@ -1302,7 +1443,8 @@ export default class Game extends cc.Component {
      */
     useHemmerItem(event) {
         if (!this.judgeItemEnough(ItemType.hummer)) {
-            this.showHintUI(HintUIType.Failure, '道具不足');
+            // this.showHintUI(HintUIType.Failure, '道具不足');
+            this.showGetItemView();
             return
         }
         GameManager.PLAYSTATE = PlayState.useItem;
@@ -1323,7 +1465,8 @@ export default class Game extends cc.Component {
      */
     useBrushItem(event) {
         if (!this.judgeItemEnough(ItemType.brush)) {
-            this.showHintUI(HintUIType.Failure, '道具不足');
+            // this.showHintUI(HintUIType.Failure, '道具不足');
+            this.showGetItemView();
             return
         }
         GameManager.PLAYSTATE = PlayState.useItem;
@@ -1336,7 +1479,8 @@ export default class Game extends cc.Component {
      */
     useChangeItem(event) {
         if (!this.judgeItemEnough(ItemType.change)) {
-            this.showHintUI(HintUIType.Failure, '道具不足');
+            // this.showHintUI(HintUIType.Failure, '道具不足');
+            this.showGetItemView();
             return
         }
         GameManager.PLAYSTATE = PlayState.useItem;

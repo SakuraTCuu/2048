@@ -113,6 +113,12 @@ export default class Hall extends cc.Component {
                 }
             });
         }
+        self.initVideo();
+    }
+
+    initVideo() {
+        //缓存
+        GameManager.VIDEOAD.getRewardedVideoAd();
     }
 
     initWXLogin() {

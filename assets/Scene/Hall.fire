@@ -3,7 +3,7 @@
     "__type__": "cc.SceneAsset",
     "_name": "",
     "_objFlags": 0,
-    "_native": "",
+    "_rawFiles": null,
     "scene": {
       "__id__": 1
     }
@@ -190,7 +190,7 @@
       "__id__": 3
     },
     "_enabled": true,
-    "alignMode": 0,
+    "isAlignOnce": true,
     "_target": null,
     "_alignFlags": 45,
     "_left": 0,
@@ -1078,7 +1078,7 @@
       "__id__": 9
     },
     "_enabled": true,
-    "alignMode": 0,
+    "isAlignOnce": true,
     "_target": null,
     "_alignFlags": 45,
     "_left": 0,
@@ -1309,8 +1309,6 @@
       "__id__": 30
     },
     "_enabled": true,
-    "alignMode": 1,
-    "_wasAlignOnce": {},
     "isAlignOnce": {},
     "_target": null,
     "_alignFlags": 45,
@@ -1418,7 +1416,7 @@
       "__id__": 33
     },
     "_enabled": true,
-    "alignMode": 0,
+    "isAlignOnce": true,
     "_target": null,
     "_alignFlags": 45,
     "_left": 0,
@@ -1444,7 +1442,7 @@
       "__id__": 29
     },
     "_enabled": true,
-    "alignMode": 0,
+    "isAlignOnce": true,
     "_target": null,
     "_alignFlags": 12,
     "_left": 50,
@@ -1717,7 +1715,7 @@
       "__id__": 39
     },
     "_enabled": true,
-    "alignMode": 0,
+    "isAlignOnce": true,
     "_target": null,
     "_alignFlags": 36,
     "_left": 0,
@@ -1990,7 +1988,7 @@
       "__id__": 47
     },
     "_enabled": true,
-    "alignMode": 0,
+    "isAlignOnce": true,
     "_target": null,
     "_alignFlags": 36,
     "_left": 0,
@@ -2081,7 +2079,7 @@
       "__id__": 28
     },
     "_enabled": true,
-    "alignMode": 0,
+    "isAlignOnce": true,
     "_target": null,
     "_alignFlags": 44,
     "_left": 0,
@@ -2107,7 +2105,7 @@
       "__id__": 6
     },
     "_enabled": true,
-    "alignMode": 0,
+    "isAlignOnce": true,
     "_target": null,
     "_alignFlags": 45,
     "_left": 0,
@@ -2259,7 +2257,7 @@
       "__id__": 59
     },
     "_enabled": true,
-    "alignMode": 0,
+    "isAlignOnce": true,
     "_target": null,
     "_alignFlags": 45,
     "_left": 0,
@@ -2434,8 +2432,6 @@
       "__id__": 62
     },
     "_enabled": true,
-    "alignMode": 1,
-    "_wasAlignOnce": {},
     "isAlignOnce": {},
     "_target": null,
     "_alignFlags": 45,
@@ -2874,7 +2870,7 @@
       "__id__": 74
     },
     "_enabled": true,
-    "alignMode": 1,
+    "isAlignOnce": true,
     "_target": null,
     "_alignFlags": 45,
     "_left": 0,
@@ -2964,7 +2960,7 @@
       "__id__": 78
     },
     "_enabled": true,
-    "alignMode": 0,
+    "isAlignOnce": true,
     "_target": null,
     "_alignFlags": 45,
     "_left": 0,
@@ -3098,7 +3094,7 @@
       "__id__": 81
     },
     "_enabled": true,
-    "alignMode": 1,
+    "isAlignOnce": true,
     "_target": null,
     "_alignFlags": 9,
     "_left": 100,
@@ -3189,7 +3185,7 @@
       "__id__": 73
     },
     "_enabled": true,
-    "alignMode": 0,
+    "isAlignOnce": true,
     "_target": null,
     "_alignFlags": 45,
     "_left": 0,
@@ -3376,7 +3372,7 @@
       "__id__": 88
     },
     "_enabled": true,
-    "alignMode": 1,
+    "isAlignOnce": true,
     "_target": null,
     "_alignFlags": 45,
     "_left": 0,
@@ -3943,8 +3939,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 240,
-      "height": 241
+      "width": 235,
+      "height": 238
     },
     "_rotationX": 0,
     "_rotationY": 0,
@@ -4039,8 +4035,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 171,
-      "height": 171
+      "width": 169,
+      "height": 168
     },
     "_rotationX": 0,
     "_rotationY": 0,
@@ -4117,8 +4113,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 67,
-      "height": 69
+      "width": 66,
+      "height": 68
     },
     "_rotationX": 0,
     "_rotationY": 0,
@@ -4332,7 +4328,7 @@
     "_contentSize": {
       "__type__": "cc.Size",
       "width": 19,
-      "height": 24
+      "height": 23
     },
     "_rotationX": 0,
     "_rotationY": 0,
@@ -4622,7 +4618,7 @@
     "_contentSize": {
       "__type__": "cc.Size",
       "width": 19,
-      "height": 24
+      "height": 23
     },
     "_rotationX": 0,
     "_rotationY": 0,
@@ -4922,7 +4918,7 @@
       "__id__": 87
     },
     "_enabled": true,
-    "alignMode": 1,
+    "isAlignOnce": true,
     "_target": null,
     "_alignFlags": 45,
     "_left": 0,
@@ -5145,7 +5141,7 @@
       "__id__": 134
     },
     "_enabled": true,
-    "alignMode": 1,
+    "isAlignOnce": true,
     "_target": null,
     "_alignFlags": 45,
     "_left": 0,
@@ -5403,7 +5399,7 @@
       "__id__": 133
     },
     "_enabled": true,
-    "alignMode": 1,
+    "isAlignOnce": true,
     "_target": null,
     "_alignFlags": 45,
     "_left": 0,
