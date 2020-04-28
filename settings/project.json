@@ -37,7 +37,8 @@
     "StudioComponent",
     "RenderTexture",
     "Camera",
-    "Intersection"
+    "Intersection",
+    "Native NetWork"
   ],
   "fit-height": false,
   "fit-width": true,

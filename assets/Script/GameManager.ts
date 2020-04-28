@@ -40,5 +40,18 @@ export default class GameManager {
 
     // static NETSTATE: boolean = false;
 
-    static VIDEOAD  = VideoAd.instance;
+    static VIDEOAD = VideoAd.instance;
+
+    static saveItemData() {
+        cc.sys.localStorage.setItem('itemData', this.itemDataToString());
+    }
+
+    static getItemData() {
+        let itemData: String = cc.sys.localStorage.getItem("itemData");
+        return itemData;
+    }
+
+    static itemDataToString(): String {
+        return this.userInfo.hummer + "_" + this.userInfo.brush + "_" + this.userInfo.change;
+    }
 }

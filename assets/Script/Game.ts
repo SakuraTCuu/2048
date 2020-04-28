@@ -5,6 +5,7 @@ import HintUI, { HintUIType } from "./HintUI";
 import config from "./config";
 import GameProp from "./GameProp";
 import HTTPMgr from "./net/HTTPMgr";
+import GetItemUI from "./GetItemUI";
 
 const { ccclass, property } = cc._decorator;
 export interface locationInfo {
@@ -161,7 +162,6 @@ export default class Game extends cc.Component {
     _hummer_armature: dragonBones.Armature = null;
     _brush_armature: dragonBones.Armature = null;
 
-
     //使用锤子后点击的数字块节点
     hummerTarNode: cc.Node = null;
 
@@ -180,6 +180,11 @@ export default class Game extends cc.Component {
 
     //点击判断
     _clickFlag: boolean = true;
+
+    //点击视频后该获得的道具
+    _clickItem: ItemType = ItemType.none;
+
+    _isVideoPlay: boolean = false;
 
     //合并的数组
     _mergeNode: Array<cc.Node> = new Array();
@@ -209,7 +214,6 @@ export default class Game extends cc.Component {
         this.content.on(cc.Node.EventType.TOUCH_END, this.touchEnd, this);
         this.content.on(cc.Node.EventType.TOUCH_START, this.touchStart, this);
         this.content.on(cc.Node.EventType.TOUCH_CANCEL, this.touchCancel, this);
-
 
         this.maskNode.on(cc.Node.EventType.TOUCH_END, () => {
             //是否继续?
@@ -438,7 +442,7 @@ export default class Game extends cc.Component {
     }
 
     // /**
-    //  * 复活  
+    //  * 复活
     //  * 消除2 和 4
     //  */
     // onClickReliveBtn() {
@@ -470,102 +474,66 @@ export default class Game extends cc.Component {
      * 消除2 和 4
      */
     onClickReliveBtn() {
+
+        if (!CC_WECHATGAME) {
+            this.clear2Or4();
+            return;
+        }
+        if (this._isVideoPlay) {
+            return;
+        }
+        //关闭结束界面
+        this.reliveNode.active = false;
+        
         //弹出广告的
-        let videoAd = GameManager.VIDEOAD.getRewardedVideoAd();
-
-        videoAd.load()
-
-        // 用户触发广告后，显示激励视频广告
-        videoAd.show().catch(() => {
-            // 失败重试
-            videoAd.load()
-                .then(() => videoAd.show())
-                .catch(err => {
-                    console.log('激励视频 广告显示失败')
-                    wx.showToast('激励视频 广告显示失败')
-                })
-        })
-
-
-        //捕捉错误
-        videoAd.onError(err => {
-            console.log(err);
-            wx.showToast("今日广告已经看完了！明日再来吧");
-        })
-
-        //关闭视频的回调函数
-        videoAd.onClose(res => {
-            // 用户点击了【关闭广告】按钮
-            // 小于 2.1.0 的基础库版本，res 是一个 undefined
-            console.log(res)
-            if (res && res.isEnded || res === undefined) {
-                // 正常播放结束，可以下发游戏奖励  初始化下一个广告
-                GameManager.VIDEOAD.getRewardedVideoAd();
-                //消除2和4
-                if (true) {
-                    this.clear2Or4();
-                }
-            } else {
-                wx.showToast('您的视频还没看完，无法获得奖励');
-                // 播放中途退出，不下发游戏奖励
-                //退出就结束游戏
-                this.showGameOverUI();
-            }
-        })
+        GameManager.VIDEOAD.getRewardedVideoAd(() => {
+            this.clear2Or4();
+            this._isVideoPlay = false;
+        }, () => {
+            this.showGameOverUI();
+            this._isVideoPlay = false;
+        });
+        this._isVideoPlay = true;
     }
 
     //观看广告
     onClickVideoLook() {
+        if (!CC_WECHATGAME) {
+            this.getItemByVideo();
+            return;
+        }
+        if (this._isVideoPlay) {
+            return;
+        }
         //弹出广告的
-        let videoAd = GameManager.VIDEOAD.getRewardedVideoAd();
-
-        videoAd.load()
-
-        // 用户触发广告后，显示激励视频广告
-        videoAd.show().catch(() => {
-            // 失败重试
-            videoAd.load()
-                .then(() => videoAd.show())
-                .catch(err => {
-                    console.log('激励视频 广告显示失败')
-                    wx.showToast('激励视频 广告显示失败')
-                })
-        })
-
-
-        //捕捉错误
-        videoAd.onError(err => {
-            console.log(err);
-            wx.showToast("今日广告已经看完了！明日再来吧");
-        })
-
-        //关闭视频的回调函数
-        videoAd.onClose(res => {
-            // 用户点击了【关闭广告】按钮
-            // 小于 2.1.0 的基础库版本，res 是一个 undefined
-            console.log(res)
-            if (res && res.isEnded || res === undefined) {
-                // 正常播放结束，可以下发游戏奖励  初始化下一个广告
-                GameManager.VIDEOAD.getRewardedVideoAd();
-                //消除2和4
-                if (true) {
-                    this.getItemByVideo();
-                }
-            } else {
-                wx.showToast('您的视频还没看完，无法获得奖励');
-                // 播放中途退出，不下发游戏奖励
-                // this.showGameOverUI();
-            }
-        })
+        GameManager.VIDEOAD.getRewardedVideoAd(() => {
+            this.getItemByVideo();
+            this._isVideoPlay = false;
+        }, () => {
+            this._isVideoPlay = false;
+        });
+        this._isVideoPlay = true;
+        // videoAd.load()
     }
 
     //通过广告赚取道具
     getItemByVideo() {
         this.getItemView.active = false;
         //所有道具+2;
-        GameManager.userInfo.brush += 2;
-        GameManager.userInfo.hummer += 2;
-        GameManager.userInfo.change += 2;
+        // GameManager.userInfo.brush += 2;
+        // GameManager.userInfo.hummer += 2;
+        // GameManager.userInfo.change += 2;
+
+        if (this._clickItem == ItemType.brush) {
+            GameManager.userInfo.brush += 2;
+        } else if (this._clickItem == ItemType.hummer) {
+            GameManager.userInfo.hummer += 2;
+        } else if (this._clickItem == ItemType.change) {
+            GameManager.userInfo.change += 2;
+        }
+
+        GameManager.saveItemData();
+
         this.initBottomItem();
     }
 
@@ -592,8 +560,6 @@ export default class Game extends cc.Component {
             // cc.log('@@@!', GameManager.ITEMTYPE);
         }, 1);
     }
-
-
 
     /**分享按钮 */
     onClickShareBtn() {
@@ -649,7 +615,6 @@ export default class Game extends cc.Component {
         //结束使用道具状态;
         GameManager.PLAYSTATE = PlayState.normal;
         GameManager.ITEMTYPE = ItemType.none;
-
         //
         this.calcUserItem(ItemType.hummer);
     }
@@ -1117,7 +1082,6 @@ export default class Game extends cc.Component {
         }
     }
 
-
     /**
      * 计算块的滑动
      * @param line  行/列
@@ -1426,8 +1390,11 @@ export default class Game extends cc.Component {
         return true;
     }
 
-    showGetItemView() {
+    showGetItemView(type: ItemType) {
+        this._clickItem = type;
+        this.getItemView.getComponent(GetItemUI).showItem(type);
         this.getItemView.active = true;
+        //
     }
 
     /**
@@ -1444,7 +1411,7 @@ export default class Game extends cc.Component {
     useHemmerItem(event) {
         if (!this.judgeItemEnough(ItemType.hummer)) {
             // this.showHintUI(HintUIType.Failure, '道具不足');
-            this.showGetItemView();
+            this.showGetItemView(ItemType.hummer);
             return
         }
         GameManager.PLAYSTATE = PlayState.useItem;
@@ -1466,7 +1433,7 @@ export default class Game extends cc.Component {
     useBrushItem(event) {
         if (!this.judgeItemEnough(ItemType.brush)) {
             // this.showHintUI(HintUIType.Failure, '道具不足');
-            this.showGetItemView();
+            this.showGetItemView(ItemType.brush);
             return
         }
         GameManager.PLAYSTATE = PlayState.useItem;
@@ -1480,7 +1447,7 @@ export default class Game extends cc.Component {
     useChangeItem(event) {
         if (!this.judgeItemEnough(ItemType.change)) {
             // this.showHintUI(HintUIType.Failure, '道具不足');
-            this.showGetItemView();
+            this.showGetItemView(ItemType.change);
             return
         }
         GameManager.PLAYSTATE = PlayState.useItem;
@@ -1535,6 +1502,10 @@ export default class Game extends cc.Component {
                 cc.log('err-->>>换位道具数量小于零');
             }
         }
+
+        // 保存用户数据
+        GameManager.saveItemData();
+
         //更新界面展示
         this.initBottomItem();
 

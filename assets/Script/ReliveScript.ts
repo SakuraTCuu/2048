@@ -8,7 +8,6 @@ export default class ReliveScript extends cc.Component {
     @property(cc.Label)
     timeLab: cc.Label = null;
 
-
     onEnable() {
         this.startTimeCount();
         let anim = this.getComponent(cc.Animation);

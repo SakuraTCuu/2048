@@ -81,8 +81,6 @@
         }
 
         var onStart = function () {
-            cc.loader.downloader._subpackages = settings.subpackages;
-
             if (false) {
                 BK.Script.loadlib();
             }
@@ -90,6 +88,10 @@
             cc.view.resizeWithBrowserSize(true);
 
             if (!true && !false) {
+                // UC browser on many android devices have performance issue with retina display
+                if (cc.sys.os !== cc.sys.OS_ANDROID || cc.sys.browserType !== cc.sys.BROWSER_TYPE_UC) {
+                    cc.view.enableRetina(true);
+                }
                 if (cc.sys.isBrowser) {
                     setLoadingDisplay();
                 }
@@ -110,7 +112,7 @@
                 }
 
                 // Limit downloading max concurrent task to 2,
-                // more tasks simultaneously may cause performance draw back on some android system / browsers.
+                // more tasks simultaneously may cause performance draw back on some android system / brwosers.
                 // You can adjust the number based on your own test result, you have to set it before any loading process to take effect.
                 if (cc.sys.isBrowser && cc.sys.os === cc.sys.OS_ANDROID) {
                     cc.macro.DOWNLOAD_MAX_CONCURRENT = 2;
@@ -227,9 +229,7 @@
         var engineLoaded = function () {
             document.body.removeChild(cocos2d);
             cocos2d.removeEventListener('load', engineLoaded, false);
-            if (typeof VConsole !== 'undefined') {
-                window.vConsole = new VConsole();
-            }
+            window.eruda && eruda.init() && eruda.get('console').config.set('displayUnenumerable', false);
             boot();
         };
         cocos2d.addEventListener('load', engineLoaded, false);

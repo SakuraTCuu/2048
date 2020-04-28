@@ -79,8 +79,19 @@ export default class Hall extends cc.Component {
             hummer: 2,
             brush: 2,
             change: 2
+        };
+        //读取本地存储
+        let itemData: String = GameManager.getItemData();
+
+        if (itemData && itemData !== "") {
+            let itemList = itemData.split("_");//2_2_2
+            user.hummer = Number(itemList[0]);
+            user.brush = Number(itemList[1]);
+            user.change = Number(itemList[2]);
         }
+        console.log(user);
         GameManager.userInfo = user;
+        GameManager.saveItemData();
     }
 
     initWX() {
@@ -118,7 +129,7 @@ export default class Hall extends cc.Component {
 
     initVideo() {
         //缓存
-        GameManager.VIDEOAD.getRewardedVideoAd();
+        // GameManager.VIDEOAD.getRewardedVideoAd();
     }
 
     initWXLogin() {

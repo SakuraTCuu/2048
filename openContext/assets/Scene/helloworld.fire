@@ -3,7 +3,7 @@
     "__type__": "cc.SceneAsset",
     "_name": "",
     "_objFlags": 0,
-    "_native": "",
+    "_rawFiles": null,
     "scene": {
       "__id__": 1
     }
@@ -293,7 +293,7 @@
       "__id__": 5
     },
     "_enabled": true,
-    "alignMode": 1,
+    "isAlignOnce": true,
     "_target": null,
     "_alignFlags": 41,
     "_left": 0,
@@ -364,7 +364,7 @@
       "__id__": 4
     },
     "_enabled": true,
-    "alignMode": 1,
+    "isAlignOnce": true,
     "_target": null,
     "_alignFlags": 45,
     "_left": 0,
@@ -412,7 +412,7 @@
       "__id__": 3
     },
     "_enabled": true,
-    "alignMode": 1,
+    "isAlignOnce": true,
     "_target": null,
     "_alignFlags": 40,
     "_left": 100,
@@ -492,7 +492,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 232,
+      "width": 230,
       "height": 40
     },
     "_rotationX": 0,
@@ -541,7 +541,7 @@
       "__id__": 13
     },
     "_enabled": true,
-    "alignMode": 1,
+    "isAlignOnce": true,
     "_target": null,
     "_alignFlags": 18,
     "_left": 0,
