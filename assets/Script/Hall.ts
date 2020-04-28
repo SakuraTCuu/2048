@@ -111,8 +111,12 @@ export default class Hall extends cc.Component {
             wx.onShareAppMessage(function () {
                 // 用户点击了“转发”按钮
                 return {
+
                     title: '来看看谁的得分最高!',
-                    imageUrl: config.shareImg_url,
+                    // imageUrl: canvas.toTempFilePathSync({
+                    //     destWidth: 500,
+                    //     destHeight: 400
+                    // }),
                     success: () => {
                         console.log('转发成功!');
                         this.showHintUI(HintUIType.Success, "转发成功,多谢你的支持!");
