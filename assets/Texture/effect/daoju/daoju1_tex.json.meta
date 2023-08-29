@@ -1,7 +1,6 @@
 {
-  "ver": "1.0.0",
+  "ver": "1.0.3",
   "uuid": "bfbb1656-ef19-42e0-9fae-bbfdf208d421",
-  "atlasJson": "{\"width\":512,\"imagePath\":\"daoju1_tex.png\",\"height\":512,\"name\":\"daoju1\",\"SubTexture\":[{\"width\":98,\"y\":1,\"height\":110,\"name\":\"dlibao/chuizi1\",\"x\":243},{\"width\":98,\"y\":113,\"height\":110,\"name\":\"chuizi1\",\"x\":243},{\"width\":1,\"y\":507,\"height\":1,\"name\":\"shangdian13\",\"x\":4},{\"width\":240,\"y\":1,\"height\":241,\"name\":\"dlibao/shangdian13\",\"x\":1},{\"width\":1,\"y\":510,\"height\":1,\"name\":\"shangdian14\",\"x\":1},{\"width\":171,\"y\":244,\"height\":171,\"name\":\"dlibao/shangdian14\",\"x\":176},{\"width\":1,\"y\":510,\"height\":1,\"name\":\"biaoti\",\"x\":4},{\"width\":1,\"y\":506,\"height\":1,\"name\":\"shangdian15\",\"x\":265},{\"width\":87,\"y\":417,\"height\":88,\"name\":\"dlibao/shangdian15\",\"x\":176},{\"width\":173,\"y\":244,\"height\":173,\"name\":\"dlibao/jieshuan3\",\"x\":1},{\"width\":1,\"y\":507,\"height\":1,\"name\":\"jieshuan3\",\"x\":1},{\"width\":1,\"y\":503,\"height\":1,\"name\":\"libao\",\"x\":265},{\"width\":132,\"y\":244,\"height\":150,\"name\":\"fengmian/fm11\",\"x\":349},{\"width\":105,\"y\":396,\"height\":105,\"name\":\"dlibao/libao\",\"x\":349}]}",
-  "texture": "44a35fff-9720-4c00-ac7f-aaf9c1eecfea",
+  "importer": "dragonbones-atlas",
   "subMetas": {}
 }

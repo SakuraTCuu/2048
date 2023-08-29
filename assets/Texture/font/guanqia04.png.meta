@@ -1,13 +1,21 @@
 {
-  "ver": "1.0.0",
+  "ver": "2.3.7",
   "uuid": "4effaace-c200-4c28-8e78-3599cece183e",
+  "importer": "texture",
   "type": "sprite",
   "wrapMode": "clamp",
   "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "genMipmaps": false,
+  "packable": true,
+  "width": 280,
+  "height": 35,
+  "platformSettings": {},
   "subMetas": {
     "guanqia04": {
-      "ver": "1.0.3",
+      "ver": "1.0.6",
       "uuid": "02e8ddc6-7a9f-4cfb-8c79-4296871d084d",
+      "importer": "sprite-frame",
       "rawTextureUuid": "4effaace-c200-4c28-8e78-3599cece183e",
       "trimType": "auto",
       "trimThreshold": 1,

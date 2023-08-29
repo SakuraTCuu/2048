@@ -1,13 +1,21 @@
 {
-  "ver": "1.0.0",
+  "ver": "2.3.7",
   "uuid": "a8b84294-0444-4cd9-b964-6c46ebd63c55",
+  "importer": "texture",
   "type": "sprite",
   "wrapMode": "clamp",
   "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "genMipmaps": false,
+  "packable": true,
+  "width": 58,
+  "height": 33,
+  "platformSettings": {},
   "subMetas": {
     "nandu01": {
-      "ver": "1.0.3",
+      "ver": "1.0.6",
       "uuid": "4cb9a1d5-b6f4-4d1a-8a52-ce7326789201",
+      "importer": "sprite-frame",
       "rawTextureUuid": "a8b84294-0444-4cd9-b964-6c46ebd63c55",
       "trimType": "auto",
       "trimThreshold": 1,

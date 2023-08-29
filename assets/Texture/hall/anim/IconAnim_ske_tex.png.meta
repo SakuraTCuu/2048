@@ -1,13 +1,21 @@
 {
-  "ver": "1.0.0",
+  "ver": "2.3.7",
   "uuid": "13e21d27-cdb7-407c-b4b4-7eeeaa2949ef",
+  "importer": "texture",
   "type": "sprite",
   "wrapMode": "clamp",
   "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "genMipmaps": false,
+  "packable": true,
+  "width": 1024,
+  "height": 512,
+  "platformSettings": {},
   "subMetas": {
     "IconAnim_ske_tex": {
-      "ver": "1.0.3",
+      "ver": "1.0.6",
       "uuid": "9596de17-2289-47a2-9a98-dfb99019ddaa",
+      "importer": "sprite-frame",
       "rawTextureUuid": "13e21d27-cdb7-407c-b4b4-7eeeaa2949ef",
       "trimType": "auto",
       "trimThreshold": 1,

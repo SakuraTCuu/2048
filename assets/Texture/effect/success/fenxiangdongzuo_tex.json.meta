@@ -1,7 +1,6 @@
 {
-  "ver": "1.0.0",
+  "ver": "1.0.3",
   "uuid": "9fa380ce-f78b-465f-9bde-82f4ab0cf272",
-  "atlasJson": "{\"width\":1024,\"imagePath\":\"fenxiangdongzuo_tex.png\",\"height\":1024,\"name\":\"fenxiangdongzuo\",\"SubTexture\":[{\"width\":124,\"y\":1,\"height\":623,\"name\":\"fenxiang7\",\"x\":574},{\"width\":128,\"y\":1,\"height\":677,\"name\":\"fenxiang8\",\"x\":444},{\"width\":441,\"y\":1,\"height\":660,\"name\":\"fenxiang1\",\"x\":1},{\"width\":268,\"y\":1,\"height\":114,\"name\":\"fenxiang2\",\"x\":700},{\"width\":87,\"y\":663,\"height\":88,\"name\":\"fenxiang9\",\"x\":324},{\"width\":270,\"y\":229,\"height\":103,\"name\":\"fenxiang3\",\"x\":700},{\"width\":268,\"y\":117,\"height\":110,\"name\":\"fenxiang4\",\"x\":700},{\"width\":323,\"y\":626,\"height\":106,\"name\":\"fenxiang5\",\"x\":574},{\"width\":321,\"y\":663,\"height\":112,\"name\":\"32678\",\"x\":1}]}",
-  "texture": "06d6f477-e091-46cf-8b41-c2e5151de61f",
+  "importer": "dragonbones-atlas",
   "subMetas": {}
 }

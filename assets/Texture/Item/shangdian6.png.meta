@@ -1,13 +1,21 @@
 {
-  "ver": "1.0.0",
+  "ver": "2.3.7",
   "uuid": "204d2fc0-faf7-469d-9c3b-f36adb87ee3e",
+  "importer": "texture",
   "type": "sprite",
   "wrapMode": "clamp",
   "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "genMipmaps": false,
+  "packable": true,
+  "width": 379,
+  "height": 230,
+  "platformSettings": {},
   "subMetas": {
     "shangdian6": {
-      "ver": "1.0.3",
+      "ver": "1.0.6",
       "uuid": "56395813-fde6-4735-82fa-50c3e0be6c80",
+      "importer": "sprite-frame",
       "rawTextureUuid": "204d2fc0-faf7-469d-9c3b-f36adb87ee3e",
       "trimType": "auto",
       "trimThreshold": 1,

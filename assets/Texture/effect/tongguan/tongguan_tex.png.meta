@@ -1,13 +1,21 @@
 {
-  "ver": "1.0.0",
+  "ver": "2.3.7",
   "uuid": "92f2307c-524f-473a-8c61-a2511121045f",
+  "importer": "texture",
   "type": "sprite",
   "wrapMode": "clamp",
   "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "genMipmaps": false,
+  "packable": true,
+  "width": 1024,
+  "height": 1024,
+  "platformSettings": {},
   "subMetas": {
     "tongguan_tex": {
-      "ver": "1.0.3",
+      "ver": "1.0.6",
       "uuid": "72170d81-fc0e-46a5-ac43-9eadef8de5a0",
+      "importer": "sprite-frame",
       "rawTextureUuid": "92f2307c-524f-473a-8c61-a2511121045f",
       "trimType": "auto",
       "trimThreshold": 1,

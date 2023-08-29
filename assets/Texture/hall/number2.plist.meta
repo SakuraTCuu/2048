@@ -1,6 +1,7 @@
 {
-  "ver": "1.2.4",
+  "ver": "1.2.6",
   "uuid": "8bafe9d6-586a-446f-be47-91b4fdaa06a4",
+  "importer": "sprite-atlas",
   "rawTextureUuid": "ab44347b-8e81-4ea5-8bf3-f7a73268b1c5",
   "size": {
     "width": 2048,
@@ -9,8 +10,9 @@
   "type": "Texture Packer",
   "subMetas": {
     "shangdian-shangdian21.png": {
-      "ver": "1.0.3",
+      "ver": "1.0.6",
       "uuid": "4ca3d733-ffb0-4c1c-94ef-739f54dc238d",
+      "importer": "sprite-frame",
       "rawTextureUuid": "ab44347b-8e81-4ea5-8bf3-f7a73268b1c5",
       "trimType": "auto",
       "trimThreshold": 1,
@@ -31,8 +33,9 @@
       "subMetas": {}
     },
     "fengmian-jiemian.png": {
-      "ver": "1.0.3",
+      "ver": "1.0.6",
       "uuid": "a470e5d8-2bc7-4dc5-9a4b-8f7bae213a08",
+      "importer": "sprite-frame",
       "rawTextureUuid": "ab44347b-8e81-4ea5-8bf3-f7a73268b1c5",
       "trimType": "auto",
       "trimThreshold": 1,

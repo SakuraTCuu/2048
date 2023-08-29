@@ -1,13 +1,21 @@
 {
-  "ver": "1.0.0",
+  "ver": "2.3.7",
   "uuid": "9a171e3f-2fce-45ef-8340-7312f6340a18",
+  "importer": "texture",
   "type": "sprite",
   "wrapMode": "clamp",
   "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "genMipmaps": false,
+  "packable": true,
+  "width": 287,
+  "height": 153,
+  "platformSettings": {},
   "subMetas": {
     "gouimai01": {
-      "ver": "1.0.3",
+      "ver": "1.0.6",
       "uuid": "be89cbb7-13f8-44b3-bae8-05ebb637bf52",
+      "importer": "sprite-frame",
       "rawTextureUuid": "9a171e3f-2fce-45ef-8340-7312f6340a18",
       "trimType": "auto",
       "trimThreshold": 1,

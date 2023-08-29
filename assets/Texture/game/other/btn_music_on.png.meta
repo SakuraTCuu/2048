@@ -1,13 +1,21 @@
 {
-  "ver": "1.0.0",
+  "ver": "2.3.7",
   "uuid": "c1482f67-1ac9-4b7b-bd1f-7493b1425729",
+  "importer": "texture",
   "type": "sprite",
   "wrapMode": "clamp",
   "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "genMipmaps": false,
+  "packable": true,
+  "width": 153,
+  "height": 127,
+  "platformSettings": {},
   "subMetas": {
     "btn_music_on": {
-      "ver": "1.0.3",
+      "ver": "1.0.6",
       "uuid": "9e710b00-3458-4f1c-9bc2-eea5f0ccfb3d",
+      "importer": "sprite-frame",
       "rawTextureUuid": "c1482f67-1ac9-4b7b-bd1f-7493b1425729",
       "trimType": "auto",
       "trimThreshold": 1,

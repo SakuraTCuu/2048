@@ -1,13 +1,21 @@
 {
-  "ver": "1.0.0",
+  "ver": "2.3.7",
   "uuid": "906f3333-5163-4a4d-91a1-82bd6e4bef5e",
+  "importer": "texture",
   "type": "sprite",
   "wrapMode": "clamp",
   "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "genMipmaps": false,
+  "packable": true,
+  "width": 2048,
+  "height": 1024,
+  "platformSettings": {},
   "subMetas": {
     "chongwu_tex": {
-      "ver": "1.0.3",
+      "ver": "1.0.6",
       "uuid": "c983d5a0-918f-4b3e-9810-374711a1e537",
+      "importer": "sprite-frame",
       "rawTextureUuid": "906f3333-5163-4a4d-91a1-82bd6e4bef5e",
       "trimType": "auto",
       "trimThreshold": 1,

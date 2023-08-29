@@ -1,13 +1,21 @@
 {
-  "ver": "1.0.0",
+  "ver": "2.3.7",
   "uuid": "3c7870ee-6617-48af-a0bc-c4601194d72d",
+  "importer": "texture",
   "type": "sprite",
   "wrapMode": "clamp",
   "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "genMipmaps": false,
+  "packable": true,
+  "width": 287,
+  "height": 127,
+  "platformSettings": {},
   "subMetas": {
     "shezhi2": {
-      "ver": "1.0.3",
+      "ver": "1.0.6",
       "uuid": "396265b1-854b-415f-a23a-eb2a297803be",
+      "importer": "sprite-frame",
       "rawTextureUuid": "3c7870ee-6617-48af-a0bc-c4601194d72d",
       "trimType": "auto",
       "trimThreshold": 1,

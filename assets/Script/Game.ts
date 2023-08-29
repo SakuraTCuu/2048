@@ -583,8 +583,8 @@ export default class Game extends cc.Component {
     /**
      * 刷子动画回调
      */
-    brushEventHandler(event: cc.Event.EventCustom) {
-        cc.log('custom---', event.detail.animationState.name);
+    brushEventHandler(event: cc.Event) {
+        cc.log('custom---', event.animationState.name);
         //刷子特效完成, 开始消除数字块;
         if (this.brushTarNode) {
             this.brushTarNode.getComponent(Item).showRandomNumber();
@@ -603,7 +603,7 @@ export default class Game extends cc.Component {
      * @param event 
      */
     hummerEventHandler(event) {
-        cc.log('custom---', event.detail.animationState.name);
+        cc.log('custom---', event.animationState.name);
         if (this.hummerTarNode) {
             this.hummerTarNode.getComponent(Item).playHummerEffect();
             this.hummerEffectDrag.node.active = false;
@@ -932,9 +932,18 @@ export default class Game extends cc.Component {
      */
     checkSlideDirection(point: cc.Vec2) {
         //计算滑动的角度
-        let subVect = cc.pSub(this._startPos, point);
-        let radian = cc.pToAngle(subVect);//弧度
-        let degrees = cc.radiansToDegrees(radian);//弧度转度数
+        // let subVect = this._startPos.sub(point); //  cc.pSub(this._startPos, point);
+        let radian = this._startPos.signAngle(point); //  cc.pSub(this._startPos, point);
+        // console.log('subVect=',subVect)
+        // console.log('subVect.angle=', subVect.angle())
+        // let radian = subVect.angle;  //cc.pToAngle(subVect);//弧度
+        let degrees = cc.misc.radiansToDegrees(radian);//  cc.radiansToDegrees(radian);//弧度转度数
+
+        let subVect = this._startPos.sub(point);
+        radian = Math.atan2(subVect.y, subVect.x);
+        degrees = cc.misc.radiansToDegrees(radian);//  cc.radiansToDegrees(radian);//弧度转度数
+
+        console.log('degrees=', degrees);
         // degrees = 90 - degrees;
         if ((degrees >= 45 && degrees <= 135) ||
             (degrees <= -45 && degrees >= - 135)) {
@@ -942,6 +951,23 @@ export default class Game extends cc.Component {
         } else {
             this._slide = slideDirection.LeftRight;
         }
+
+    
+        // let xDist =  point.x - this._startPos.x;
+
+        // let isLeft = false;
+        // if(this._startPos.x < point.x){
+        //     isLeft = true;
+        // }
+        // let isTop = false;
+        // if(this._startPos.y > point.y){
+        //     isTop = true;
+        // }
+
+        // if(isLeft){
+
+        // }
+
 
         if (this._slide == slideDirection.LeftRight) {
             if (this._startPos.x > point.x) {

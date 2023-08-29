@@ -1,13 +1,21 @@
 {
-  "ver": "1.0.0",
+  "ver": "2.3.7",
   "uuid": "7f6bf83b-12a5-4b04-8496-00104a725bbe",
+  "importer": "texture",
   "type": "sprite",
   "wrapMode": "clamp",
   "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "genMipmaps": false,
+  "packable": true,
+  "width": 73,
+  "height": 79,
+  "platformSettings": {},
   "subMetas": {
     "daoju047": {
-      "ver": "1.0.3",
+      "ver": "1.0.6",
       "uuid": "7dec97fa-1628-4a50-93d4-f5548b6284b2",
+      "importer": "sprite-frame",
       "rawTextureUuid": "7f6bf83b-12a5-4b04-8496-00104a725bbe",
       "trimType": "auto",
       "trimThreshold": 1,

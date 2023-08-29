@@ -1,13 +1,21 @@
 {
-  "ver": "1.0.0",
+  "ver": "2.3.7",
   "uuid": "7eb19e3e-b661-4fd7-8029-7d9e05a428b3",
+  "importer": "texture",
   "type": "sprite",
   "wrapMode": "clamp",
   "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "genMipmaps": false,
+  "packable": true,
+  "width": 172,
+  "height": 94,
+  "platformSettings": {},
   "subMetas": {
     "tishi12": {
-      "ver": "1.0.3",
+      "ver": "1.0.6",
       "uuid": "30e29bc7-28c1-4cb6-9b03-b3207c5cf5b2",
+      "importer": "sprite-frame",
       "rawTextureUuid": "7eb19e3e-b661-4fd7-8029-7d9e05a428b3",
       "trimType": "auto",
       "trimThreshold": 1,

@@ -1,13 +1,21 @@
 {
-  "ver": "1.0.0",
+  "ver": "2.3.7",
   "uuid": "d351f862-ee51-458f-8feb-1bf7db28ad50",
+  "importer": "texture",
   "type": "sprite",
   "wrapMode": "clamp",
   "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "genMipmaps": false,
+  "packable": true,
+  "width": 285,
+  "height": 129,
+  "platformSettings": {},
   "subMetas": {
     "jingdanmoshi": {
-      "ver": "1.0.3",
+      "ver": "1.0.6",
       "uuid": "3535d4ed-2eb0-4375-82b2-c59ee217bcb1",
+      "importer": "sprite-frame",
       "rawTextureUuid": "d351f862-ee51-458f-8feb-1bf7db28ad50",
       "trimType": "auto",
       "trimThreshold": 1,

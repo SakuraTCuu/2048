@@ -1,13 +1,21 @@
 {
-  "ver": "1.0.0",
+  "ver": "2.3.7",
   "uuid": "e55d40b1-b6bd-4afc-888e-9f6bdb253d4a",
+  "importer": "texture",
   "type": "sprite",
   "wrapMode": "clamp",
   "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "genMipmaps": false,
+  "packable": true,
+  "width": 43,
+  "height": 42,
+  "platformSettings": {},
   "subMetas": {
     "hecheng": {
-      "ver": "1.0.3",
+      "ver": "1.0.6",
       "uuid": "1780e0bb-0ce2-42d4-815b-bb943b35d75f",
+      "importer": "sprite-frame",
       "rawTextureUuid": "e55d40b1-b6bd-4afc-888e-9f6bdb253d4a",
       "trimType": "auto",
       "trimThreshold": 1,

@@ -1,13 +1,21 @@
 {
-  "ver": "1.0.0",
+  "ver": "2.3.7",
   "uuid": "e01cfc1d-f395-4c11-931a-56483fa6d77c",
+  "importer": "texture",
   "type": "sprite",
   "wrapMode": "clamp",
   "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "genMipmaps": false,
+  "packable": true,
+  "width": 672,
+  "height": 62,
+  "platformSettings": {},
   "subMetas": {
     "choujiangshuzi": {
-      "ver": "1.0.3",
+      "ver": "1.0.6",
       "uuid": "7a0db99d-1437-40ed-bd63-7fdcf81609d0",
+      "importer": "sprite-frame",
       "rawTextureUuid": "e01cfc1d-f395-4c11-931a-56483fa6d77c",
       "trimType": "auto",
       "trimThreshold": 1,

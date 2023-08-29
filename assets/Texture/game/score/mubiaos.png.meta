@@ -1,13 +1,21 @@
 {
-  "ver": "1.0.0",
+  "ver": "2.3.7",
   "uuid": "4c86c2a1-e5f5-40b4-8443-b8f2f840180f",
+  "importer": "texture",
   "type": "sprite",
   "wrapMode": "clamp",
   "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "genMipmaps": false,
+  "packable": true,
+  "width": 6,
+  "height": 126,
+  "platformSettings": {},
   "subMetas": {
     "mubiaos": {
-      "ver": "1.0.3",
+      "ver": "1.0.6",
       "uuid": "9e09f684-6730-48f7-a8d3-d2a26a8fa98c",
+      "importer": "sprite-frame",
       "rawTextureUuid": "4c86c2a1-e5f5-40b4-8443-b8f2f840180f",
       "trimType": "auto",
       "trimThreshold": 1,

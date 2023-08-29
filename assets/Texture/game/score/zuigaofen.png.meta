@@ -1,13 +1,21 @@
 {
-  "ver": "1.0.0",
+  "ver": "2.3.7",
   "uuid": "adeab8d3-e951-4055-8384-efa8b3502cca",
+  "importer": "texture",
   "type": "sprite",
   "wrapMode": "clamp",
   "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "genMipmaps": false,
+  "packable": true,
+  "width": 110,
+  "height": 33,
+  "platformSettings": {},
   "subMetas": {
     "zuigaofen": {
-      "ver": "1.0.3",
+      "ver": "1.0.6",
       "uuid": "f4f11b87-0739-4567-aaef-8eaf29520127",
+      "importer": "sprite-frame",
       "rawTextureUuid": "adeab8d3-e951-4055-8384-efa8b3502cca",
       "trimType": "auto",
       "trimThreshold": 1,

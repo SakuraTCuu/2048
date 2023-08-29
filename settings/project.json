@@ -38,7 +38,14 @@
     "RenderTexture",
     "Camera",
     "Intersection",
-    "Native NetWork"
+    "Native NetWork",
+    "Geom Utils",
+    "3D",
+    "3D Primitive",
+    "3D Physics/cannon.js",
+    "3D Physics/Builtin",
+    "3D Particle",
+    "SafeArea"
   ],
   "fit-height": false,
   "fit-width": true,
@@ -52,5 +59,8 @@
   },
   "start-scene": "2d2f792f-a40c-49bb-a189-ed176a246e49",
   "use-customize-simulator": false,
-  "use-project-simulator-setting": false
+  "use-project-simulator-setting": false,
+  "migrate-history": [
+    "cloud-function"
+  ]
 }

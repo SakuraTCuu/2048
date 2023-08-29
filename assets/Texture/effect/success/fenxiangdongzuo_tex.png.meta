@@ -1,13 +1,21 @@
 {
-  "ver": "1.0.0",
+  "ver": "2.3.7",
   "uuid": "06d6f477-e091-46cf-8b41-c2e5151de61f",
+  "importer": "texture",
   "type": "sprite",
   "wrapMode": "clamp",
   "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "genMipmaps": false,
+  "packable": true,
+  "width": 1024,
+  "height": 1024,
+  "platformSettings": {},
   "subMetas": {
     "fenxiangdongzuo_tex": {
-      "ver": "1.0.3",
+      "ver": "1.0.6",
       "uuid": "1016916f-c01a-4d40-8c16-26edd8ffdb18",
+      "importer": "sprite-frame",
       "rawTextureUuid": "06d6f477-e091-46cf-8b41-c2e5151de61f",
       "trimType": "auto",
       "trimThreshold": 1,

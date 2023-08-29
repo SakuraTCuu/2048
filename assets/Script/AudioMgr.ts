@@ -27,13 +27,23 @@ export default class AudioMgr {
         // });
     }
 
-    static getUrl(url) {
-        return cc.url.raw("resources/audio/effectAudio/" + url);
+    static getUrl(url: String): Promise<cc.AudioClip> {
+        url = url.split(".")[0];
+        let audioUrl = "audio/effectAudio/" + url;
+        return new Promise((resolve, reject) => {
+            cc.resources.load(audioUrl, cc.AudioClip, null, function (err, clip) {
+                if (err) {
+                    console.log(err);
+                    return;
+                }
+                resolve(clip);
+            });
+        })
     }
 
-    static playBGM(url) {
+    static async playBGM(url) {
         AudioMgr.audioUrl = url;
-        const audioUrl = AudioMgr.getUrl(url);
+        const audioUrl = await AudioMgr.getUrl(url);
         if (AudioMgr.bgmAudioID >= 0) {
             cc.audioEngine.stop(AudioMgr.bgmAudioID);
         }
@@ -44,9 +54,9 @@ export default class AudioMgr {
         cc.audioEngine.pause(AudioMgr.bgmAudioID);
     }
 
-    static playSFX(url) {
+    static async playSFX(url) {
         if (AudioMgr.sfxVolume > 0) {
-            const audioUrl = AudioMgr.getUrl(url);
+            const audioUrl = await AudioMgr.getUrl(url);
             cc.audioEngine.play(audioUrl, false, AudioMgr.sfxVolume);
         }
     }
@@ -74,15 +84,15 @@ export default class AudioMgr {
     }
 
     static pauseAll(): void {
-  
+
         cc.audioEngine.stopAll();
     }
 
     static resumeAll(): void {
-      
+
         cc.audioEngine.stopAll();
         if (GameManager.gameState == GameState.Hall) {
-      
+
             if (AudioMgr.audioUrl != '') {
                 AudioMgr.playBGM(AudioMgr.audioUrl);
             } else {
