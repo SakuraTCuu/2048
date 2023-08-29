@@ -4,8 +4,6 @@ export default class config {
     static shareImg_url = 'http://112.74.174.202:8080/success.png'
     // static shareImg_url = ''
 
-    success
-
     /**
      *  提交分数给微信后台
      */

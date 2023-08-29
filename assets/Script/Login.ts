@@ -1,6 +1,6 @@
 import GameManager from "./GameManager";
 import HTTPManager, { getURL } from "./net/HTTPManager";
-import { init_net } from "./interface";
+import { init_net } from "./Interface";
 
 const { ccclass, property } = cc._decorator;
 

@@ -4,7 +4,6 @@ import GameManager, { GameState, PlayState, ItemType } from "./GameManager";
 import HintUI, { HintUIType } from "./HintUI";
 import config from "./config";
 import GameProp from "./GameProp";
-import HTTPMgr from "./net/HTTPMgr";
 import GetItemUI from "./GetItemUI";
 
 const { ccclass, property } = cc._decorator;
@@ -371,7 +370,6 @@ export default class Game extends cc.Component {
         //刷子特效
         this._brush_armature = this.brushEffectDrag.armature();
 
-
         this.successEffectDrag.addEventListener(dragonBones.EventObject.COMPLETE, this.successEventHandler, this);
         this.hummerEffectDrag.addEventListener(dragonBones.EventObject.COMPLETE, this.hummerEventHandler, this);
         this.brushEffectDrag.addEventListener(dragonBones.EventObject.COMPLETE, this.brushEventHandler, this);
@@ -380,8 +378,6 @@ export default class Game extends cc.Component {
         this.hummerEffectDrag.node.active = false;
         this.brushEffectDrag.node.active = false;
     }
-
-
 
     /**==================================事件 函数===================================================== */
     onReturnHall() {
@@ -484,7 +480,7 @@ export default class Game extends cc.Component {
         }
         //关闭结束界面
         this.reliveNode.active = false;
-        
+
         //弹出广告的
         GameManager.VIDEOAD.getRewardedVideoAd(() => {
             this.clear2Or4();
@@ -1021,8 +1017,12 @@ export default class Game extends cc.Component {
             config.submitScoreToWX(score);
         }
 
-        //添加新的游戏结束画面
-        this.showReliveUI();
+        if (CC_WECHATGAME) {
+            //添加新的游戏结束画面
+            this.showReliveUI();
+            return
+        }
+        this.showGameOverUI();
     }
 
     showGameOverUI() {
