@@ -23,12 +23,26 @@ export enum direction {
     down,
 }
 
+export enum gameType {
+    Endless, //无尽
+    Easy, //简单
+    Medium, //中等
+    Hard,   //困难
+}
+
 enum successType {
+    success_32 = 32,
+    success_64 = 64,
+    success_128 = 128,
+    success_256 = 256,
+    success_512 = 512,
+    success_1024 = 1024,
     success_2048 = 2048,
     success_4096 = 4096,
     success_8192 = 8192,
     success_16384 = 16384,
-    success_32768 = 32768
+    success_32768 = 32768,
+    success_endless = -1
 }
 
 @ccclass
@@ -120,6 +134,8 @@ export default class Game extends cc.Component {
     @property(cc.Label)
     changeLab: cc.Label = null;
 
+    //游戏模式
+    _gameType: gameType = gameType.Easy;
 
     // 最近一阶段的成功的数字   用于判断是否达成过
     _successPhase: successType = successType.success_2048;
@@ -700,9 +716,11 @@ export default class Game extends cc.Component {
 
                 this.maskNode.active = true;
                 let effectName = this.getEffectNameByType();
-                //更改等级阶段
-                this._successPhase = this.getTargetScoreByType(this._successPhase);
-                this._success_armature.animation.fadeIn(effectName, -1, -1, 0);
+                if (effectName !== "-1") {
+                    //更改等级阶段
+                    this._success_armature.animation.fadeIn(effectName, -1, -1, 0);
+                }
+                this._successPhase = this.getNextTarget(this._successPhase);
 
                 break;
             case 'jiangbei2048chuxian':
@@ -771,7 +789,7 @@ export default class Game extends cc.Component {
     }
 
     /**更具当前达成的阶段分数来展示特效 */
-    getEffectNameByType() {
+    getEffectNameByType(): string {
         if (this._successPhase === 2048) {
             return 'jiangbei2048chuxian'
         } else if (this._successPhase === 4096) {
@@ -783,6 +801,7 @@ export default class Game extends cc.Component {
         } else if (this._successPhase === 32768) {
             return 'jiangbei32768chuxian'
         }
+        return "-1";
     }
 
     /**
@@ -793,7 +812,6 @@ export default class Game extends cc.Component {
         cc.log('showSuccessNode--')
         this.successEffectDrag.node.parent.active = true;
         this._success_armature.animation.fadeIn('fenxiang1', -1, -1, 0);
-
     }
 
     /**
@@ -951,23 +969,6 @@ export default class Game extends cc.Component {
         } else {
             this._slide = slideDirection.LeftRight;
         }
-
-    
-        // let xDist =  point.x - this._startPos.x;
-
-        // let isLeft = false;
-        // if(this._startPos.x < point.x){
-        //     isLeft = true;
-        // }
-        // let isTop = false;
-        // if(this._startPos.y > point.y){
-        //     isTop = true;
-        // }
-
-        // if(isLeft){
-
-        // }
-
 
         if (this._slide == slideDirection.LeftRight) {
             if (this._startPos.x > point.x) {
@@ -1255,7 +1256,8 @@ export default class Game extends cc.Component {
             }
         }
         let index = Math.floor(Math.random() * nullList.length);
-        let num = this.randomNumber();
+
+        let num = this.getRandomByPhase();
 
         if (nullList.length == 0) {
             this._clickFlag = true;
@@ -1274,6 +1276,59 @@ export default class Game extends cc.Component {
      */
     randomNumber(): number {
         return Math.random() < 0.8 ? 2 : 4;
+    }
+
+    /**
+     * 根据游戏阶段来
+     */
+    getRandomByPhase(): number {
+        //低两阶的
+        let len = this.content.childrenCount;
+        let numMap: Record<string, number> = {};
+        let minNum = Number.MAX_VALUE;
+        let maxNum = -1;
+        for (let i = 0; i < len; i++) {
+            let item = this.content.children[i]
+            let isNum = item.getComponent(Item).isNum();
+            if (!isNum) {
+                continue;
+            }
+            let num = item.getComponent(Item).getNum();
+            if (minNum > num) {
+                minNum = num;
+            }
+            if (maxNum < num) {
+                maxNum = num;
+            }
+
+            if (numMap[num]) {
+                numMap[num]++
+            } else {
+                numMap[num] = 1;
+            }
+        }
+
+        let num: number;
+        //跟随当前进度, 生成符合的数字 困难类型
+        if (this._gameType === gameType.Easy) { //生成最多的
+            let max = 0;
+            let maxKey = 0;
+            for (const key in numMap) {
+                if (numMap[key] > max) {
+                    maxKey = Number(key);
+                }
+            }
+            num = maxKey || this.randomNumber();
+        } else if (this._gameType === gameType.Medium) {
+            num = minNum;
+        }
+        else if (this._gameType === gameType.Hard) {
+            num = this.randomNumber();
+        }
+        else if (this._gameType === gameType.Endless) {
+            num = this.randomNumber();
+        }
+        return num;
     }
 
     /**
@@ -1352,7 +1407,7 @@ export default class Game extends cc.Component {
     /**
      * 通过类型获取分数
      */
-    getTargetScoreByType(type: successType) {
+    getNextTarget(type: successType): successType {
         switch (type) {
             case successType.success_2048:
                 return successType.success_4096;
@@ -1364,12 +1419,29 @@ export default class Game extends cc.Component {
                 return successType.success_32768;
             case successType.success_32768:
                 return successType.success_32768;
+            default:
+                if (this._gameType === gameType.Endless) { //无尽模式, 没有接下来的动画了
+                    return successType.success_endless
+                }
         }
+
     }
 
     //当分数设置直接高过2048时  主要用于测试   不排除后续开发bigNumber 合成游戏
     setTheSuccessType(num: number) {
-        if (num >= 0 && num < 2048) {
+        if (num >= 0 && num < 32) {
+            this._successPhase = successType.success_32;
+        } else if (num >= 32 && num < 64) {
+            this._successPhase = successType.success_64;
+        } else if (num >= 64 && num < 128) {
+            this._successPhase = successType.success_128;
+        } else if (num >= 128 && num < 256) {
+            this._successPhase = successType.success_256;
+        } else if (num >= 256 && num < 512) {
+            this._successPhase = successType.success_512;
+        } else if (num >= 512 && num < 1024) {
+            this._successPhase = successType.success_1024;
+        } else if (num >= 1024 && num < 2048) {
             this._successPhase = successType.success_2048;
         } else if (num >= 2048 && num < 4096) {
             this._successPhase = successType.success_4096;
@@ -1380,7 +1452,8 @@ export default class Game extends cc.Component {
         } else if (num >= 16384 && num < 32768) {
             this._successPhase = successType.success_32768;
         } else {
-            this.showHintUI(HintUIType.Failure, '啊哦,出错误了');
+            this._successPhase = successType.success_endless;
+            // this.showHintUI(HintUIType.Failure, '啊哦,出错误了');
         }
     }
 
